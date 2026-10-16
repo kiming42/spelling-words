@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v9.1</title>
+<title>RIVALS: Word Arena v9.4</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -57,7 +57,7 @@
   }
 
   /* =========================================================
-     主遊戲視窗架構 (自動適應橫向與直向)
+     主遊戲視窗架構 (上下獨立分區，100% 零遮擋競技場)
      ========================================================= */
   .app-viewport {
     position: absolute;
@@ -76,7 +76,7 @@
     z-index: 15;
     background: #0b111e;
     border-bottom: 2px solid #1e293b;
-    padding: 6px 12px;
+    padding: 5px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -93,15 +93,15 @@
     border-radius: 99px;
     padding: 4px 12px;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 13px;
     white-space: nowrap;
   }
-  .s-you { color: var(--blue); font-size: 17px; }
-  .s-bot { color: var(--red); font-size: 17px; }
+  .s-you { color: var(--green); font-size: 16px; }
+  .s-total { color: var(--blue); font-size: 16px; }
 
   .word-pill {
     flex: 1;
-    max-width: 640px;
+    max-width: 680px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -149,6 +149,11 @@
     font-size: 11px;
     font-weight: 800;
     cursor: pointer;
+  }
+  .action-chip-btn.slow {
+    background: rgba(168, 85, 247, 0.22);
+    border-color: var(--purple);
+    color: #e9d5ff;
   }
   .action-chip-btn.gold {
     background: rgba(250, 204, 21, 0.2);
@@ -198,6 +203,52 @@
     box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
   }
 
+  /* Assault Mode 字母按鈕列嵌入頂部 HUD 區內 */
+  .quick-spell-dock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px dashed rgba(250, 204, 21, 0.45);
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .dock-hint {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .dock-tiles {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .quick-tile {
+    width: 38px;
+    height: 36px;
+    background: #1e293b;
+    border: 2px solid var(--gold);
+    border-bottom-width: 4px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 900;
+    text-transform: lowercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .quick-tile:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .quick-tile.wrong { background: var(--red); border-color: #fda4af; }
+
   .top-right-btns {
     display: flex;
     gap: 6px;
@@ -244,9 +295,7 @@
     transition: opacity 0.15s;
   }
 
-  /* =========================================================
-     手機橫向操控：左右按鍵偏中、偏高，手感最舒適
-     ========================================================= */
+  /* 底部雙手觸控層 */
   .bottom-touch-layer {
     position: absolute;
     left: 0; right: 0; bottom: 0;
@@ -255,7 +304,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 12px 6vw 11vh 6vw;
+    padding: 12px 5vw 10vh 5vw;
   }
   .interactive { pointer-events: auto; }
 
@@ -267,58 +316,11 @@
   }
 
   .joy-zone {
-    width: 130px;
-    height: 130px;
+    width: 126px;
+    height: 126px;
     position: relative;
     flex-shrink: 0;
   }
-
-  /* Assault Mode 字母列：強制橫向一字排開，絕不變直柱 */
-  .quick-spell-dock {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.94);
-    border: 2px solid var(--gold);
-    border-radius: 14px;
-    padding: 6px 12px;
-    margin: 0 auto 8px auto;
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
-    max-width: 94vw;
-  }
-  .dock-hint {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--gold);
-    margin-bottom: 4px;
-    text-align: center;
-  }
-  .dock-tiles {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 6px;
-    justify-content: center;
-  }
-  .quick-tile {
-    width: 44px;
-    height: 46px;
-    background: #1e293b;
-    border: 2px solid #94a3b8;
-    border-bottom-width: 4px;
-    border-radius: 9px;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 900;
-    text-transform: lowercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .quick-tile:active { transform: translateY(2px); border-bottom-width: 2px; }
-  .quick-tile.wrong { background: var(--red); border-color: #fda4af; }
 
   .right-actions {
     display: flex;
@@ -339,23 +341,23 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   }
   .round-btn:active { transform: scale(0.92); }
-  .btn-dash { width: 62px; height: 62px; background: radial-gradient(circle, #38bdf8, #0284c7); }
-  .btn-fire { width: 88px; height: 88px; background: radial-gradient(circle, #f43f5e, #be123c); }
+  .btn-dash { width: 60px; height: 60px; background: radial-gradient(circle, #38bdf8, #0284c7); }
+  .btn-fire { width: 86px; height: 86px; background: radial-gradient(circle, #f43f5e, #be123c); }
 
   @media (orientation: landscape) and (max-height: 520px) {
-    .top-hud-strip { padding: 3px 10px; }
-    .word-pill { flex-direction: row; justify-content: space-between; padding: 3px 10px; gap: 8px; }
-    .word-top-row { margin-bottom: 0; }
+    .top-hud-strip { padding: 3px 8px; }
+    .word-pill { padding: 3px 8px; }
+    .word-top-row { margin-bottom: 2px; }
+    .quick-spell-dock { margin-top: 3px; padding-top: 3px; }
+    .quick-tile { width: 34px; height: 32px; font-size: 16px; }
     .bottom-touch-layer {
-      padding: 6px 8vw 13vh 8vw;
+      padding: 6px 6vw 11vh 6vw;
     }
-    .joy-zone { width: 115px; height: 115px; }
-    .btn-fire { width: 78px; height: 78px; }
-    .btn-dash { width: 54px; height: 54px; }
-    .quick-spell-dock { margin-bottom: -10vh; }
+    .joy-zone { width: 112px; height: 112px; }
+    .btn-fire { width: 76px; height: 76px; }
+    .btn-dash { width: 52px; height: 52px; }
   }
 
-  /* 手機直向：下方獨立操控台，字母橫排絕不遮擋地圖 */
   @media (orientation: portrait), (max-width: 680px) {
     .top-hud-strip {
       flex-wrap: wrap;
@@ -366,21 +368,17 @@
       min-width: 100%;
       margin-top: 4px;
     }
+    .quick-tile {
+      width: 42px;
+      height: 42px;
+      font-size: 19px;
+    }
     .bottom-touch-layer {
       position: relative;
       background: #0b111e;
       border-top: 2px solid #1e293b;
-      padding: 10px 8vw 22px 8vw;
+      padding: 12px 8vw 22px 8vw;
       flex-shrink: 0;
-    }
-    .quick-spell-dock {
-      width: 100%;
-      margin: 0 0 12px 0;
-      padding: 8px;
-    }
-    .quick-tile {
-      width: 44px;
-      height: 46px;
     }
     .joy-zone { width: 115px; height: 115px; }
     .btn-fire { width: 80px; height: 80px; }
@@ -599,6 +597,7 @@
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 10px;
+    margin-bottom: 10px;
   }
   .seg-group {
     display: flex;
@@ -674,8 +673,9 @@
     background: #131c2e;
     border: 2px solid var(--gold);
     border-radius: 22px;
-    width: 320px;
-    padding: 20px;
+    width: 340px;
+    max-width: 94vw;
+    padding: 18px;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.9);
   }
@@ -782,12 +782,13 @@
      ========================================================= -->
 <div class="app-viewport">
 
-  <!-- 1. 頂部獨立狀態與單字列 -->
+  <!-- 1. 頂部獨立狀態與單字列 (新增 🐢 慢讀快速鍵) -->
   <div class="top-hud-strip">
     <div class="score-pill">
+      <span style="font-size:12px; color:#94a3b8;">🎯進度:</span>
       <span class="s-you" id="scoreYou">0</span>
-      <span style="font-size:11px; color:#94a3b8;">VS</span>
-      <span class="s-bot" id="scoreBot">0</span>
+      <span style="font-size:12px; color:#94a3b8;">/</span>
+      <span class="s-total" id="scoreTotal">0</span>
       <span style="font-size:12px; color:var(--gold); margin-left:4px;">
         🔥<span id="streakNum">0</span> | 🔑<span id="keysNum">0</span> | 💰<span id="coinsNum">0</span>
       </span>
@@ -799,9 +800,15 @@
         <span class="unit-badge" id="hudUnitBadge">Unit 1</span>
         <span class="meaning-text" id="hudMeaning">準備中...</span>
         <button class="action-chip-btn" onclick="speakCurrentWord()">🔊 讀音</button>
+        <button class="action-chip-btn slow" onclick="speakCurrentWord('-35%')">🐢 慢讀</button>
         <button class="action-chip-btn gold" onclick="useHint()">💡 提示(-15💰)</button>
       </div>
       <div class="word-slots" id="hudSlots"></div>
+
+      <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
+        <span class="dock-hint">⚡ 篤字補彈:</span>
+        <div class="dock-tiles" id="dockTiles"></div>
+      </div>
     </div>
 
     <div class="top-right-btns">
@@ -816,18 +823,13 @@
     <div id="damageFlash"></div>
 
     <div id="centerBanner" class="hidden">
-      <div id="bannerTitle" style="font-size:21px; font-weight:900; color:var(--gold);">ROUND 1</div>
+      <div id="bannerTitle" style="font-size:21px; font-weight:900; color:var(--gold);">STAGE 1</div>
       <div id="bannerSub" style="font-size:13px; color:#e2e8f0; margin-top:4px;"></div>
     </div>
   </div>
 
   <!-- 3. 底部觸控層 -->
   <div class="bottom-touch-layer" id="bottomTouchLayer">
-    <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
-      <div class="dock-hint">⚡ 篤對字母補彈 (篤錯扣 -15 HP)</div>
-      <div class="dock-tiles" id="dockTiles"></div>
-    </div>
-
     <div class="controls-main-row">
       <div class="joy-zone interactive" id="joyZone"></div>
 
@@ -847,26 +849,43 @@
 </div>
 
 <!-- =========================================================
-     ⏸️ 暫停視窗 (PAUSE MODAL)
+     ⏸️ 暫停視窗 (內置即時更換聲音與語速!)
      ========================================================= -->
 <div class="modal-overlay hidden" id="pauseModal">
   <div class="pin-card interactive">
-    <div style="font-size:34px; margin-bottom:4px;">⏸️</div>
-    <h3 style="color:var(--gold); font-size:20px; margin-bottom:6px;">遊戲已暫停 (PAUSED)</h3>
-    <p style="font-size:12px; color:#cbd5e1; margin-bottom:16px;">
-      提示：你亦可以隨時行入地圖左邊綠色的「🛡️ 思考保護區」免受子彈攻擊慢慢諗串字！
-    </p>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <button class="start-hero-btn" style="padding:12px; font-size:16px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
-      <button class="mini-btn" style="padding:11px; font-size:14px;" onclick="speakCurrentWord()">🔊 重聽目標生字讀音</button>
-      <button class="mini-btn" style="padding:11px; font-size:14px;" onclick="restartCurrentRound()">🔄 重新開始本回合</button>
-      <button class="mini-btn" style="padding:11px; font-size:14px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
+    <div style="font-size:30px; margin-bottom:2px;">⏸️</div>
+    <h3 style="color:var(--gold); font-size:19px; margin-bottom:6px;">遊戲已暫停 (PAUSED)</h3>
+
+    <!-- 戰鬥中隨時調整聲音與語速 -->
+    <div style="background:#090d16; border:1px solid #334155; border-radius:12px; padding:10px; margin-bottom:12px; text-align:left;">
+      <div style="font-size:11px; color:var(--blue); font-weight:900; margin-bottom:4px;">🔊 語音角色與速度設定</div>
+      <select class="form-select" id="pauseVoiceSelect" onchange="changeVoice(this.value)" style="margin-bottom:8px;">
+        <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia - 學校標準)</option>
+        <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan - 沉穩清晰)</option>
+        <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie - 小朋友聲)</option>
+        <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava - 自然流暢)</option>
+        <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew - 陽光清晰)</option>
+        <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana - 可愛小朋友聲)</option>
+      </select>
+      <div class="seg-group" id="pauseSpeedGroup">
+        <button class="seg-btn" data-spd="-35%" onclick="setVoiceSpeed('-35%')">🐢 超慢</button>
+        <button class="seg-btn" data-spd="-20%" onclick="setVoiceSpeed('-20%')">🚶 慢速</button>
+        <button class="seg-btn" data-spd="-5%" onclick="setVoiceSpeed('-5%')">▶️ 正常</button>
+        <button class="seg-btn" data-spd="+10%" onclick="setVoiceSpeed('+10%')">⚡ 快速</button>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="start-hero-btn" style="padding:11px; font-size:16px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px;" onclick="speakCurrentWord()">🔊 用目前語速重聽讀音</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px;" onclick="restartCurrentRound()">🔄 重新開始本題</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
     </div>
   </div>
 </div>
 
 <!-- =========================================================
-     v9.1 響應式主大廳 (DASHBOARD)
+     v9.4 響應式主大廳 (DASHBOARD)
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -905,8 +924,8 @@
     <div class="dash-body" id="tabContentPlay">
       <div class="step-card">
         <div class="step-header">
-          <span class="step-title">📚 STEP 1. 揀選溫習課題 (<span id="lobbyProfLabel" style="color:var(--gold);">JUSTIN</span> 的專屬題庫)</span>
-          <span style="font-size:11px; color:#94a3b8;" id="activePoolCountText">已選生字</span>
+          <span class="step-title">📚 STEP 1. 揀選溫習課題 (<span id="lobbyProfLabel" style="color:var(--gold);">JUSTIN</span> — 完成所選全部題目即通關!)</span>
+          <span style="font-size:11px; color:var(--green); font-weight:800;" id="activePoolCountText">已選生字</span>
         </div>
         <div class="unit-bar" id="unitSelectBar"></div>
       </div>
@@ -919,7 +938,7 @@
           <div class="mode-card active" onclick="setMode('mix', this)">
             <span class="m-icon">🔥</span>
             <div class="m-title">混合輪換賽</div>
-            <div class="m-desc">每局切換玩法</div>
+            <div class="m-desc">每題切換玩法</div>
           </div>
           <div class="mode-card" onclick="setMode('sniper', this)">
             <span class="m-icon">🎯</span>
@@ -956,17 +975,42 @@
             <span class="step-title">🔢 STEP 4. 出題次序</span>
           </div>
           <div class="seg-group" id="orderRow">
-            <button class="seg-btn active" id="orderBtnRandom" onclick="setWordOrder('random')">🔀 隨機</button>
-            <button class="seg-btn" id="orderBtnSeq" onclick="setWordOrder('sequential')">🔢 順序</button>
+            <button class="seg-btn active" id="orderBtnRandom" onclick="setWordOrder('random')">🔀 隨機不重複</button>
+            <button class="seg-btn" id="orderBtnSeq" onclick="setWordOrder('sequential')">🔢 按順序出題</button>
           </div>
         </div>
       </div>
 
-      <button class="start-hero-btn" onclick="startMatch()" style="margin-top:12px;">
-        🚀 進入競技場對決 (START MATCH)
+      <!-- 新增要求 2：STEP 5 語音角色與多段朗讀速度選擇器 -->
+      <div class="step-card" style="margin-bottom:8px;">
+        <div class="step-header">
+          <span class="step-title">🔊 STEP 5. 英文發音角色 & 朗讀速度</span>
+          <button class="action-chip-btn" onclick="previewVoiceSample()">🔊 試聽發音</button>
+        </div>
+        <div class="settings-split" style="margin-bottom:0; align-items:center;">
+          <select class="form-select" id="lobbyVoiceSelect" style="margin-top:0; height:36px;" onchange="changeVoice(this.value)">
+            <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia - 學校標準)</option>
+            <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan - 沉穩清晰)</option>
+            <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie - 小朋友聲)</option>
+            <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava - 自然流暢)</option>
+            <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew - 陽光清晰)</option>
+            <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana - 可愛小朋友聲)</option>
+          </select>
+
+          <div class="seg-group" id="lobbySpeedGroup">
+            <button class="seg-btn" data-spd="-35%" onclick="setVoiceSpeed('-35%')">🐢 超慢</button>
+            <button class="seg-btn" data-spd="-20%" onclick="setVoiceSpeed('-20%')">🚶 慢速</button>
+            <button class="seg-btn" data-spd="-5%" onclick="setVoiceSpeed('-5%')">▶️ 正常</button>
+            <button class="seg-btn" data-spd="+10%" onclick="setVoiceSpeed('+10%')">⚡ 快速</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="start-hero-btn" id="btnStartChallenge" onclick="startMatch()" style="margin-top:6px;">
+        🚀 開始挑戰所選題庫 (START)
       </button>
       <div style="text-align:center; font-size:10px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 9.1.0 (已內置 Azure 語音服務 & 3 人題庫)
+        PWA Auto-Update Ready • Version 9.4.0 (敵人減速優化 + 6款聲音與4段語速)
       </div>
     </div>
 
@@ -982,7 +1026,7 @@
       <div class="armory-grid" id="armorList"></div>
     </div>
 
-    <!-- TAB 3: 家長題庫與設定 (Azure 金鑰已隱藏內置於底層，不顯示於畫面) -->
+    <!-- TAB 3: 家長題庫與設定 -->
     <div class="dash-body hidden" id="tabContentParent">
       <div class="step-card" style="border-color:var(--purple);">
         <div class="step-header">
@@ -1131,7 +1175,6 @@ async function installPWAApp() {
    ========================================================= */
 const EMBEDDED_AZURE_KEY = '7rqTKvFwVlRmh84vQ8bQDNgPZjitlh44KMkom9ZMOAFYMWASiWngJQQJ99CIAC3pKaRXJ3w3AAAYACOGJ8DS';
 const EMBEDDED_AZURE_REGION = 'eastasia';
-const EMBEDDED_AZURE_VOICE = 'en-GB-SoniaNeural';
 
 /* =========================================================
    2. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫
@@ -1275,7 +1318,7 @@ const BOSS_PROFILES = [
 ];
 
 /* =========================================================
-   4. 獨立玩家檔案與智慧片語解析引擎
+   4. 獨立玩家檔案、語音與語速設定
    ========================================================= */
 let config = {
   playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
@@ -1283,6 +1326,8 @@ let config = {
   diff: 'progressive',
   wordOrder: localStorage.getItem('rv8_word_order') || 'random',
   seqIndex: 0,
+  voiceName: localStorage.getItem('rv94_voice_name') || 'en-GB-SoniaNeural',
+  voiceRate: localStorage.getItem('rv94_voice_rate') || '-15%', // '-35%', '-20%', '-5%', '+10%'
   parentPin: localStorage.getItem('rv8_parent_pin') || '1234',
   geminiKey: localStorage.getItem('rv7_gemini_key') || '',
   weaponId: 'cyber',
@@ -1343,6 +1388,7 @@ function loadProfileData(profName) {
   renderGearLists();
   updateTopHUD();
   updateWordOrderUI();
+  syncVoiceControlsUI();
 }
 
 function saveProfileData(silent = false) {
@@ -1363,6 +1409,40 @@ function saveProfileData(silent = false) {
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveProfileData(true); });
 window.addEventListener('pagehide', () => saveProfileData(true));
 window.addEventListener('beforeunload', () => saveProfileData(true));
+
+/* --- 要求 2：多款聲音與多段語速切換控制 --- */
+function changeVoice(newVoice) {
+  config.voiceName = newVoice;
+  localStorage.setItem('rv94_voice_name', newVoice);
+  syncVoiceControlsUI();
+  previewVoiceSample();
+}
+
+function setVoiceSpeed(newRate) {
+  config.voiceRate = newRate;
+  localStorage.setItem('rv94_voice_rate', newRate);
+  syncVoiceControlsUI();
+  previewVoiceSample();
+}
+
+function syncVoiceControlsUI() {
+  const lv = document.getElementById('lobbyVoiceSelect');
+  const pv = document.getElementById('pauseVoiceSelect');
+  if (lv) lv.value = config.voiceName;
+  if (pv) pv.value = config.voiceName;
+
+  document.querySelectorAll('#lobbySpeedGroup .seg-btn, #pauseSpeedGroup .seg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-spd') === config.voiceRate);
+  });
+}
+
+function previewVoiceSample() {
+  const samplePool = getActiveWordPool();
+  const sampleWord = (round.wordObj && match.active)
+    ? (round.wordObj.ttsText || round.wordObj.word)
+    : (samplePool[0] ? samplePool[0].ttsText : 'Welcome to Rivals Word Arena');
+  speakText(sampleWord);
+}
 
 function parseUnitsFromText(rawText) {
   const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
@@ -1781,17 +1861,6 @@ function updateWordOrderUI() {
   document.getElementById('orderBtnSeq').classList.toggle('active', config.wordOrder === 'sequential');
 }
 
-function pickNextWordFromPool() {
-  const pool = getActiveWordPool();
-  if (config.wordOrder === 'sequential') {
-    const picked = pool[config.seqIndex % pool.length];
-    config.seqIndex = (config.seqIndex + 1) % pool.length;
-    return picked;
-  } else {
-    return pool[Math.floor(Math.random() * pool.length)];
-  }
-}
-
 function getActiveWordPool() {
   const unitNames = Object.keys(config.unitsMap);
   if (config.selectedUnits.includes('ALL') || config.selectedUnits.length === 0) {
@@ -1849,7 +1918,11 @@ function renderUnitSelectorBar() {
   });
 
   const activePool = getActiveWordPool();
-  document.getElementById('activePoolCountText').textContent = `已選 ${activePool.length} 個溫習題目`;
+  document.getElementById('activePoolCountText').textContent = `目標：完成全部 ${activePool.length} 題即通關`;
+  const startBtn = document.getElementById('btnStartChallenge');
+  if (startBtn) {
+    startBtn.textContent = `🚀 開始挑戰所選題庫 (共 ${activePool.length} 題)`;
+  }
 }
 
 async function autoTranslateMissingChinese() {
@@ -1923,11 +1996,14 @@ function executeFullReset() {
 }
 
 /* =========================================================
-   7. 語音合成 (直接使用隱藏內置的 Azure Key 與 East Asia 端點) & 音效
+   7. 語音合成 (支援 6 款聲音角色與 4 段自訂語速) & 音效
    ========================================================= */
 let currentAudio = null;
-async function speakText(text) {
+async function speakText(text, customRate = null) {
   if (!text) return;
+  const activeVoice = config.voiceName || 'en-GB-SoniaNeural';
+  const activeRate = customRate || config.voiceRate || '-15%';
+
   try {
     if (currentAudio) { currentAudio.pause(); currentAudio = null; }
     const res = await fetch(`https://${EMBEDDED_AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
@@ -1937,7 +2013,7 @@ async function speakText(text) {
         'Content-Type': 'application/ssml+xml',
         'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
       },
-      body: `<speak version='1.0' xml:lang='en-US'><voice name='${EMBEDDED_AZURE_VOICE}'><prosody rate='-8%'>${text}</prosody></voice></speak>`
+      body: `<speak version='1.0' xml:lang='en-US'><voice name='${activeVoice}'><prosody rate='${activeRate}'>${text}</prosody></voice></speak>`
     });
     if (res.ok) {
       const blob = await res.blob();
@@ -1950,13 +2026,15 @@ async function speakText(text) {
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-GB';
-    u.rate = 0.86;
+    u.lang = activeVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
+    const rateMap = { '-35%': 0.62, '-20%': 0.78, '-5%': 0.94, '+10%': 1.1 };
+    u.rate = rateMap[activeRate] || 0.85;
     window.speechSynthesis.speak(u);
   }
 }
-function speakCurrentWord() {
-  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word);
+
+function speakCurrentWord(overrideRate = null) {
+  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word, overrideRate);
 }
 
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -2060,7 +2138,7 @@ function triggerDeathLootDrop() {
 }
 
 /* =========================================================
-   9. 競技場地圖、「休息思考保護區 (SAFE_ZONE)」與「暫停鍵」
+   9. 競技場地圖、「完成題庫隊列制 (Word Queue)」與敵人減速設定
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
@@ -2101,7 +2179,16 @@ function generateRandomObstacles() {
   });
 }
 
-let match = { active: false, paused: false, round: 1, you: 0, bot: 0 };
+let match = {
+  active: false,
+  paused: false,
+  round: 1,
+  you: 0,
+  totalWords: 0,
+  bot: 0,
+  queue: []
+};
+
 let round = {
   mode: 'sniper',
   diff: 'blanks',
@@ -2138,10 +2225,11 @@ let player = {
   dashCd: 0
 };
 
+// 要求 1：敵人基礎移動速度減慢至 2.2 (原本為 3.1)，追擊瞄準更輕鬆！
 let rival = {
   x: 1060, y: 330, r: 27,
   hp: 100, maxHp: 100,
-  speed: 3.1,
+  speed: 2.2,
   angle: Math.PI,
   shielded: false,
   stun: 0,
@@ -2156,6 +2244,7 @@ function togglePause() {
   if (!match.active) return;
   match.paused = !match.paused;
   firingHeld = false;
+  syncVoiceControlsUI();
   document.getElementById('pauseModal').classList.toggle('hidden', !match.paused);
   sfx('good');
 }
@@ -2177,11 +2266,23 @@ function startMatch() {
   document.getElementById('lobbyModal').classList.add('hidden');
   document.getElementById('pauseModal').classList.add('hidden');
   resize();
-  match.active = true;
-  match.paused = false;
-  match.round = 1;
+
+  const pool = [...getActiveWordPool()];
+  if (config.wordOrder === 'random') {
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+  }
+
+  match.queue = pool;
+  match.totalWords = pool.length;
   match.you = 0;
   match.bot = 0;
+  match.round = 1;
+  match.active = true;
+  match.paused = false;
+
   updateTopHUD();
   initRound();
 }
@@ -2210,10 +2311,10 @@ function initRound() {
   const modes = ['sniper', 'assault', 'breaker'];
   round.mode = config.mode === 'mix' ? modes[(match.round - 1) % 3] : config.mode;
   round.diff = config.diff === 'progressive'
-    ? ((match.you >= 2 || match.round >= 3) ? 'full' : 'blanks')
+    ? ((match.you >= Math.ceil(match.totalWords / 2)) ? 'full' : 'blanks')
     : config.diff;
 
-  round.wordObj = pickNextWordFromPool();
+  round.wordObj = match.queue[0] || getActiveWordPool()[0];
   rival.profile = BOSS_PROFILES[Math.floor(Math.random() * BOSS_PROFILES.length)];
   round.hintHighlightChar = null;
 
@@ -2232,7 +2333,7 @@ function initRound() {
 
   rival.x = 1060; rival.y = 330;
   rival.hp = 100; rival.stun = 0; rival.fireCd = 75;
-  rival.speed = 3.1;
+  rival.speed = 2.2; // 減慢敵人移動速度
   rival.enragedBoost = 0;
   pickNewRivalWaypoint();
 
@@ -2404,8 +2505,8 @@ function spawnSniperOrbs() {
     round.orbs.push({
       x: 430 + (i % 3) * 155,
       y: 120 + Math.floor(i / 3) * 380 + (Math.random() * 30 - 15),
-      vx: (Math.random() - 0.5) * 2.5,
-      vy: (Math.random() - 0.5) * 2.5,
+      vx: (Math.random() - 0.5) * 2.3,
+      vy: (Math.random() - 0.5) * 2.3,
       r: 26,
       char: ch
     });
@@ -2416,7 +2517,6 @@ function renderQuickSpellDock() {
   const container = document.getElementById('dockTiles');
   container.innerHTML = '';
   if (round.nextIdx === -1) {
-    round.wordObj = pickNextWordFromPool();
     buildSlots(round.wordObj.word, 'assault', round.diff);
     updateWordHUD();
   }
@@ -2460,7 +2560,7 @@ function handleQuickTileTap(ch, btn) {
       addCoins(10);
       player.ammo += 25;
       player.speedBuff = 150;
-      rival.enragedBoost = 240;
+      rival.enragedBoost = 180;
       pickNewRivalWaypoint();
       document.getElementById('ammoLabel').textContent = `彈藥:${player.ammo}`;
       addText(player.x, player.y - 42, '⚡ 串字完成！獲得 +25 強化子彈！追擊敵人！', '#facc15');
@@ -2753,7 +2853,7 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
 }
 
 /* =========================================================
-   11. 遊戲更新與碰撞邏輯
+   11. 遊戲更新與碰撞邏輯 (敵人減速優化)
    ========================================================= */
 function circleRect(cx, cy, cr, rx, ry, rw, rh) {
   const nx = Math.max(rx, Math.min(cx, rx + rw));
@@ -2880,7 +2980,8 @@ function update() {
     if (Math.hypot(rival.wp.x - rival.x, rival.wp.y - rival.y) < 35) {
       pickNewRivalWaypoint();
     }
-    const aiSpd = rival.speed * (rival.enragedBoost > 0 ? 1.45 : 1) * (round.mode === 'assault' ? 1.15 : 1);
+    // 要求 1：敵人移動速度減慢，加速倍率亦調低，方便玩家追擊瞄準
+    const aiSpd = rival.speed * (rival.enragedBoost > 0 ? 1.2 : 1) * (round.mode === 'assault' ? 1.05 : 1);
     const ang = Math.atan2(rival.wp.y - rival.y, rival.wp.x - rival.x);
     const rx = rival.x + Math.cos(ang) * aiSpd;
     const ry = rival.y + Math.sin(ang) * aiSpd;
@@ -2907,12 +3008,12 @@ function update() {
     rival.angle = Math.atan2(player.y - rival.y, player.x - rival.x);
     rival.fireCd--;
     if (rival.fireCd <= 0 && !player.inSafeZone) {
-      rival.fireCd = Math.max(44, 72 - config.streak * 3);
+      rival.fireCd = Math.max(48, 76 - config.streak * 3);
       round.bullets.push({
         x: rival.x + Math.cos(rival.angle) * 28,
         y: rival.y + Math.sin(rival.angle) * 28,
-        vx: Math.cos(rival.angle) * 8.2,
-        vy: Math.sin(rival.angle) * 8.2,
+        vx: Math.cos(rival.angle) * 7.6,
+        vy: Math.sin(rival.angle) * 7.6,
         r: 6, color: '#f43f5e', fromPlayer: false, dmg: 9
       });
     }
@@ -3083,41 +3184,50 @@ function finishRound(won) {
   match.active = false;
 
   let dropMsg = '';
+  let milestoneMsg = '';
+
   if (won) {
     sfx('good');
     match.you++;
     addCoins(10);
+    match.queue.shift();
+
+    if (match.you % 5 === 0 && match.queue.length > 0) {
+      config.keys += 1;
+      milestoneMsg = '🎁 達成 5 題里程碑：即時獲得 +1 把鎖匙 🔑！ ';
+    }
   } else {
     sfx('bad');
     match.bot++;
     dropMsg = triggerDeathLootDrop();
+    if (match.queue.length > 1) {
+      const failedWord = match.queue.shift();
+      match.queue.push(failedWord);
+    }
   }
   saveProfileData();
   updateTopHUD();
 
-  if (match.you >= 3 || match.bot >= 3) {
-    const victory = match.you >= 3;
-    if (victory) {
-      config.streak++;
-      const bonusKey = (config.streak % 3 === 0) ? 1 : 0;
-      const earnedKeys = 1 + bonusKey;
-      config.keys += earnedKeys;
-      addCoins(25);
-      saveProfileData();
-      announceRound(`🏆 ${config.playerName} 贏得總決賽!`,
-        `獲得 +${earnedKeys} 把鎖匙 🔑 & +25 金幣 💰 | 連勝 🔥${config.streak}`);
-    } else {
-      config.streak = 0;
-      saveProfileData();
-      announceRound('💀 DEFEAT! 挑戰失敗!', `${dropMsg} | 正確: ${round.wordObj.word}`);
-    }
+  if (match.queue.length === 0) {
+    config.streak++;
+    const clearKeys = Math.max(1, Math.ceil(match.totalWords / 8));
+    config.keys += clearKeys;
+    addCoins(35);
+    saveProfileData();
     updateTopHUD();
-    setTimeout(() => openLobby(), 2800);
+
+    announceRound(
+      `🏆 恭喜 ${config.playerName} 完成全部 ${match.totalWords} 題！`,
+      `通關大獎：+${clearKeys} 把鎖匙 🔑 & +35 金幣 💰 | 連勝 🔥${config.streak}`
+    );
+    setTimeout(() => openLobby(), 3200);
   } else {
     match.round++;
     announceRound(
-      won ? `✅ ROUND WIN! (${round.wordObj.word})` : `❌ ROUND LOST! (${round.wordObj.word})`,
-      won ? '進度已自動儲存，準備下一局...' : `${dropMsg}`
+      won ? `✅ STAGE CLEAR! (${round.wordObj.word})` : `❌ 挑戰失敗，稍後重考! (${round.wordObj.word})`,
+      won
+        ? `${milestoneMsg}進度：已完成 ${match.you} / ${match.totalWords} 題 (剩餘 ${match.queue.length} 題)`
+        : `${dropMsg} | 本題已排入隊尾重溫 (剩餘 ${match.queue.length} 題)`
     );
     setTimeout(() => { match.active = true; initRound(); }, 2500);
   }
@@ -3334,7 +3444,7 @@ function shoot(manualAim = false) {
 
   if (round.mode === 'assault' && player.ammo <= 0) {
     sfx('bad');
-    addText(player.x, player.y - 30, '⚡ 無子彈！請篤下方字母串字補彈！', '#facc15');
+    addText(player.x, player.y - 30, '⚡ 無子彈！請篤頂部字母串字補彈！', '#facc15');
     return;
   }
   if (!manualAim) {
@@ -3426,7 +3536,7 @@ function updateWordHUD() {
 
 function updateTopHUD() {
   document.getElementById('scoreYou').textContent = match.you;
-  document.getElementById('scoreBot').textContent = match.bot;
+  document.getElementById('scoreTotal').textContent = match.totalWords || getActiveWordPool().length;
   document.getElementById('streakNum').textContent = config.streak;
   document.getElementById('keysNum').textContent = config.keys;
   document.getElementById('coinsNum').textContent = config.coins;
@@ -3440,10 +3550,10 @@ function announceRound(t, s) {
   const b = document.getElementById('centerBanner');
   const subs = {
     sniper: '順序射擊正確字母球！(可隨時回左邊綠色保護區思考)',
-    assault: '篤底部字母補彈 ➔ 走出綠色保護區追擊敵人！',
+    assault: '篤頂部字母補彈 ➔ 走出綠色保護區追擊敵人！',
     breaker: '射爆或拾取正確字母箱破盾！(小心假箱扣 15 HP)'
   };
-  document.getElementById('bannerTitle').textContent = t || `ROUND ${match.round} vs ${rival.profile.title}`;
+  document.getElementById('bannerTitle').textContent = t || `STAGE ${match.you + 1} / ${match.totalWords} vs ${rival.profile.title}`;
   document.getElementById('bannerSub').textContent = s || subs[round.mode];
   b.classList.remove('hidden');
   setTimeout(() => b.classList.add('hidden'), 2300);
@@ -3516,6 +3626,7 @@ function openLobby() {
   updateTopHUD();
   renderUnitSelectorBar();
   renderGearLists();
+  syncVoiceControlsUI();
   document.getElementById('pauseModal').classList.add('hidden');
   document.getElementById('lobbyModal').classList.remove('hidden');
 }
