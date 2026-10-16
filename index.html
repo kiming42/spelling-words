@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v8.0</title>
+<title>RIVALS: Word Arena v9.0.1</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -37,60 +37,6 @@
     color: #fff;
     touch-action: none;
   }
-
-  /* =========================================================
-     修正附圖 1 & 3：採用 Flex 上下分層結構，頂部 HUD 永不遮擋競技場！
-     ========================================================= */
-  .app-viewport {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-  }
-
-  /* 頂部獨立 HUD 區（不重疊在畫布上） */
-  .top-hud-strip {
-    position: relative;
-    z-index: 12;
-    background: #0b111e;
-    border-bottom: 2px solid #1e293b;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  /* 中央競技場畫布容器（自動填滿剩餘高度） */
-  .arena-stage {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    overflow: hidden;
-    background: var(--bg-dark);
-  }
-  #gameCanvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-  }
-  #damageFlash {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle, transparent 40%, rgba(244, 63, 94, 0.55) 100%);
-    z-index: 5;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
   .hidden { display: none !important; }
 
   #autoSaveToast {
@@ -110,7 +56,34 @@
     transition: opacity 0.25s;
   }
 
-  /* 頂部 HUD 元件 */
+  /* =========================================================
+     主遊戲視窗架構 (自動適應橫向與直向)
+     ========================================================= */
+  .app-viewport {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  /* 頂部獨立 HUD 區 */
+  .top-hud-strip {
+    position: relative;
+    z-index: 15;
+    background: #0b111e;
+    border-bottom: 2px solid #1e293b;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
   .score-pill {
     display: flex;
     align-items: center;
@@ -128,7 +101,7 @@
 
   .word-pill {
     flex: 1;
-    max-width: 560px;
+    max-width: 640px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -163,7 +136,7 @@
     color: var(--gold);
   }
   .meaning-text {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     color: #fff;
   }
@@ -173,7 +146,7 @@
     color: #fff;
     border-radius: 6px;
     padding: 2px 8px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     cursor: pointer;
   }
@@ -182,11 +155,13 @@
     border-color: var(--gold);
     color: var(--gold);
   }
+
   .word-slots {
     display: flex;
     gap: 3px;
     flex-wrap: wrap;
     justify-content: center;
+    max-width: 100%;
   }
   .slot {
     width: 20px;
@@ -197,9 +172,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     text-transform: lowercase;
+  }
+  .word-slots.compact .slot {
+    width: 15px;
+    height: 20px;
+    font-size: 12px;
+  }
+  .slot.space-slot {
+    background: transparent;
+    border-bottom: none;
+    width: 10px;
+    color: #64748b;
   }
   .slot.filled {
     color: var(--green);
@@ -212,6 +198,11 @@
     box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
   }
 
+  .top-right-btns {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
   .mini-btn {
     background: #131c2e;
     border: 1.5px solid #475569;
@@ -223,26 +214,66 @@
     cursor: pointer;
     white-space: nowrap;
   }
+  .mini-btn.pause-btn {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
 
-  /* 底部觸控層 (浮於競技場下方兩側) */
+  /* 中央競技場容器 */
+  .arena-stage {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg-dark);
+  }
+  #gameCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  #damageFlash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, transparent 40%, rgba(244, 63, 94, 0.55) 100%);
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  /* =========================================================
+     手機橫向操控：左右按鍵偏中、偏高，手感最舒適
+     ========================================================= */
   .bottom-touch-layer {
     position: absolute;
     left: 0; right: 0; bottom: 0;
-    z-index: 10;
+    z-index: 12;
     pointer-events: none;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding: 10px 16px;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px 6vw 11vh 6vw;
   }
   .interactive { pointer-events: auto; }
 
+  .controls-main-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .joy-zone {
-    width: 125px;
-    height: 125px;
+    width: 130px;
+    height: 130px;
     position: relative;
     flex-shrink: 0;
   }
+
+  /* Assault Mode 字母列：強制橫向一字排開，絕不變直柱 */
   .quick-spell-dock {
     display: flex;
     flex-direction: column;
@@ -250,9 +281,10 @@
     background: rgba(15, 23, 42, 0.94);
     border: 2px solid var(--gold);
     border-radius: 14px;
-    padding: 6px 10px;
-    margin: 0 8px;
+    padding: 6px 12px;
+    margin: 0 auto 8px auto;
     box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
+    max-width: 94vw;
   }
   .dock-hint {
     font-size: 10px;
@@ -263,17 +295,18 @@
   }
   .dock-tiles {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 6px;
-    flex-wrap: wrap;
     justify-content: center;
   }
   .quick-tile {
-    width: 42px;
-    height: 44px;
+    width: 44px;
+    height: 46px;
     background: #1e293b;
     border: 2px solid #94a3b8;
     border-bottom-width: 4px;
-    border-radius: 8px;
+    border-radius: 9px;
     color: #fff;
     font-size: 20px;
     font-weight: 900;
@@ -282,6 +315,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
   .quick-tile:active { transform: translateY(2px); border-bottom-width: 2px; }
   .quick-tile.wrong { background: var(--red); border-color: #fda4af; }
@@ -289,7 +323,7 @@
   .right-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     flex-shrink: 0;
   }
   .round-btn {
@@ -302,14 +336,59 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 5px 16px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   }
   .round-btn:active { transform: scale(0.92); }
-  .btn-dash { width: 58px; height: 58px; background: radial-gradient(circle, #38bdf8, #0284c7); }
-  .btn-fire { width: 82px; height: 82px; background: radial-gradient(circle, #f43f5e, #be123c); }
+  .btn-dash { width: 62px; height: 62px; background: radial-gradient(circle, #38bdf8, #0284c7); }
+  .btn-fire { width: 88px; height: 88px; background: radial-gradient(circle, #f43f5e, #be123c); }
+
+  @media (orientation: landscape) and (max-height: 520px) {
+    .top-hud-strip { padding: 3px 10px; }
+    .word-pill { flex-direction: row; justify-content: space-between; padding: 3px 10px; gap: 8px; }
+    .word-top-row { margin-bottom: 0; }
+    .bottom-touch-layer {
+      padding: 6px 8vw 13vh 8vw;
+    }
+    .joy-zone { width: 115px; height: 115px; }
+    .btn-fire { width: 78px; height: 78px; }
+    .btn-dash { width: 54px; height: 54px; }
+    .quick-spell-dock { margin-bottom: -10vh; }
+  }
+
+  /* 手機直向：下方獨立操控台，字母橫排絕不遮擋地圖 */
+  @media (orientation: portrait), (max-width: 680px) {
+    .top-hud-strip {
+      flex-wrap: wrap;
+      padding: 6px 10px;
+    }
+    .word-pill {
+      order: 3;
+      min-width: 100%;
+      margin-top: 4px;
+    }
+    .bottom-touch-layer {
+      position: relative;
+      background: #0b111e;
+      border-top: 2px solid #1e293b;
+      padding: 10px 8vw 22px 8vw;
+      flex-shrink: 0;
+    }
+    .quick-spell-dock {
+      width: 100%;
+      margin: 0 0 12px 0;
+      padding: 8px;
+    }
+    .quick-tile {
+      width: 44px;
+      height: 46px;
+    }
+    .joy-zone { width: 115px; height: 115px; }
+    .btn-fire { width: 80px; height: 80px; }
+    .btn-dash { width: 56px; height: 56px; }
+  }
 
   /* =========================================================
-     修正附圖 2：手機與電腦皆完美適配的響應式 DASHBOARD
+     DASHBOARD & MODALS
      ========================================================= */
   .modal-overlay {
     position: fixed;
@@ -382,7 +461,6 @@
     box-shadow: 0 0 6px var(--green);
   }
 
-  /* Chrome 安裝 APP 按鈕 */
   .install-pwa-btn {
     background: linear-gradient(135deg, #a855f7, #7e22ce);
     border: 1.5px solid #e9d5ff;
@@ -398,7 +476,6 @@
     box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
     white-space: nowrap;
   }
-  .install-pwa-btn:active { transform: scale(0.95); }
 
   .profile-switcher {
     display: flex;
@@ -586,54 +663,21 @@
   .gear-card .g-desc { font-size: 10px; color: #94a3b8; margin: 2px 0; }
   .gear-card .g-cost { font-size: 11px; font-weight: 900; color: var(--gold); }
 
-  /* =========================================================
-     📱 手機直向 / 窄螢幕專用響應式規則 (解決附圖 2 & 3 壓扁問題!)
-     ========================================================= */
   @media (max-width: 680px) {
-    .mode-grid {
-      grid-template-columns: repeat(2, 1fr); /* 直向自動變 2x2 寬卡片，不再變成一條竹竿 */
-    }
-    .armory-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .settings-split {
-      grid-template-columns: 1fr;
-    }
-    .top-hud-strip {
-      flex-wrap: wrap;
-      padding: 5px 8px;
-    }
-    .word-pill {
-      order: 3;
-      min-width: 100%;
-      margin-top: 2px;
-    }
-    .joy-zone {
-      width: 105px;
-      height: 105px;
-    }
-    .btn-fire { width: 72px; height: 72px; }
-    .btn-dash { width: 50px; height: 50px; }
+    .mode-grid { grid-template-columns: repeat(2, 1fr); }
+    .armory-grid { grid-template-columns: repeat(2, 1fr); }
+    .settings-split { grid-template-columns: 1fr; }
   }
 
-  /* 手機橫向超矮螢幕緊湊化 (解決附圖 1) */
-  @media (max-height: 480px) {
-    .top-hud-strip { padding: 3px 10px; }
-    .word-pill { flex-direction: row; justify-content: space-between; padding: 3px 12px; gap: 8px; }
-    .word-top-row { margin-bottom: 0; }
-    .joy-zone { width: 105px; height: 105px; }
-    .btn-fire { width: 74px; height: 74px; }
-    .btn-dash { width: 52px; height: 52px; }
-  }
-
-  /* 家長密碼數字鍵盤 */
+  /* 暫停視窗與密碼視窗 */
   .pin-card {
     background: #131c2e;
     border: 2px solid var(--gold);
     border-radius: 22px;
-    width: 310px;
-    padding: 18px;
+    width: 320px;
+    padding: 20px;
     text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
   }
   .pin-dots {
     display: flex;
@@ -713,7 +757,7 @@
 
   #centerBanner {
     position: absolute;
-    top: 38%;
+    top: 36%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(15, 23, 42, 0.95);
@@ -734,7 +778,7 @@
 <input type="file" id="ocrFileInput" accept="image/*" class="hidden" onchange="openPhotoRotateModal(event)">
 
 <!-- =========================================================
-     主遊戲視窗：上下分區結構 (頂部 HUD 獨立，永不遮擋下方競技場畫布!)
+     主遊戲視窗
      ========================================================= -->
 <div class="app-viewport">
 
@@ -760,10 +804,13 @@
       <div class="word-slots" id="hudSlots"></div>
     </div>
 
-    <button class="mini-btn" onclick="openLobby()">🏠 返回大廳</button>
+    <div class="top-right-btns">
+      <button class="mini-btn pause-btn" onclick="togglePause()">⏸️ 暫停</button>
+      <button class="mini-btn" onclick="openLobby()">🏠 大廳</button>
+    </div>
   </div>
 
-  <!-- 2. 下方競技場畫布與觸控區 -->
+  <!-- 2. 中央競技場畫布 -->
   <div class="arena-stage" id="arenaStage">
     <canvas id="gameCanvas"></canvas>
     <div id="damageFlash"></div>
@@ -772,14 +819,17 @@
       <div id="bannerTitle" style="font-size:21px; font-weight:900; color:var(--gold);">ROUND 1</div>
       <div id="bannerSub" style="font-size:13px; color:#e2e8f0; margin-top:4px;"></div>
     </div>
+  </div>
 
-    <div class="bottom-touch-layer">
+  <!-- 3. 底部觸控層 -->
+  <div class="bottom-touch-layer" id="bottomTouchLayer">
+    <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
+      <div class="dock-hint">⚡ 篤對字母補彈 (篤錯扣 -15 HP)</div>
+      <div class="dock-tiles" id="dockTiles"></div>
+    </div>
+
+    <div class="controls-main-row">
       <div class="joy-zone interactive" id="joyZone"></div>
-
-      <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
-        <div class="dock-hint">⚡ 篤對字母補彈 (篤錯扣 -15 HP)</div>
-        <div class="dock-tiles" id="dockTiles"></div>
-      </div>
 
       <div class="right-actions interactive">
         <button class="round-btn btn-dash" onclick="triggerDash()">
@@ -797,12 +847,30 @@
 </div>
 
 <!-- =========================================================
-     v8.0 響應式主大廳 (DASHBOARD)
+     ⏸️ 暫停視窗 (PAUSE MODAL)
+     ========================================================= -->
+<div class="modal-overlay hidden" id="pauseModal">
+  <div class="pin-card interactive">
+    <div style="font-size:34px; margin-bottom:4px;">⏸️</div>
+    <h3 style="color:var(--gold); font-size:20px; margin-bottom:6px;">遊戲已暫停 (PAUSED)</h3>
+    <p style="font-size:12px; color:#cbd5e1; margin-bottom:16px;">
+      提示：你亦可以隨時行入地圖左邊綠色的「🛡️ 思考保護區」免受子彈攻擊慢慢諗串字！
+    </p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button class="start-hero-btn" style="padding:12px; font-size:16px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
+      <button class="mini-btn" style="padding:11px; font-size:14px;" onclick="speakCurrentWord()">🔊 重聽目標生字讀音</button>
+      <button class="mini-btn" style="padding:11px; font-size:14px;" onclick="restartCurrentRound()">🔄 重新開始本回合</button>
+      <button class="mini-btn" style="padding:11px; font-size:14px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     v9.0.1 響應式主大廳 (DASHBOARD)
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
 
-    <!-- 頂部狀態與 Chrome 安裝 APP 鍵 -->
     <div class="dash-topbar">
       <div class="brand-box">
         <div class="title-grad">RIVALS: WORD ARENA</div>
@@ -814,7 +882,6 @@
           <span>|</span>
           <span>💰<b id="lobbyCoins">0</b></span>
         </div>
-        <!-- 新增要求 1：Chrome 安裝 APP 鍵 -->
         <button class="install-pwa-btn" id="btnInstallApp" onclick="installPWAApp()">
           📲 安裝 APP
         </button>
@@ -828,7 +895,6 @@
       </div>
     </div>
 
-    <!-- 三大分頁 Tab -->
     <div class="dash-tabs">
       <button class="tab-btn active" id="tabBtnPlay" onclick="switchDashTab('play')">⚔️ 出戰大廳</button>
       <button class="tab-btn" id="tabBtnArmory" onclick="switchDashTab('armory')">🎒 軍械庫商店</button>
@@ -839,7 +905,7 @@
     <div class="dash-body" id="tabContentPlay">
       <div class="step-card">
         <div class="step-header">
-          <span class="step-title">📚 STEP 1. 揀選溫習課題 (可單選或多選)</span>
+          <span class="step-title">📚 STEP 1. 揀選溫習課題 (<span id="lobbyProfLabel" style="color:var(--gold);">JUSTIN</span> 的專屬題庫)</span>
           <span style="font-size:11px; color:#94a3b8;" id="activePoolCountText">已選生字</span>
         </div>
         <div class="unit-bar" id="unitSelectBar"></div>
@@ -900,7 +966,7 @@
         🚀 進入競技場對決 (START MATCH)
       </button>
       <div style="text-align:center; font-size:10px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 8.0.0
+        PWA Auto-Update Ready • Version 9.0.1 (已載入 3 人專屬題庫 & 思考保護區)
       </div>
     </div>
 
@@ -928,6 +994,7 @@
           <button class="tool-btn photo" onclick="triggerPhotoInput()">📸 影相/揀相片識別</button>
           <button class="tool-btn" id="btnAutoTrans" onclick="autoTranslateMissingChinese()">🌐 自動補全中文</button>
           <button class="tool-btn" onclick="insertNewUnitTemplate()">➕ 新增 [Unit X]</button>
+          <button class="tool-btn" onclick="restorePlayerDefaultWords()">🔄 還原此玩家預設題庫</button>
           <button class="tool-btn backup" onclick="exportFullSaveBackup()">💾 匯出備份碼</button>
           <button class="tool-btn backup" onclick="importFullSaveBackup()">📥 還原備份碼</button>
         </div>
@@ -935,7 +1002,7 @@
 
       <div style="margin-bottom:10px;">
         <label style="font-size:11px; color:#cbd5e1; font-weight:700;">
-          📝 分課生字表（目前預設保留 2 題簡單試玩，可隨時貼上或影相加入新課題）：
+          📝 分課生字表（支援單字或片語 Phrase，括號內文字會自動變成提示，空格與斜線自動跳過免串）：
         </label>
         <textarea class="form-textarea" id="wordInput" style="height:125px; font-family:monospace; line-height:1.4;"></textarea>
       </div>
@@ -1024,25 +1091,23 @@
 
 <script>
 /* =========================================================
-   0. 註冊 Service Worker (確保每次更新後 APP 自動升級!) & Chrome 安裝按鈕
+   0. PWA 自動更新註冊 & Chrome 安裝按鈕
    ========================================================= */
 let deferredInstallPrompt = null;
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
-      // 每次開啟 App 自動向伺服器檢查有無新版 sw.js
       reg.update();
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // 發現新版本，自動重新載入最新遊戲！
             window.location.reload();
           }
         });
       });
-    }).catch((err) => console.warn('SW registration skipped:', err));
+    }).catch(() => {});
 
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -1063,49 +1128,121 @@ async function installPWAApp() {
   if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
     const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === 'accepted') {
-      deferredInstallPrompt = null;
-    }
+    if (outcome === 'accepted') deferredInstallPrompt = null;
   } else {
-    alert('📲 安裝全螢幕 APP 方法：\n\n• Android Chrome：請點選瀏覽器右上角「⋮」選單 ➔ 選擇「安裝應用程式」或「加到主畫面」。\n• iPad / iPhone Safari：請點選頂部或底部的「分享」按鈕 ➔ 選擇「加入主畫面」。\n\n(若你已安裝此 App，代表目前已是最新全螢幕版本！)');
+    alert('📲 安裝全螢幕 APP 方法：\n\n• Android Chrome：請點選右上角「⋮」➔ 選擇「安裝應用程式」或「加到主畫面」。\n• iPad / iPhone Safari：請點選「分享」按鈕 ➔ 選擇「加入主畫面」。');
   }
 }
 
 /* =========================================================
-   1. 要求 4：清除每個玩家的舊 DATABASE，預設只保留 2 題簡單試玩！
+   1. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫！(已修復語法錯誤)
    ========================================================= */
-const DEFAULT_UNIT_WORDS = `[Unit 1: 簡單試玩 (Demo)]
-apple, 蘋果 (n.)
-water, 水 (n.)`;
+const INITIAL_PROFILE_WORDS = {
+  MARCUS: `[Unit 1]
+aim, 目標 (n./v.)
+observe, 觀察 (v.)
+conservation, 保育 (n.)
+progress, 進步 (n.)
+relieved, 放心的 (adj.)
+endangered, 瀕危的 (adj.)
+predator, 捕食者 (n.)
+attitude, 態度 (n.)
+succeed, 成功 (v.)
+resist, 抵抗 (v.)
+extinct, 絕種的 (adj.)
+presenter, 主持人 (n.)
+develop, 發展 (v.)
+interrupted, 被打斷 (v.)
+connection, 聯繫 (n.)
+habitat, 棲息地 (n.)
+species, 物種 (n.)
+open-minded, 思想開明的 (adj.)
+protect, 保護
+steady, 穩定的 (adj.)
+prey, 獵物 (n.)
+navigate, 導航 (v.)
+fail, 失敗 (v.)
+barely, 勉強/幾乎不 (adv.)
+reality, 現實 (n.)`,
 
-// 執行一次性 v8.0 資料庫徹底重置 (清除所有舊版測試遺留的題庫、Keys 與裝備)
-(function cleanDatabaseForV8Once() {
-  if (!localStorage.getItem('rv8_clean_init_done')) {
-    const keepAzKey = localStorage.getItem('rv2_az_key') || '';
-    const keepAzReg = localStorage.getItem('rv2_az_reg') || 'eastasia';
-    const keepGemKey = localStorage.getItem('rv7_gemini_key') || '';
-    localStorage.clear();
-    if (keepAzKey) localStorage.setItem('rv2_az_key', keepAzKey);
-    if (keepAzReg) localStorage.setItem('rv2_az_reg', keepAzReg);
-    if (keepGemKey) localStorage.setItem('rv7_gemini_key', keepGemKey);
-    localStorage.setItem('rv8_clean_init_done', 'true');
+  JUSTIN: `[Unit 1]
+arrive at school early, 提早返到學校
+arrive at school late, 遲到返學校
+dress tidily / untidily, 穿著整齊 / 不整齊
+wait patiently / impatiently, 耐心地 / 不耐煩地等待
+eat quietly / noisily, 安靜地 / 嘈吵地進食
+speak politely / rudely, 有禮貌地 / 粗魯地說話
+jump the queue, 打尖 / 插隊
+offer your seat, 讓座
+push other passengers, 推撞其他乘客
+rush to the seats, 衝去搶座位
+talk on the phone softly / loudly, 細聲 / 大聲講電話
+
+[Unit 2]
+be mean to, 對...刻薄/惡劣
+be nice to, 對...友善
+say sorry to, 向...道歉
+share (feelings, secrets, things) with, 與...分享(感受/秘密/東西)
+quarrel / argue with, 與...吵架/爭論
+discuss (a topic, problem) with, 與...討論(話題/問題)
+agree with, 同意...
+disagree with, 不同意...
+get on with, 與...融洽相處
+help ... with (the homework), 幫...做(功課)
+lie to, 對...講大話
+be jealous of, 妒忌...
+take care of, 照顧...
+shocked, 震驚的 (adj.)
+puzzled, 困惑的 (adj.)
+embarrassed, 尷尬的 (adj.)
+annoyed, 惱怒/煩躁的 (adj.)
+upset, 難過/心煩的 (adj.)
+disappointed, 失望的 (adj.)`,
+
+  FUNG: `[Unit 1]
+go rock climbing, 去攀石
+go jogging, 去慢跑
+go cycling, 去踩單車
+go ice-skating, 去溜冰
+go to an indoor playground, 去室內遊樂場
+go to a public library, 去公共圖書館
+play tennis, 打網球
+play volleyball, 打排球
+play online games, 玩網上遊戲
+play video games, 玩電子遊戲
+text my friend, 傳訊息給朋友
+read the newspaper, 睇報紙
+read magazines, 睇雜誌`
+};
+
+// 自動寫入三位玩家的專屬題庫（若之前為空或為舊版 apple/water 試玩題庫，自動替換為新題庫）
+(function seedV9ProfileWordsOnce() {
+  if (!localStorage.getItem('rv9_fixed_seeded')) {
+    ['JUSTIN', 'FUNG', 'MARCUS'].forEach(prof => {
+      const currentSaved = localStorage.getItem(`rv8_${prof}_words`) || '';
+      if (!currentSaved || currentSaved.includes('簡單試玩') || currentSaved.length < 35) {
+        localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
+      } else {
+        localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
+      }
+      localStorage.setItem(`rv8_${prof}_sel_units`, '["ALL"]');
+    });
+    localStorage.setItem('rv9_fixed_seeded', 'true');
   }
 })();
 
 const BUILTIN_DICT = {
   apple: '蘋果 (n.)', water: '水 (n.)', environment: '環境', pollution: '污染',
-  temperature: '溫度', protect: '保護', recycle: '循環再造', electricity: '電力',
-  competition: '比賽', celebrate: '慶祝', invitation: '邀請', communicate: '溝通',
-  instrument: '樂器', volunteer: '義工', adventure: '冒險', passenger: '乘客',
-  comfortable: '舒適的', delicious: '美味的', ingredient: '材料', discovery: '發現',
-  government: '政府', aim: '目標 (n./v.)', observe: '觀察 (v.)', conservation: '保育 (n.)',
+  aim: '目標 (n./v.)', observe: '觀察 (v.)', conservation: '保育 (n.)',
   progress: '進步 (n.)', relieved: '放心的 (adj.)', endangered: '瀕危的 (adj.)',
   predator: '捕食者 (n.)', attitude: '態度 (n.)', succeed: '成功 (v.)', resist: '抵抗 (v.)',
   extinct: '絕種的 (adj.)', presenter: '主持人 (n.)', develop: '發展 (v.)',
   interrupted: '被打斷 (v.)', connection: '聯繫 (n.)', habitat: '棲息地 (n.)',
-  species: '物種 (n.)', 'open-minded': '思想開明的 (adj.)', openminded: '思想開明的 (adj.)',
+  species: '物種 (n.)', 'open-minded': '思想開明的 (adj.)', protect: '保護',
   steady: '穩定的 (adj.)', prey: '獵物 (n.)', navigate: '導航 (v.)', fail: '失敗 (v.)',
-  barely: '勉強/幾乎不 (adv.)', reality: '現實 (n.)'
+  barely: '勉強/幾乎不 (adv.)', reality: '現實 (n.)',
+  shocked: '震驚的 (adj.)', puzzled: '困惑的 (adj.)', embarrassed: '尷尬的 (adj.)',
+  annoyed: '煩躁的 (adj.)', upset: '難過的 (adj.)', disappointed: '失望的 (adj.)'
 };
 
 /* =========================================================
@@ -1145,7 +1282,7 @@ const BOSS_PROFILES = [
 ];
 
 /* =========================================================
-   3. 獨立玩家檔案與永久 Auto-Save
+   3. 獨立玩家檔案與智慧片語解析引擎
    ========================================================= */
 let config = {
   playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
@@ -1185,6 +1322,7 @@ function loadProfileData(profName) {
   document.querySelectorAll('.prof-btn').forEach(btn => {
     btn.classList.toggle('active', btn.textContent === profName);
   });
+  document.getElementById('lobbyProfLabel').textContent = profName;
 
   config.keys = parseInt(localStorage.getItem(getProfKey('keys')) || '0', 10);
   config.coins = parseInt(localStorage.getItem(getProfKey('coins')) || '30', 10);
@@ -1199,7 +1337,12 @@ function loadProfileData(profName) {
     ARMORS.forEach(a => { a.unlocked = (a.id === 'shield') || ua.includes(a.id); });
   } catch (e) {}
 
-  const rawWords = localStorage.getItem(getProfKey('words')) || DEFAULT_UNIT_WORDS;
+  const defaultForProf = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  let rawWords = localStorage.getItem(getProfKey('words'));
+  if (!rawWords || !rawWords.trim()) {
+    rawWords = defaultForProf;
+    localStorage.setItem(getProfKey('words'), rawWords);
+  }
   parseUnitsFromText(rawWords);
 
   try {
@@ -1231,12 +1374,84 @@ window.addEventListener('visibilitychange', () => { if (document.visibilityState
 window.addEventListener('pagehide', () => saveProfileData(true));
 window.addEventListener('beforeunload', () => saveProfileData(true));
 
+function parseUnitsFromText(rawText) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+  const map = {};
+  let currentUnit = 'Unit 1';
+
+  for (const line of lines) {
+    if (line.startsWith('[') && line.endsWith(']')) {
+      currentUnit = line.slice(1, -1).trim() || 'Unit 1';
+      if (!map[currentUnit]) map[currentUnit] = [];
+      continue;
+    }
+
+    let splitIdx = -1;
+    let parenDepth = 0;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '(' || line[i] === '（') parenDepth++;
+      else if (line[i] === ')' || line[i] === '）') parenDepth = Math.max(0, parenDepth - 1);
+      else if (parenDepth === 0 && (line[i] === ',' || line[i] === '，' || line[i] === '\t')) {
+        splitIdx = i;
+        break;
+      }
+    }
+
+    let rawEng = splitIdx !== -1 ? line.slice(0, splitIdx).trim() : line.trim();
+    let meaning = splitIdx !== -1 ? line.slice(splitIdx + 1).trim() : '';
+
+    let parenNotes = [];
+    let spellTarget = rawEng.replace(/\(([^)]+)\)/g, (_, inner) => {
+      parenNotes.push(`(${inner})`);
+      return '';
+    });
+
+    spellTarget = spellTarget.toLowerCase()
+      .replace(/[\/\.]+/g, ' ')
+      .replace(/[^a-z\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const pureLetters = spellTarget.replace(/[^a-z]/g, '');
+    if (pureLetters.length >= 2) {
+      if (!meaning) {
+        meaning = BUILTIN_DICT[rawEng.toLowerCase()] || BUILTIN_DICT[pureLetters] || '（點擊🔊聽讀音）';
+      }
+      if (parenNotes.length > 0 && !meaning.includes('(')) {
+        meaning += ' ' + parenNotes.join(' ');
+      }
+      const ttsPhrase = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
+      if (!map[currentUnit]) map[currentUnit] = [];
+      map[currentUnit].push({
+        word: spellTarget,
+        pureWord: pureLetters,
+        ttsText: ttsPhrase,
+        meaning,
+        unit: currentUnit
+      });
+    }
+  }
+
+  if (Object.keys(map).length === 0) {
+    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' }];
+  }
+  config.unitsMap = map;
+}
+
 function clearWordListContent() {
   if (!confirm(`🧹 確定要清空【${config.playerName}】目前的題庫文字框，以便貼上新一批生字嗎？`)) return;
   const textarea = document.getElementById('wordInput');
-  textarea.value = `[Unit 1: 新一期默書生字]\n`;
+  textarea.value = `[Unit 1]\n`;
   textarea.focus();
   document.getElementById('ocrStatusText').textContent = '✨ 已清空！請直接貼上新英文生字，或按「📸 影相識別」。';
+  sfx('good');
+}
+
+function restorePlayerDefaultWords() {
+  if (!confirm(`🔄 確定要還原【${config.playerName}】的預設專屬題庫嗎？`)) return;
+  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  document.getElementById('wordInput').value = def;
+  document.getElementById('ocrStatusText').textContent = `✅ 已載入 ${config.playerName} 的預設題庫，請按下方「💾 儲存題庫與設定」。`;
   sfx('good');
 }
 
@@ -1302,11 +1517,12 @@ function switchProfile(profName) {
   sfx('good');
   loadProfileData(profName);
   document.getElementById('parentProfName').textContent = config.playerName;
-  document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || DEFAULT_UNIT_WORDS;
+  const def = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
 }
 
 /* =========================================================
-   4. 📸 相片旋轉預覽 + 三重智能 OCR 識別引擎
+   4. 📸 相片旋轉預覽 + 智能 OCR 識別引擎
    ========================================================= */
 let rawUploadedImage = null;
 let currentRotationDeg = 0;
@@ -1415,7 +1631,7 @@ async function runSmartOCR() {
         body: JSON.stringify({
           contents: [{
             parts: [
-              { text: 'Extract all vocabulary words from this worksheet table. Ignore instructions. Return ONLY lines in format: english_word, 繁體中文解釋 (詞性).' },
+              { text: 'Extract all vocabulary words or phrases from this worksheet. Return ONLY lines in format: english_word_or_phrase, 繁體中文解釋.' },
               { inlineData: { mimeType: 'image/jpeg', data: base64Data } }
             ]
           }]
@@ -1506,7 +1722,7 @@ function appendRecognizedBlock(linesText, titleLabel) {
 }
 
 /* =========================================================
-   5. 分頁切換、家長密碼鎖 & 題庫解析
+   5. 分頁切換、家長密碼鎖 & 題庫工具
    ========================================================= */
 let enteredPin = '';
 let pinTargetAction = '';
@@ -1522,7 +1738,8 @@ function switchDashTab(tabName) {
 
   if (tabName === 'parent') {
     document.getElementById('parentProfName').textContent = config.playerName;
-    document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || DEFAULT_UNIT_WORDS;
+    const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+    document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
     document.getElementById('geminiKeyInput').value = config.geminiKey;
     document.getElementById('azureKey').value = config.azureKey;
     document.getElementById('azureRegion').value = config.azureRegion;
@@ -1587,36 +1804,6 @@ function pickNextWordFromPool() {
   }
 }
 
-function parseUnitsFromText(rawText) {
-  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-  const map = {};
-  let currentUnit = 'Unit 1';
-
-  for (const line of lines) {
-    if (line.startsWith('[') && line.endsWith(']')) {
-      currentUnit = line.slice(1, -1).trim() || 'Unit 1';
-      if (!map[currentUnit]) map[currentUnit] = [];
-      continue;
-    }
-    const parts = line.split(/[,，\t]+/);
-    const rawWord = parts[0].trim().toLowerCase();
-    const cleanWord = rawWord.replace(/[^a-z]/g, '');
-    if (cleanWord.length >= 2) {
-      let meaning = parts.slice(1).join(' ').trim();
-      if (!meaning) meaning = BUILTIN_DICT[rawWord] || BUILTIN_DICT[cleanWord] || '（點擊🔊聽讀音）';
-      if (!map[currentUnit]) map[currentUnit] = [];
-      map[currentUnit].push({ word: cleanWord, meaning, unit: currentUnit });
-    }
-  }
-  if (Object.keys(map).length === 0) {
-    map['Unit 1'] = [
-      { word: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' },
-      { word: 'water', meaning: '水 (n.)', unit: 'Unit 1' }
-    ];
-  }
-  config.unitsMap = map;
-}
-
 function getActiveWordPool() {
   const unitNames = Object.keys(config.unitsMap);
   if (config.selectedUnits.includes('ALL') || config.selectedUnits.length === 0) {
@@ -1638,7 +1825,7 @@ function renderUnitSelectorBar() {
   const isAll = config.selectedUnits.includes('ALL');
   allChip.className = 'unit-chip' + (isAll ? ' active' : '');
   const totalWords = unitNames.reduce((acc, u) => acc + config.unitsMap[u].length, 0);
-  allChip.textContent = `🌟 全部課題 (${totalWords}字)`;
+  allChip.textContent = `🌟 全部課題 (${totalWords}題)`;
   allChip.onclick = () => {
     config.selectedUnits = ['ALL'];
     config.seqIndex = 0;
@@ -1652,7 +1839,7 @@ function renderUnitSelectorBar() {
     const chip = document.createElement('div');
     const active = !isAll && config.selectedUnits.includes(uName);
     chip.className = 'unit-chip' + (active ? ' active' : '');
-    chip.textContent = `📘 ${uName.split(':')[0]} (${config.unitsMap[uName].length}字)`;
+    chip.textContent = `📘 ${uName.split(':')[0]} (${config.unitsMap[uName].length}題)`;
     chip.onclick = () => {
       if (config.selectedUnits.includes('ALL')) {
         config.selectedUnits = [uName];
@@ -1674,7 +1861,7 @@ function renderUnitSelectorBar() {
   });
 
   const activePool = getActiveWordPool();
-  document.getElementById('activePoolCountText').textContent = `已選 ${activePool.length} 個溫習生字`;
+  document.getElementById('activePoolCountText').textContent = `已選 ${activePool.length} 個溫習題目`;
 }
 
 async function autoTranslateMissingChinese() {
@@ -1691,22 +1878,26 @@ async function autoTranslateMissingChinese() {
       updatedLines.push(rawLine);
       continue;
     }
-    const parts = line.split(/[,，\t]+/);
-    const engRaw = parts[0].trim().toLowerCase();
-    const engClean = engRaw.replace(/[^a-z]/g, '');
-    const existingChi = parts.slice(1).join(' ').trim();
+    let hasComma = false;
+    let pDepth = 0;
+    for (let c of line) {
+      if (c === '(') pDepth++;
+      else if (c === ')') pDepth = Math.max(0, pDepth - 1);
+      else if (pDepth === 0 && (c === ',' || c === '，')) hasComma = true;
+    }
 
-    if (engClean && !existingChi) {
-      if (BUILTIN_DICT[engRaw] || BUILTIN_DICT[engClean]) {
-        updatedLines.push(`${engClean}, ${BUILTIN_DICT[engRaw] || BUILTIN_DICT[engClean]}`);
+    if (!hasComma) {
+      const cleanQuery = line.replace(/\.\.\./g, ' ').trim();
+      if (BUILTIN_DICT[cleanQuery.toLowerCase()]) {
+        updatedLines.push(`${line}, ${BUILTIN_DICT[cleanQuery.toLowerCase()]}`);
       } else {
         try {
-          const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dt=t&q=${encodeURIComponent(engRaw)}`);
+          const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dt=t&q=${encodeURIComponent(cleanQuery)}`);
           const data = await res.json();
-          const trans = (data && data[0] && data[0][0] && data[0][0][0]) ? data[0][0][0] : '生字';
-          updatedLines.push(`${engClean}, ${trans}`);
+          const trans = (data && data[0] && data[0][0] && data[0][0][0]) ? data[0][0][0] : '生字/片語';
+          updatedLines.push(`${line}, ${trans}`);
         } catch (e) {
-          updatedLines.push(`${engClean}, (聽讀音串字)`);
+          updatedLines.push(`${line}, (聽讀音串字)`);
         }
       }
     } else {
@@ -1726,7 +1917,7 @@ async function autoTranslateMissingChinese() {
 function insertNewUnitTemplate() {
   const textarea = document.getElementById('wordInput');
   const count = (textarea.value.match(/\[Unit/gi) || []).length + 1;
-  textarea.value += `\n\n[Unit ${count}: 新課題]\n`;
+  textarea.value += `\n\n[Unit ${count}]\n`;
   textarea.scrollTop = textarea.scrollHeight;
 }
 
@@ -1773,12 +1964,12 @@ async function speakText(text) {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = config.azureVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
-    u.rate = 0.88;
+    u.rate = 0.86;
     window.speechSynthesis.speak(u);
   }
 }
 function speakCurrentWord() {
-  if (round.wordObj) speakText(round.wordObj.word);
+  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word);
 }
 
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1882,20 +2073,22 @@ function triggerDeathLootDrop() {
 }
 
 /* =========================================================
-   8. 競技場地圖與遊戲迴圈 (頂部 HUD 已完全獨立，整個 1200x660 競技場 100% 無遮擋!)
+   8. 競技場地圖、「休息思考保護區 (SAFE_ZONE)」與「暫停鍵」
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const ARENA = { w: 1200, h: 660 };
 
+const SAFE_ZONE = { x: 115, y: 330, r: 78 };
+
 let obstacles = [];
 
 const PORTALS = [
-  { x: 190, y: 100, r: 28, color: '#38bdf8', targetIdx: 1 },
-  { x: 1010, y: 560, r: 28, color: '#38bdf8', targetIdx: 0 },
-  { x: 190, y: 560, r: 28, color: '#a855f7', targetIdx: 3 },
-  { x: 1010, y: 100, r: 28, color: '#a855f7', targetIdx: 2 }
+  { x: 225, y: 95, r: 28, color: '#38bdf8', targetIdx: 1 },
+  { x: 1010, y: 565, r: 28, color: '#38bdf8', targetIdx: 0 },
+  { x: 225, y: 565, r: 28, color: '#a855f7', targetIdx: 3 },
+  { x: 1010, y: 95, r: 28, color: '#a855f7', targetIdx: 2 }
 ];
 
 const SPEED_PADS = [
@@ -1906,8 +2099,8 @@ const SPEED_PADS = [
 function generateRandomObstacles() {
   obstacles = [];
   const zones = [
-    { minX: 280, maxX: 370, minY: 90, maxY: 200 },
-    { minX: 280, maxX: 370, minY: 390, maxY: 490 },
+    { minX: 290, maxX: 370, minY: 90, maxY: 200 },
+    { minX: 290, maxX: 370, minY: 390, maxY: 490 },
     { minX: 530, maxX: 610, minY: 210, maxY: 340 },
     { minX: 760, maxX: 840, minY: 90, maxY: 200 },
     { minX: 760, maxX: 840, minY: 390, maxY: 490 }
@@ -1921,7 +2114,7 @@ function generateRandomObstacles() {
   });
 }
 
-let match = { active: false, round: 1, you: 0, bot: 0 };
+let match = { active: false, paused: false, round: 1, you: 0, bot: 0 };
 let round = {
   mode: 'sniper',
   diff: 'blanks',
@@ -1942,10 +2135,11 @@ let round = {
 };
 
 let player = {
-  x: 130, y: 330, r: 25,
+  x: 115, y: 330, r: 25,
   hp: 100, maxHp: 100,
   shield: 0, maxShield: 45,
   spawnProtected: true,
+  inSafeZone: true,
   reviveUsed: false,
   droneTimer: 150,
   speed: 4.5,
@@ -1971,11 +2165,33 @@ let rival = {
   profile: BOSS_PROFILES[0]
 };
 
+function togglePause() {
+  if (!match.active) return;
+  match.paused = !match.paused;
+  firingHeld = false;
+  document.getElementById('pauseModal').classList.toggle('hidden', !match.paused);
+  sfx('good');
+}
+
+function restartCurrentRound() {
+  match.paused = false;
+  document.getElementById('pauseModal').classList.add('hidden');
+  initRound();
+}
+
+function quitToLobbyFromPause() {
+  match.paused = false;
+  document.getElementById('pauseModal').classList.add('hidden');
+  openLobby();
+}
+
 function startMatch() {
   saveProfileData(true);
   document.getElementById('lobbyModal').classList.add('hidden');
+  document.getElementById('pauseModal').classList.add('hidden');
   resize();
   match.active = true;
+  match.paused = false;
   match.round = 1;
   match.you = 0;
   match.bot = 0;
@@ -2003,7 +2219,6 @@ function pickNewRivalWaypoint() {
 
 function initRound() {
   generateRandomObstacles();
-  resize();
 
   const modes = ['sniper', 'assault', 'breaker'];
   round.mode = config.mode === 'mix' ? modes[(match.round - 1) % 3] : config.mode;
@@ -2015,10 +2230,12 @@ function initRound() {
   rival.profile = BOSS_PROFILES[Math.floor(Math.random() * BOSS_PROFILES.length)];
   round.hintHighlightChar = null;
 
-  player.x = 130; player.y = 330;
+  player.x = SAFE_ZONE.x;
+  player.y = SAFE_ZONE.y;
   player.vx = 0; player.vy = 0;
   player.hp = 100;
   player.spawnProtected = true;
+  player.inSafeZone = true;
   player.reviveUsed = false;
   player.droneTimer = 150;
   player.shield = config.armorId === 'shield' ? 45 : 15;
@@ -2065,6 +2282,7 @@ function initRound() {
   }
 
   updateWordHUD();
+  setTimeout(resize, 20);
   announceRound();
   setTimeout(() => speakCurrentWord(), 550);
 }
@@ -2072,30 +2290,55 @@ function initRound() {
 function buildSlots(word, mode, diff) {
   round.slots = [];
   const chars = word.split('');
+
   if (mode === 'breaker') {
-    const len = word.length >= 6 ? 3 : 2;
-    const start = Math.max(1, Math.min(word.length - len - 1, Math.floor(word.length / 2) - 1));
-    round.missingChunk = word.slice(start, start + len);
-    for (let i = 0; i < chars.length; i++) {
-      const missing = i >= start && i < start + len;
-      round.slots.push({ char: chars[i], filled: !missing });
+    let candidates = [];
+    for (let i = 0; i < chars.length - 1; i++) {
+      if (chars[i] !== ' ' && chars[i + 1] !== ' ') {
+        const len = (i + 2 < chars.length && chars[i + 2] !== ' ') ? 3 : 2;
+        candidates.push({ start: i, len });
+      }
     }
-    round.nextIdx = start;
+    const pick = candidates.length > 0
+      ? candidates[Math.floor(candidates.length / 2)]
+      : { start: 0, len: Math.min(2, chars.length) };
+
+    round.missingChunk = word.slice(pick.start, pick.start + pick.len);
+    for (let i = 0; i < chars.length; i++) {
+      const missing = i >= pick.start && i < pick.start + pick.len;
+      round.slots.push({
+        char: chars[i],
+        isSpace: chars[i] === ' ',
+        filled: chars[i] === ' ' ? true : !missing
+      });
+    }
+    round.nextIdx = pick.start;
     round.totalToFill = 1;
     round.filledCount = 0;
     return;
   }
 
+  const letterIndices = [];
+  chars.forEach((c, idx) => { if (c !== ' ') letterIndices.push(idx); });
+
   if (diff === 'full') {
-    chars.forEach(c => round.slots.push({ char: c, filled: false }));
+    chars.forEach(c => {
+      round.slots.push({ char: c, isSpace: c === ' ', filled: c === ' ' });
+    });
   } else {
-    const blanks = Math.max(2, Math.min(5, Math.ceil(chars.length * 0.45)));
+    const blanksCount = Math.max(2, Math.min(6, Math.ceil(letterIndices.length * 0.45)));
     const picks = [];
-    while (picks.length < blanks) {
-      const r = Math.floor(Math.random() * chars.length);
-      if (!picks.includes(r)) picks.push(r);
+    while (picks.length < blanksCount && picks.length < letterIndices.length) {
+      const rIdx = letterIndices[Math.floor(Math.random() * letterIndices.length)];
+      if (!picks.includes(rIdx)) picks.push(rIdx);
     }
-    chars.forEach((c, i) => round.slots.push({ char: c, filled: !picks.includes(i) }));
+    chars.forEach((c, i) => {
+      round.slots.push({
+        char: c,
+        isSpace: c === ' ',
+        filled: c === ' ' ? true : !picks.includes(i)
+      });
+    });
   }
   round.totalToFill = round.slots.filter(s => !s.filled).length;
   round.filledCount = 0;
@@ -2111,7 +2354,7 @@ function findNextSlot() {
 }
 
 function useHint() {
-  if (!match.active || round.nextIdx === -1) return;
+  if (!match.active || match.paused || round.nextIdx === -1) return;
   const HINT_COST = 15;
   if (config.coins < HINT_COST) {
     sfx('bad');
@@ -2160,7 +2403,10 @@ function spawnSniperOrbs() {
   const targetChar = round.slots[round.nextIdx].char;
   const pool = [targetChar];
   for (let i = round.nextIdx + 1; i < round.slots.length; i++) {
-    if (!round.slots[i].filled && pool.length < 3) pool.push(round.slots[i].char);
+    const ch = round.slots[i].char;
+    if (!round.slots[i].filled && ch !== ' ' && !pool.includes(ch) && pool.length < 3) {
+      pool.push(ch);
+    }
   }
   const alpha = 'abcdefghijklmnopqrstuvwxyz';
   while (pool.length < 5) {
@@ -2190,7 +2436,7 @@ function renderQuickSpellDock() {
   const needed = round.slots[round.nextIdx].char;
   const choices = [needed];
   round.slots.forEach(s => {
-    if (!s.filled && !choices.includes(s.char) && choices.length < 4) choices.push(s.char);
+    if (!s.filled && s.char !== ' ' && !choices.includes(s.char) && choices.length < 4) choices.push(s.char);
   });
   const alpha = 'abcdefghijklmnopqrstuvwxyz';
   while (choices.length < 6) {
@@ -2212,7 +2458,7 @@ function renderQuickSpellDock() {
 }
 
 function handleQuickTileTap(ch, btn) {
-  if (!match.active || round.nextIdx === -1) return;
+  if (!match.active || match.paused || round.nextIdx === -1) return;
   const expected = round.slots[round.nextIdx].char;
   if (ch === expected) {
     sfx('good');
@@ -2261,8 +2507,34 @@ function spawnBreakerCrates() {
 }
 
 /* =========================================================
-   9. 繪製主角、立體紅心 ❤️ 回血包、以及 8 款百變造型敵人 Boss
+   9. 繪製「休息思考保護區」、主角、紅心與 Boss
    ========================================================= */
+function drawSafeSanctuaryZone() {
+  ctx.save();
+  ctx.translate(SAFE_ZONE.x, SAFE_ZONE.y);
+
+  const pulse = Math.sin(performance.now() * 0.005) * 4;
+  ctx.beginPath();
+  ctx.arc(0, 0, SAFE_ZONE.r + pulse, 0, Math.PI * 2);
+  ctx.fillStyle = player.inSafeZone ? 'rgba(34, 197, 94, 0.22)' : 'rgba(34, 197, 94, 0.1)';
+  ctx.fill();
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = player.inSafeZone ? '#4ade80' : 'rgba(74, 222, 128, 0.55)';
+  ctx.setLineDash([12, 8]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = player.inSafeZone ? '#86efac' : 'rgba(134, 239, 172, 0.7)';
+  ctx.font = '900 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🛡️ 休息思考保護區', 0, -SAFE_ZONE.r - 10);
+  ctx.font = '700 11px sans-serif';
+  ctx.fillText('(站入內擋子彈 + 慢速回血)', 0, SAFE_ZONE.r + 18);
+
+  ctx.restore();
+}
+
 function drawHeartMedkit(x, y) {
   ctx.save();
   const beat = 1 + Math.sin(performance.now() * 0.008) * 0.1;
@@ -2301,21 +2573,21 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
   ctx.save();
   ctx.translate(x, y);
 
-  if (spawnProtected) {
-    const pulse = 44 + Math.sin(performance.now() * 0.01) * 4;
+  if (spawnProtected || player.inSafeZone) {
+    const pulse = 42 + Math.sin(performance.now() * 0.01) * 3;
     ctx.beginPath();
     ctx.arc(0, 0, pulse, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(250, 204, 21, 0.22)';
+    ctx.fillStyle = player.inSafeZone ? 'rgba(34, 197, 94, 0.2)' : 'rgba(250, 204, 21, 0.22)';
     ctx.fill();
-    ctx.lineWidth = 3.5;
-    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = player.inSafeZone ? '#4ade80' : '#facc15';
     ctx.setLineDash([8, 5]);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '900 12px sans-serif';
+    ctx.fillStyle = player.inSafeZone ? '#86efac' : '#fef08a';
+    ctx.font = '900 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🛡️ 開場無敵保護罩', 0, 54);
+    ctx.fillText(player.inSafeZone ? '🛡️ 思考保護中 (走出圈外開火)' : '🛡️ 開場無敵保護罩', 0, 52);
   }
 
   if (shield > 0) {
@@ -2509,7 +2781,7 @@ function update() {
     dl.vx *= 0.92; dl.vy *= 0.92;
   }
 
-  if (!match.active) return;
+  if (!match.active || match.paused) return;
 
   if (fireCd > 0) fireCd--;
   if (player.dashCd > 0) player.dashCd--;
@@ -2540,8 +2812,6 @@ function update() {
 
   if (player.spawnProtected && m > 0.08) {
     player.spawnProtected = false;
-    spawnParticles(player.x, player.y, '#facc15', 14);
-    addText(player.x, player.y - 38, '⚔️ 保護罩解除！戰鬥開始！', '#facc15');
   }
 
   const spd = player.speed * (player.speedBuff > 0 ? 1.45 : 1);
@@ -2557,6 +2827,12 @@ function update() {
   }
   if (okX) player.x = nx;
   if (okY) player.y = ny;
+
+  const distToSafe = Math.hypot(player.x - SAFE_ZONE.x, player.y - SAFE_ZONE.y);
+  player.inSafeZone = distToSafe < SAFE_ZONE.r;
+  if (player.inSafeZone && player.hp < player.maxHp && Math.random() < 0.04) {
+    player.hp = Math.min(player.maxHp, player.hp + 1);
+  }
 
   if (player.portalCd <= 0) {
     for (const p of PORTALS) {
@@ -2643,7 +2919,7 @@ function update() {
 
     rival.angle = Math.atan2(player.y - rival.y, player.x - rival.x);
     rival.fireCd--;
-    if (rival.fireCd <= 0) {
+    if (rival.fireCd <= 0 && !player.inSafeZone) {
       rival.fireCd = Math.max(44, 72 - config.streak * 3);
       round.bullets.push({
         x: rival.x + Math.cos(rival.angle) * 28,
@@ -2669,6 +2945,12 @@ function update() {
       }
     }
     if (wall) continue;
+
+    if (!b.fromPlayer && Math.hypot(b.x - SAFE_ZONE.x, b.y - SAFE_ZONE.y) < SAFE_ZONE.r + b.r) {
+      spawnParticles(b.x, b.y, '#4ade80', 5);
+      round.bullets.splice(i, 1);
+      continue;
+    }
 
     if (b.fromPlayer) {
       if (round.mode === 'sniper') {
@@ -2713,9 +2995,9 @@ function update() {
     } else {
       if (Math.hypot(b.x - player.x, b.y - player.y) < b.r + player.r) {
         round.bullets.splice(i, 1);
-        if (player.spawnProtected) {
-          spawnParticles(b.x, b.y, '#facc15', 6);
-          addText(player.x, player.y - 32, '🛡️ 保護罩抵擋!', '#facc15');
+        if (player.spawnProtected || player.inSafeZone) {
+          spawnParticles(b.x, b.y, '#4ade80', 6);
+          addText(player.x, player.y - 32, '🛡️ 保護中!', '#4ade80');
           continue;
         }
         if (config.armorId === 'thorn' && !rival.shielded && rival.hp > 20) {
@@ -2840,7 +3122,7 @@ function finishRound(won) {
     } else {
       config.streak = 0;
       saveProfileData();
-      announceRound('💀 DEFEAT! 挑戰失敗!', `${dropMsg} | 正確串法: ${round.wordObj.word}`);
+      announceRound('💀 DEFEAT! 挑戰失敗!', `${dropMsg} | 正確: ${round.wordObj.word}`);
     }
     updateTopHUD();
     setTimeout(() => openLobby(), 2800);
@@ -2855,7 +3137,7 @@ function finishRound(won) {
 }
 
 /* =========================================================
-   11. 畫面繪製 (根據下方獨立 Arena Stage 自動縮放)
+   11. 畫面繪製
    ========================================================= */
 let scale = 1, offX = 0, offY = 0;
 function resize() {
@@ -2883,6 +3165,8 @@ function draw() {
   for (let y = 0; y <= ARENA.h; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ARENA.w, y); ctx.stroke(); }
   ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4;
   ctx.strokeRect(2, 2, ARENA.w - 4, ARENA.h - 4);
+
+  drawSafeSanctuaryZone();
 
   const spin = performance.now() * 0.004;
   for (const p of PORTALS) {
@@ -2977,7 +3261,11 @@ function draw() {
    12. 觸控搖桿、開火與 UI 控制
    ========================================================= */
 let keys = {};
-window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; if (e.code === 'Space') triggerDash(); });
+window.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (e.code === 'Space') triggerDash();
+  if (e.key.toLowerCase() === 'p') togglePause();
+});
 window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
 let joy = { active: false, id: null, sx: 0, sy: 0, dx: 0, dy: 0 };
@@ -3003,18 +3291,31 @@ function moveJoy(cx, cy) {
   if (d > max) { vx = (vx / d) * max; vy = (vy / d) * max; }
   joy.dx = vx / max; joy.dy = vy / max;
 }
+
+let joyDomKnob = null;
+function initDomJoystickVisual() {
+  joyZone.style.borderRadius = '50%';
+  joyZone.style.background = 'rgba(255, 255, 255, 0.08)';
+  joyZone.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+  joyZone.style.display = 'flex';
+  joyZone.style.alignItems = 'center';
+  joyZone.style.justifyContent = 'center';
+
+  joyDomKnob = document.createElement('div');
+  joyDomKnob.style.width = '40px';
+  joyDomKnob.style.height = '40px';
+  joyDomKnob.style.borderRadius = '50%';
+  joyDomKnob.style.background = 'rgba(56, 189, 248, 0.85)';
+  joyDomKnob.style.boxShadow = '0 0 12px rgba(56, 189, 248, 0.6)';
+  joyDomKnob.style.pointerEvents = 'none';
+  joyZone.appendChild(joyDomKnob);
+}
+initDomJoystickVisual();
+
 function drawJoystickUI() {
-  const stageRect = stageEl.getBoundingClientRect();
-  const r = joyZone.getBoundingClientRect();
-  const cx = (r.left - stageRect.left) + r.width / 2;
-  const cy = (r.top - stageRect.top) + r.height / 2;
-  ctx.save();
-  ctx.beginPath(); ctx.arc(cx, cy, 42, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + joy.dx * 34, cy + joy.dy * 34, 18, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(56, 189, 248, 0.8)'; ctx.fill();
-  ctx.restore();
+  if (joyDomKnob) {
+    joyDomKnob.style.transform = `translate(${joy.dx * 34}px, ${joy.dy * 34}px)`;
+  }
 }
 
 let firingHeld = false, fireCd = 0;
@@ -3025,7 +3326,7 @@ btnFire.addEventListener('mousedown', () => { firingHeld = true; shoot(); });
 window.addEventListener('mouseup', () => { firingHeld = false; });
 
 canvas.addEventListener('pointerdown', e => {
-  if (!match.active) return;
+  if (!match.active || match.paused) return;
   const rect = canvas.getBoundingClientRect();
   const wx = (e.clientX - rect.left - offX) / scale;
   const wy = (e.clientY - rect.top - offY) / scale;
@@ -3034,7 +3335,16 @@ canvas.addEventListener('pointerdown', e => {
 });
 
 function shoot(manualAim = false) {
-  if (!match.active || fireCd > 0) return;
+  if (!match.active || match.paused || fireCd > 0) return;
+
+  if (player.inSafeZone) {
+    if (fireCd <= 0) {
+      fireCd = 20;
+      addText(player.x, player.y - 36, '🛡️ 請先走出綠色保護區再開火！', '#4ade80');
+    }
+    return;
+  }
+
   if (round.mode === 'assault' && player.ammo <= 0) {
     sfx('bad');
     addText(player.x, player.y - 30, '⚡ 無子彈！請篤下方字母串字補彈！', '#facc15');
@@ -3088,7 +3398,7 @@ function shoot(manualAim = false) {
 }
 
 function triggerDash() {
-  if (!match.active || player.dashCd > 0) return;
+  if (!match.active || match.paused || player.dashCd > 0) return;
   player.spawnProtected = false;
   player.dashCd = 50;
   const ang = (joy.dx || joy.dy) ? Math.atan2(joy.dy, joy.dx) : player.angle;
@@ -3112,10 +3422,17 @@ function updateWordHUD() {
   document.getElementById('hudMeaning').textContent = round.wordObj ? round.wordObj.meaning : '';
   const box = document.getElementById('hudSlots');
   box.innerHTML = '';
+  box.classList.toggle('compact', round.slots.length > 12);
+
   round.slots.forEach((s, i) => {
     const d = document.createElement('div');
-    d.className = 'slot' + (s.filled ? ' filled' : '') + (i === round.nextIdx ? ' target' : '');
-    d.textContent = s.filled ? s.char : '_';
+    if (s.isSpace) {
+      d.className = 'slot space-slot';
+      d.textContent = '␣';
+    } else {
+      d.className = 'slot' + (s.filled ? ' filled' : '') + (i === round.nextIdx ? ' target' : '');
+      d.textContent = s.filled ? s.char : '_';
+    }
     box.appendChild(d);
   });
 }
@@ -3135,8 +3452,8 @@ function updateTopHUD() {
 function announceRound(t, s) {
   const b = document.getElementById('centerBanner');
   const subs = {
-    sniper: '順序射擊正確字母球！(射錯扣 15 HP，最後一粒觸發秒殺)',
-    assault: '篤底部字母補彈 ➔ 親自追擊射殺移動中的敵人！',
+    sniper: '順序射擊正確字母球！(可隨時回左邊綠色保護區思考)',
+    assault: '篤底部字母補彈 ➔ 走出綠色保護區追擊敵人！',
     breaker: '射爆或拾取正確字母箱破盾！(小心假箱扣 15 HP)'
   };
   document.getElementById('bannerTitle').textContent = t || `ROUND ${match.round} vs ${rival.profile.title}`;
@@ -3206,16 +3523,19 @@ function renderGearLists() {
 
 function openLobby() {
   match.active = false;
+  match.paused = false;
   saveProfileData(true);
   switchDashTab('play');
   updateTopHUD();
   renderUnitSelectorBar();
   renderGearLists();
+  document.getElementById('pauseModal').classList.add('hidden');
   document.getElementById('lobbyModal').classList.remove('hidden');
 }
 
 function saveSettings() {
-  const raw = document.getElementById('wordInput').value.trim() || DEFAULT_UNIT_WORDS;
+  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  const raw = document.getElementById('wordInput').value.trim() || def;
   localStorage.setItem(getProfKey('words'), raw);
   parseUnitsFromText(raw);
   config.selectedUnits = ['ALL'];
