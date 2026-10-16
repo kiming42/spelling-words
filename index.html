@@ -2,14 +2,18 @@
 <html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RIVALS: Word Arena v7.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#090d16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.json">
+<title>RIVALS: Word Arena v8.0</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
     --bg-dark: #090d16;
     --card-bg: #131c2e;
-    --panel: rgba(15, 23, 42, 0.9);
+    --panel: rgba(15, 23, 42, 0.94);
     --blue: #38bdf8;
     --gold: #facc15;
     --red: #f43f5e;
@@ -33,6 +37,43 @@
     color: #fff;
     touch-action: none;
   }
+
+  /* =========================================================
+     修正附圖 1 & 3：採用 Flex 上下分層結構，頂部 HUD 永不遮擋競技場！
+     ========================================================= */
+  .app-viewport {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  /* 頂部獨立 HUD 區（不重疊在畫布上） */
+  .top-hud-strip {
+    position: relative;
+    z-index: 12;
+    background: #0b111e;
+    border-bottom: 2px solid #1e293b;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* 中央競技場畫布容器（自動填滿剩餘高度） */
+  .arena-stage {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg-dark);
+  }
   #gameCanvas {
     position: absolute;
     inset: 0;
@@ -49,102 +90,80 @@
     opacity: 0;
     transition: opacity 0.15s;
   }
+
   .hidden { display: none !important; }
 
   #autoSaveToast {
     position: fixed;
-    bottom: 12px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(34, 197, 94, 0.92);
+    background: rgba(34, 197, 94, 0.95);
     color: #fff;
     font-size: 12px;
     font-weight: 900;
-    padding: 4px 12px;
+    padding: 4px 14px;
     border-radius: 99px;
-    z-index: 99;
+    z-index: 100;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.25s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
 
-  /* =========================================
-     IN-GAME HUD (緊湊型頂部設計，不擋視線)
-     ========================================= */
-  .ui-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .interactive { pointer-events: auto; }
-
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 6px 14px;
-    gap: 8px;
-  }
+  /* 頂部 HUD 元件 */
   .score-pill {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--panel);
-    border: 2px solid #334155;
+    gap: 6px;
+    background: #131c2e;
+    border: 1.5px solid #334155;
     border-radius: 99px;
-    padding: 5px 14px;
+    padding: 4px 12px;
     font-weight: 900;
-    font-size: 15px;
-    backdrop-filter: blur(6px);
+    font-size: 14px;
+    white-space: nowrap;
   }
-  .s-you { color: var(--blue); font-size: 19px; }
-  .s-bot { color: var(--red); font-size: 19px; }
+  .s-you { color: var(--blue); font-size: 17px; }
+  .s-bot { color: var(--red); font-size: 17px; }
 
-  /* 緊湊型單字框：減少垂直佔用空間 */
   .word-pill {
+    flex: 1;
+    max-width: 560px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(15, 23, 42, 0.85);
-    border: 2px solid var(--blue);
-    border-radius: 14px;
-    padding: 5px 16px;
-    min-width: 300px;
-    max-width: 580px;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2);
+    background: #131c2e;
+    border: 1.5px solid var(--blue);
+    border-radius: 12px;
+    padding: 4px 10px;
+    box-shadow: 0 2px 12px rgba(56, 189, 248, 0.18);
   }
   .word-top-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
+    gap: 6px;
+    margin-bottom: 3px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .mode-badge {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 2px 6px;
+    border-radius: 5px;
     background: var(--blue);
     color: #000;
   }
   .unit-badge {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
-    padding: 2px 7px;
-    border-radius: 6px;
+    padding: 2px 6px;
+    border-radius: 5px;
     background: #334155;
     color: var(--gold);
   }
   .meaning-text {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     color: #fff;
   }
@@ -152,8 +171,8 @@
     background: rgba(56, 189, 248, 0.2);
     border: 1px solid var(--blue);
     color: #fff;
-    border-radius: 8px;
-    padding: 3px 9px;
+    border-radius: 6px;
+    padding: 2px 8px;
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
@@ -165,20 +184,20 @@
   }
   .word-slots {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .slot {
-    width: 22px;
-    height: 26px;
-    border-bottom: 3px solid #64748b;
-    background: rgba(30, 41, 59, 0.85);
+    width: 20px;
+    height: 24px;
+    border-bottom: 2.5px solid #64748b;
+    background: rgba(30, 41, 59, 0.9);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 900;
     text-transform: lowercase;
   }
@@ -190,30 +209,37 @@
   .slot.target {
     color: var(--gold);
     border-bottom-color: var(--gold);
-    box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
   }
 
   .mini-btn {
-    background: var(--panel);
-    border: 2px solid #475569;
+    background: #131c2e;
+    border: 1.5px solid #475569;
     color: #fff;
-    border-radius: 12px;
-    padding: 6px 12px;
-    font-size: 13px;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
+    white-space: nowrap;
   }
 
-  .bottom-bar {
+  /* 底部觸控層 (浮於競技場下方兩側) */
+  .bottom-touch-layer {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 10;
+    pointer-events: none;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 12px 20px;
-    width: 100%;
+    padding: 10px 16px;
   }
+  .interactive { pointer-events: auto; }
+
   .joy-zone {
-    width: 140px;
-    height: 140px;
+    width: 125px;
+    height: 125px;
     position: relative;
     flex-shrink: 0;
   }
@@ -223,32 +249,33 @@
     align-items: center;
     background: rgba(15, 23, 42, 0.94);
     border: 2px solid var(--gold);
-    border-radius: 18px;
-    padding: 8px 14px;
-    margin: 0 12px;
-    box-shadow: 0 0 25px rgba(250, 204, 21, 0.35);
+    border-radius: 14px;
+    padding: 6px 10px;
+    margin: 0 8px;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.35);
   }
   .dock-hint {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     color: var(--gold);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    text-align: center;
   }
   .dock-tiles {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .quick-tile {
-    width: 46px;
-    height: 50px;
+    width: 42px;
+    height: 44px;
     background: #1e293b;
     border: 2px solid #94a3b8;
-    border-bottom-width: 5px;
-    border-radius: 10px;
+    border-bottom-width: 4px;
+    border-radius: 8px;
     color: #fff;
-    font-size: 23px;
+    font-size: 20px;
     font-weight: 900;
     text-transform: lowercase;
     cursor: pointer;
@@ -262,12 +289,12 @@
   .right-actions {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     flex-shrink: 0;
   }
   .round-btn {
     border-radius: 50%;
-    border: 4px solid rgba(255,255,255,0.85);
+    border: 3.5px solid rgba(255,255,255,0.85);
     color: #fff;
     font-weight: 900;
     display: flex;
@@ -275,89 +302,111 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 5px 16px rgba(0,0,0,0.5);
   }
   .round-btn:active { transform: scale(0.92); }
-  .btn-dash { width: 66px; height: 66px; background: radial-gradient(circle, #38bdf8, #0284c7); }
-  .btn-fire { width: 94px; height: 94px; background: radial-gradient(circle, #f43f5e, #be123c); }
+  .btn-dash { width: 58px; height: 58px; background: radial-gradient(circle, #38bdf8, #0284c7); }
+  .btn-fire { width: 82px; height: 82px; background: radial-gradient(circle, #f43f5e, #be123c); }
 
-  /* =========================================
-     清爽分頁式 DASHBOARD
-     ========================================= */
+  /* =========================================================
+     修正附圖 2：手機與電腦皆完美適配的響應式 DASHBOARD
+     ========================================================= */
   .modal-overlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    background: rgba(6, 10, 19, 0.88);
+    background: rgba(6, 10, 19, 0.9);
     backdrop-filter: blur(10px);
     z-index: 30;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px;
+    padding: 8px;
   }
 
   .dashboard-shell {
     background: #0f172a;
     border: 2px solid #334155;
-    border-radius: 24px;
+    border-radius: 20px;
     max-width: 840px;
     width: 100%;
+    max-height: 96vh;
     overflow: hidden;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.9);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
     display: flex;
     flex-direction: column;
   }
 
   .dash-topbar {
     background: #090d16;
-    padding: 12px 20px;
+    padding: 10px 14px;
     border-bottom: 1px solid #1e293b;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
   .brand-box {
     display: flex;
     align-items: center;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .title-grad {
-    font-size: 21px;
+    font-size: 19px;
     font-weight: 900;
     background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    white-space: nowrap;
   }
   .stat-badges {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     background: #131c2e;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 99px;
     border: 1px solid #334155;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 900;
     color: var(--gold);
     align-items: center;
+    white-space: nowrap;
   }
   .autosave-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--green);
     display: inline-block;
     box-shadow: 0 0 6px var(--green);
   }
 
+  /* Chrome 安裝 APP 按鈕 */
+  .install-pwa-btn {
+    background: linear-gradient(135deg, #a855f7, #7e22ce);
+    border: 1.5px solid #e9d5ff;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 11px;
+    border-radius: 99px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+    white-space: nowrap;
+  }
+  .install-pwa-btn:active { transform: scale(0.95); }
+
   .profile-switcher {
     display: flex;
     align-items: center;
     gap: 4px;
     background: #131c2e;
-    padding: 4px;
-    border-radius: 12px;
+    padding: 3px;
+    border-radius: 10px;
     border: 1px solid #334155;
   }
   .prof-btn {
@@ -365,11 +414,10 @@
     border: none;
     color: #94a3b8;
     font-weight: 900;
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 8px;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 7px;
     cursor: pointer;
-    transition: 0.15s;
   }
   .prof-btn.active {
     background: var(--blue);
@@ -381,17 +429,18 @@
     grid-template-columns: repeat(3, 1fr);
     background: #131c2e;
     border-bottom: 2px solid #1e293b;
+    flex-shrink: 0;
   }
   .tab-btn {
     background: transparent;
     border: none;
     border-bottom: 3px solid transparent;
     color: #94a3b8;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 900;
-    padding: 12px;
+    padding: 10px 4px;
     cursor: pointer;
-    transition: 0.15s;
+    text-align: center;
   }
   .tab-btn.active {
     color: #fff;
@@ -400,47 +449,47 @@
   }
 
   .dash-body {
-    padding: 16px 20px;
-    max-height: 76vh;
+    padding: 12px 14px;
     overflow-y: auto;
+    flex: 1;
   }
 
   .step-card {
     background: #131c2e;
     border: 1px solid #26334d;
-    border-radius: 16px;
-    padding: 12px 16px;
-    margin-bottom: 12px;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
   }
   .step-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
     margin-bottom: 8px;
   }
   .step-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 900;
     color: var(--blue);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .unit-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
   .unit-chip {
     background: #090d16;
-    border: 2px solid #334155;
+    border: 1.5px solid #334155;
     color: #cbd5e1;
-    border-radius: 12px;
-    padding: 7px 13px;
-    font-size: 13px;
+    border-radius: 10px;
+    padding: 6px 11px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
-    transition: 0.12s;
   }
   .unit-chip.active {
     background: rgba(34, 197, 94, 0.18);
@@ -451,37 +500,35 @@
   .mode-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .mode-card {
     background: #090d16;
     border: 2px solid #334155;
-    border-radius: 14px;
-    padding: 11px 8px;
+    border-radius: 12px;
+    padding: 10px 6px;
     text-align: center;
     cursor: pointer;
-    transition: 0.15s;
   }
   .mode-card.active {
     border-color: var(--blue);
     background: rgba(56, 189, 248, 0.15);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
   }
-  .mode-card .m-icon { font-size: 25px; display: block; margin-bottom: 4px; }
-  .mode-card .m-title { font-size: 14px; font-weight: 900; color: #fff; }
-  .mode-card .m-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .mode-card .m-icon { font-size: 22px; display: block; margin-bottom: 3px; }
+  .mode-card .m-title { font-size: 13px; font-weight: 900; color: #fff; }
+  .mode-card .m-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
 
   .settings-split {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 12px;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 10px;
   }
   .seg-group {
     display: flex;
-    gap: 6px;
+    gap: 4px;
     background: #090d16;
-    padding: 5px;
-    border-radius: 12px;
+    padding: 4px;
+    border-radius: 10px;
     border: 1px solid #334155;
   }
   .seg-btn {
@@ -490,11 +537,12 @@
     border: none;
     color: #94a3b8;
     font-weight: 800;
-    font-size: 13px;
-    padding: 8px 6px;
-    border-radius: 8px;
+    font-size: 12px;
+    padding: 7px 4px;
+    border-radius: 7px;
     cursor: pointer;
     text-align: center;
+    white-space: nowrap;
   }
   .seg-btn.active {
     background: #1e293b;
@@ -504,30 +552,29 @@
 
   .start-hero-btn {
     width: 100%;
-    padding: 14px;
-    font-size: 20px;
+    padding: 13px;
+    font-size: 18px;
     font-weight: 900;
     border: none;
-    border-radius: 16px;
+    border-radius: 14px;
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.45);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
     margin-top: 4px;
   }
-  .start-hero-btn:active { transform: scale(0.99); }
 
   .armory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   .gear-card {
     background: #131c2e;
     border: 2px solid #334155;
     border-radius: 12px;
-    padding: 10px 8px;
+    padding: 8px 6px;
     text-align: center;
     cursor: pointer;
   }
@@ -535,70 +582,104 @@
     border-color: var(--green);
     background: rgba(34, 197, 94, 0.15);
   }
-  .gear-card .g-name { font-size: 13px; font-weight: 900; color: #fff; }
-  .gear-card .g-desc { font-size: 11px; color: #94a3b8; margin: 3px 0; }
-  .gear-card .g-cost { font-size: 12px; font-weight: 900; color: var(--gold); }
+  .gear-card .g-name { font-size: 12px; font-weight: 900; color: #fff; }
+  .gear-card .g-desc { font-size: 10px; color: #94a3b8; margin: 2px 0; }
+  .gear-card .g-cost { font-size: 11px; font-weight: 900; color: var(--gold); }
+
+  /* =========================================================
+     📱 手機直向 / 窄螢幕專用響應式規則 (解決附圖 2 & 3 壓扁問題!)
+     ========================================================= */
+  @media (max-width: 680px) {
+    .mode-grid {
+      grid-template-columns: repeat(2, 1fr); /* 直向自動變 2x2 寬卡片，不再變成一條竹竿 */
+    }
+    .armory-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .settings-split {
+      grid-template-columns: 1fr;
+    }
+    .top-hud-strip {
+      flex-wrap: wrap;
+      padding: 5px 8px;
+    }
+    .word-pill {
+      order: 3;
+      min-width: 100%;
+      margin-top: 2px;
+    }
+    .joy-zone {
+      width: 105px;
+      height: 105px;
+    }
+    .btn-fire { width: 72px; height: 72px; }
+    .btn-dash { width: 50px; height: 50px; }
+  }
+
+  /* 手機橫向超矮螢幕緊湊化 (解決附圖 1) */
+  @media (max-height: 480px) {
+    .top-hud-strip { padding: 3px 10px; }
+    .word-pill { flex-direction: row; justify-content: space-between; padding: 3px 12px; gap: 8px; }
+    .word-top-row { margin-bottom: 0; }
+    .joy-zone { width: 105px; height: 105px; }
+    .btn-fire { width: 74px; height: 74px; }
+    .btn-dash { width: 52px; height: 52px; }
+  }
 
   /* 家長密碼數字鍵盤 */
   .pin-card {
     background: #131c2e;
     border: 2px solid var(--gold);
     border-radius: 22px;
-    width: 320px;
-    padding: 20px;
+    width: 310px;
+    padding: 18px;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
   }
   .pin-dots {
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin: 14px 0;
+    margin: 12px 0;
   }
   .pin-dot {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     border: 2px solid var(--gold);
-    background: transparent;
   }
   .pin-dot.filled { background: var(--gold); }
   .pin-pad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    margin-bottom: 12px;
   }
   .pin-key {
     background: #1e293b;
     border: 1px solid #475569;
     border-radius: 12px;
     color: #fff;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
-    padding: 12px 0;
+    padding: 11px 0;
     cursor: pointer;
   }
-  .pin-key:active { background: var(--blue); color: #000; }
 
-  /* 📸 相片旋轉與智能 OCR 預覽視窗 */
   .ocr-modal-card {
     background: #131c2e;
     border: 2px solid var(--purple);
-    border-radius: 22px;
-    max-width: 600px;
+    border-radius: 20px;
+    max-width: 560px;
     width: 100%;
-    padding: 18px;
+    padding: 16px;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.95);
   }
   #ocrPreviewCanvas {
     max-width: 100%;
-    max-height: 240px;
+    max-height: 220px;
     border: 2px dashed #64748b;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #090d16;
-    margin: 10px auto;
+    margin: 8px auto;
     display: block;
   }
 
@@ -606,164 +687,160 @@
     background: #1e293b;
     border: 1px solid var(--blue);
     color: #bae6fd;
-    border-radius: 10px;
-    padding: 7px 11px;
-    font-size: 12px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
     font-weight: 800;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
   }
-  .tool-btn.photo {
-    background: rgba(168, 85, 247, 0.25);
-    border-color: var(--purple);
-    color: #f3e8ff;
-  }
-  .tool-btn.danger {
-    background: rgba(244, 63, 94, 0.2);
-    border-color: var(--red);
-    color: #fecdd3;
-  }
-  .tool-btn.backup {
-    background: rgba(34, 197, 94, 0.2);
-    border-color: var(--green);
-    color: #bbf7d0;
-  }
+  .tool-btn.photo { background: rgba(168, 85, 247, 0.25); border-color: var(--purple); color: #f3e8ff; }
+  .tool-btn.danger { background: rgba(244, 63, 94, 0.2); border-color: var(--red); color: #fecdd3; }
+  .tool-btn.backup { background: rgba(34, 197, 94, 0.2); border-color: var(--green); color: #bbf7d0; }
+
   .form-input, .form-textarea, .form-select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     background: #090d16;
     border: 1px solid #475569;
     border-radius: 8px;
     color: #fff;
-    font-size: 13px;
-    margin-top: 4px;
+    font-size: 12px;
+    margin-top: 3px;
   }
 
   #centerBanner {
     position: absolute;
-    top: 32%;
+    top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(15, 23, 42, 0.95);
     border: 3px solid var(--gold);
-    border-radius: 18px;
-    padding: 14px 28px;
+    border-radius: 16px;
+    padding: 12px 22px;
     text-align: center;
     z-index: 25;
     pointer-events: none;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.85);
+    width: max-content;
+    max-width: 90vw;
   }
 </style>
 </head>
 <body>
 
-<canvas id="gameCanvas"></canvas>
-<div id="damageFlash"></div>
 <div id="autoSaveToast">💾 進度已自動儲存 (Auto-Saved)</div>
-
 <input type="file" id="ocrFileInput" accept="image/*" class="hidden" onchange="openPhotoRotateModal(event)">
 
-<!-- =========================================
-     IN-GAME HUD (戰鬥畫面)
-     ========================================= -->
-<div class="ui-layer">
-  <div class="top-bar">
-    <div class="score-pill interactive">
+<!-- =========================================================
+     主遊戲視窗：上下分區結構 (頂部 HUD 獨立，永不遮擋下方競技場畫布!)
+     ========================================================= -->
+<div class="app-viewport">
+
+  <!-- 1. 頂部獨立狀態與單字列 -->
+  <div class="top-hud-strip">
+    <div class="score-pill">
       <span class="s-you" id="scoreYou">0</span>
-      <span style="font-size:12px; color:#94a3b8;">VS</span>
+      <span style="font-size:11px; color:#94a3b8;">VS</span>
       <span class="s-bot" id="scoreBot">0</span>
-      <span style="font-size:13px; color:var(--gold); margin-left:6px;">
+      <span style="font-size:12px; color:var(--gold); margin-left:4px;">
         🔥<span id="streakNum">0</span> | 🔑<span id="keysNum">0</span> | 💰<span id="coinsNum">0</span>
       </span>
     </div>
 
-    <div class="word-pill interactive">
+    <div class="word-pill">
       <div class="word-top-row">
         <span class="mode-badge" id="hudModeBadge">SNIPER</span>
         <span class="unit-badge" id="hudUnitBadge">Unit 1</span>
         <span class="meaning-text" id="hudMeaning">準備中...</span>
         <button class="action-chip-btn" onclick="speakCurrentWord()">🔊 讀音</button>
-        <button class="action-chip-btn gold" onclick="useHint()">💡 提示 (-15💰)</button>
+        <button class="action-chip-btn gold" onclick="useHint()">💡 提示(-15💰)</button>
       </div>
       <div class="word-slots" id="hudSlots"></div>
     </div>
 
-    <div class="interactive">
-      <button class="mini-btn" onclick="openLobby()">🏠 返回大廳</button>
+    <button class="mini-btn" onclick="openLobby()">🏠 返回大廳</button>
+  </div>
+
+  <!-- 2. 下方競技場畫布與觸控區 -->
+  <div class="arena-stage" id="arenaStage">
+    <canvas id="gameCanvas"></canvas>
+    <div id="damageFlash"></div>
+
+    <div id="centerBanner" class="hidden">
+      <div id="bannerTitle" style="font-size:21px; font-weight:900; color:var(--gold);">ROUND 1</div>
+      <div id="bannerSub" style="font-size:13px; color:#e2e8f0; margin-top:4px;"></div>
+    </div>
+
+    <div class="bottom-touch-layer">
+      <div class="joy-zone interactive" id="joyZone"></div>
+
+      <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
+        <div class="dock-hint">⚡ 篤對字母補彈 (篤錯扣 -15 HP)</div>
+        <div class="dock-tiles" id="dockTiles"></div>
+      </div>
+
+      <div class="right-actions interactive">
+        <button class="round-btn btn-dash" onclick="triggerDash()">
+          <span style="font-size:16px;">💨</span>
+          <span style="font-size:9px;">閃避</span>
+        </button>
+        <button class="round-btn btn-fire" id="btnFire">
+          <span style="font-size:16px;">🎯FIRE</span>
+          <span style="font-size:9px;" id="ammoLabel">AUTO</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <div id="centerBanner" class="hidden">
-    <div id="bannerTitle" style="font-size:25px; font-weight:900; color:var(--gold);">ROUND 1</div>
-    <div id="bannerSub" style="font-size:14px; color:#e2e8f0; margin-top:6px;"></div>
-  </div>
-
-  <div class="bottom-bar">
-    <div class="joy-zone interactive" id="joyZone"></div>
-
-    <div class="quick-spell-dock interactive hidden" id="quickSpellDock">
-      <div class="dock-hint">⚡ 篤對字母補充強化彈藥 (小心：篤錯字母扣 -15 HP！)</div>
-      <div class="dock-tiles" id="dockTiles"></div>
-    </div>
-
-    <div class="right-actions interactive">
-      <button class="round-btn btn-dash" onclick="triggerDash()">
-        <span style="font-size:18px;">💨</span>
-        <span style="font-size:10px;">閃避</span>
-      </button>
-      <button class="round-btn btn-fire" id="btnFire">
-        <span style="font-size:20px;">🎯FIRE</span>
-        <span style="font-size:10px;" id="ammoLabel">AUTO</span>
-      </button>
-    </div>
-  </div>
 </div>
 
-<!-- =========================================
-     v7.1 清爽分頁式主大廳 (DASHBOARD)
-     ========================================= -->
+<!-- =========================================================
+     v8.0 響應式主大廳 (DASHBOARD)
+     ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
 
-    <!-- 1. 頂部狀態與玩家切換列 -->
+    <!-- 頂部狀態與 Chrome 安裝 APP 鍵 -->
     <div class="dash-topbar">
       <div class="brand-box">
         <div class="title-grad">RIVALS: WORD ARENA</div>
-        <div class="stat-badges" title="所有鎖匙、金幣與裝備均已啟動即時永久 Auto-Save">
+        <div class="stat-badges">
           <span class="autosave-dot"></span>
-          <span>🔥 連勝: <b id="lobbyStreak">0</b></span>
+          <span>🔥<b id="lobbyStreak">0</b></span>
           <span>|</span>
-          <span>🔑 鎖匙: <b id="lobbyKeys">0</b></span>
+          <span>🔑<b id="lobbyKeys">0</b></span>
           <span>|</span>
-          <span>💰 金幣: <b id="lobbyCoins">0</b></span>
+          <span>💰<b id="lobbyCoins">0</b></span>
         </div>
+        <!-- 新增要求 1：Chrome 安裝 APP 鍵 -->
+        <button class="install-pwa-btn" id="btnInstallApp" onclick="installPWAApp()">
+          📲 安裝 APP
+        </button>
       </div>
 
       <div class="profile-switcher">
-        <span style="font-size:12px; color:#94a3b8; padding:0 6px; font-weight:800;">👤 玩家:</span>
+        <span style="font-size:11px; color:#94a3b8; padding:0 4px; font-weight:800;">👤</span>
         <button class="prof-btn active" onclick="switchProfile('JUSTIN')">JUSTIN</button>
         <button class="prof-btn" onclick="switchProfile('FUNG')">FUNG</button>
         <button class="prof-btn" onclick="switchProfile('MARCUS')">MARCUS</button>
       </div>
     </div>
 
-    <!-- 2. 三大清晰分頁 Tab -->
+    <!-- 三大分頁 Tab -->
     <div class="dash-tabs">
-      <button class="tab-btn active" id="tabBtnPlay" onclick="switchDashTab('play')">⚔️ 出戰大廳 (PLAY)</button>
-      <button class="tab-btn" id="tabBtnArmory" onclick="switchDashTab('armory')">🎒 軍械庫商店 (ARMORY)</button>
-      <button class="tab-btn" id="tabBtnParent" onclick="requestParentPin('parentTab')">🔒 家長題庫與設定 (PIN)</button>
+      <button class="tab-btn active" id="tabBtnPlay" onclick="switchDashTab('play')">⚔️ 出戰大廳</button>
+      <button class="tab-btn" id="tabBtnArmory" onclick="switchDashTab('armory')">🎒 軍械庫商店</button>
+      <button class="tab-btn" id="tabBtnParent" onclick="requestParentPin('parentTab')">🔒 家長題庫(PIN)</button>
     </div>
 
-    <!-- =====================================
-         TAB 1: ⚔️ 出戰大廳
-         ===================================== -->
+    <!-- TAB 1: 出戰大廳 -->
     <div class="dash-body" id="tabContentPlay">
       <div class="step-card">
         <div class="step-header">
           <span class="step-title">📚 STEP 1. 揀選溫習課題 (可單選或多選)</span>
-          <span style="font-size:12px; color:#94a3b8;" id="activePoolCountText">已選生字</span>
+          <span style="font-size:11px; color:#94a3b8;" id="activePoolCountText">已選生字</span>
         </div>
         <div class="unit-bar" id="unitSelectBar"></div>
       </div>
@@ -776,22 +853,22 @@
           <div class="mode-card active" onclick="setMode('mix', this)">
             <span class="m-icon">🔥</span>
             <div class="m-title">混合輪換賽</div>
-            <div class="m-desc">每局自動切換玩法</div>
+            <div class="m-desc">每局切換玩法</div>
           </div>
           <div class="mode-card" onclick="setMode('sniper', this)">
             <span class="m-icon">🎯</span>
             <div class="m-title">字母狙擊手</div>
-            <div class="m-desc">順序射爆場上字母球</div>
+            <div class="m-desc">順序射爆字母球</div>
           </div>
           <div class="mode-card" onclick="setMode('assault', this)">
             <span class="m-icon">⚡</span>
             <div class="m-title">裝彈追擊戰</div>
-            <div class="m-desc">篤字補彈追射敵人</div>
+            <div class="m-desc">篤字補彈追射</div>
           </div>
           <div class="mode-card" onclick="setMode('breaker', this)">
             <span class="m-icon">🛡️</span>
             <div class="m-title">弱點破甲戰</div>
-            <div class="m-desc">揀正確字母箱破盾</div>
+            <div class="m-desc">揀字母箱破盾</div>
           </div>
         </div>
       </div>
@@ -802,7 +879,7 @@
             <span class="step-title">⚡ STEP 3. 串字難度</span>
           </div>
           <div class="seg-group" id="diffRow">
-            <button class="seg-btn active" onclick="setDiff('progressive', this)">📈 自動晉級</button>
+            <button class="seg-btn active" onclick="setDiff('progressive', this)">📈 晉級</button>
             <button class="seg-btn" onclick="setDiff('blanks', this)">🧩 半漏空</button>
             <button class="seg-btn" onclick="setDiff('full', this)">👑 全盲串</button>
           </div>
@@ -813,98 +890,84 @@
             <span class="step-title">🔢 STEP 4. 出題次序</span>
           </div>
           <div class="seg-group" id="orderRow">
-            <button class="seg-btn active" id="orderBtnRandom" onclick="setWordOrder('random')">🔀 隨機抽題</button>
-            <button class="seg-btn" id="orderBtnSeq" onclick="setWordOrder('sequential')">🔢 按順序出題</button>
+            <button class="seg-btn active" id="orderBtnRandom" onclick="setWordOrder('random')">🔀 隨機</button>
+            <button class="seg-btn" id="orderBtnSeq" onclick="setWordOrder('sequential')">🔢 順序</button>
           </div>
         </div>
       </div>
 
-      <button class="start-hero-btn" onclick="startMatch()" style="margin-top:14px;">
+      <button class="start-hero-btn" onclick="startMatch()" style="margin-top:12px;">
         🚀 進入競技場對決 (START MATCH)
       </button>
+      <div style="text-align:center; font-size:10px; color:#64748b; margin-top:6px;">
+        PWA Auto-Update Ready • Version 8.0.0
+      </div>
     </div>
 
-    <!-- =====================================
-         TAB 2: 🎒 軍械庫商店
-         ===================================== -->
+    <!-- TAB 2: 軍械庫商店 -->
     <div class="dash-body hidden" id="tabContentArmory">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <span class="step-title">🔫 攻擊武器庫 (8 款神武 — 自動永久儲存)</span>
-        <span style="font-size:13px; color:var(--gold); font-weight:900;">目前擁有鎖匙：🔑 <span id="armoryKeysNum">0</span></span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="step-title">🔫 攻擊武器庫 (8 款神武 — 用 🔑 解鎖)</span>
+        <span style="font-size:12px; color:var(--gold); font-weight:900;">擁有鎖匙：🔑 <span id="armoryKeysNum">0</span></span>
       </div>
       <div class="armory-grid" id="weaponList"></div>
 
-      <div class="step-title" style="margin-bottom:8px;">🛡️ 戰術裝甲與無人機 (8 款裝甲 — 全部用 🔑 解鎖)</div>
+      <div class="step-title" style="margin-bottom:8px;">🛡️ 戰術裝甲與無人機 (8 款裝甲 — 用 🔑 解鎖)</div>
       <div class="armory-grid" id="armorList"></div>
     </div>
 
-    <!-- =====================================
-         TAB 3: 🔒 家長題庫與設定 (受密碼 1234 保護)
-         ===================================== -->
+    <!-- TAB 3: 家長題庫與設定 (受密碼 1234 保護) -->
     <div class="dash-body hidden" id="tabContentParent">
       <div class="step-card" style="border-color:var(--purple);">
         <div class="step-header">
-          <span class="step-title" style="color:#e879f9;">📸 題庫快速編輯與相片識別工具 (<span id="parentProfName" style="color:var(--gold);">JUSTIN</span>)</span>
-          <span id="ocrStatusText" style="font-size:12px; color:var(--gold); font-weight:800;"></span>
+          <span class="step-title" style="color:#e879f9;">📸 題庫編輯與相片識別 (<span id="parentProfName" style="color:var(--gold);">JUSTIN</span>)</span>
+          <span id="ocrStatusText" style="font-size:11px; color:var(--gold); font-weight:800;"></span>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:6px;">
-          <!-- 新增：一鍵清除題庫內容鍵，方便整批更換生字 -->
-          <button class="tool-btn danger" onclick="clearWordListContent()">🧹 一鍵清空題庫 (整批換新字)</button>
+          <button class="tool-btn danger" onclick="clearWordListContent()">🧹 一鍵清空題庫</button>
           <button class="tool-btn photo" onclick="triggerPhotoInput()">📸 影相/揀相片識別</button>
-          <button class="tool-btn" id="btnAutoTrans" onclick="autoTranslateMissingChinese()">🌐 自動補全中文解釋</button>
+          <button class="tool-btn" id="btnAutoTrans" onclick="autoTranslateMissingChinese()">🌐 自動補全中文</button>
           <button class="tool-btn" onclick="insertNewUnitTemplate()">➕ 新增 [Unit X]</button>
-          <button class="tool-btn" onclick="restoreDefaultWords()">🔄 載入預設題庫</button>
           <button class="tool-btn backup" onclick="exportFullSaveBackup()">💾 匯出備份碼</button>
           <button class="tool-btn backup" onclick="importFullSaveBackup()">📥 還原備份碼</button>
         </div>
       </div>
 
       <div style="margin-bottom:10px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <label style="font-size:12px; color:#cbd5e1; font-weight:700;">
-            📝 分課生字表（可按上方「🧹 一鍵清空題庫」直接貼入新一期默書生字）：
-          </label>
-          <span style="font-size:11px; color:#94a3b8;">格式：英文, 中文解釋 (或只寫英文再按自動補全)</span>
-        </div>
-        <textarea class="form-textarea" id="wordInput" style="height:140px; font-family:monospace; line-height:1.4;"></textarea>
+        <label style="font-size:11px; color:#cbd5e1; font-weight:700;">
+          📝 分課生字表（目前預設保留 2 題簡單試玩，可隨時貼上或影相加入新課題）：
+        </label>
+        <textarea class="form-textarea" id="wordInput" style="height:125px; font-family:monospace; line-height:1.4;"></textarea>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 0.7fr; gap:8px; margin-bottom:12px; align-items:end;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:12px;">
         <div>
-          <label style="font-size:11px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填)</label>
-          <input type="password" class="form-input" id="geminiKeyInput" placeholder="AI 100%識別打側表格">
+          <label style="font-size:10px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填)</label>
+          <input type="password" class="form-input" id="geminiKeyInput" placeholder="AI 相片識別">
         </div>
         <div>
-          <label style="font-size:11px; color:#cbd5e1;">Azure TTS Key (選填)</label>
+          <label style="font-size:10px; color:#cbd5e1;">Azure TTS Key</label>
           <input type="password" class="form-input" id="azureKey" placeholder="留空用內置發音">
         </div>
         <div>
-          <label style="font-size:11px; color:#cbd5e1;">Azure Region</label>
+          <label style="font-size:10px; color:#cbd5e1;">Azure Region</label>
           <input type="text" class="form-input" id="azureRegion" placeholder="eastasia">
         </div>
         <div>
-          <label style="font-size:11px; color:#cbd5e1;">英文語音角色</label>
-          <select class="form-select" id="azureVoice">
-            <option value="en-GB-SoniaNeural">英式女聲 Sonia</option>
-            <option value="en-US-AvaMultilingualNeural">美式女聲 Ava</option>
-            <option value="en-GB-RyanNeural">英式男聲 Ryan</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px; color:var(--gold);">🔐 家長密碼</label>
+          <label style="font-size:10px; color:var(--gold);">🔐 家長密碼</label>
           <input type="text" class="form-input" id="parentPinInput" maxlength="6" value="1234">
         </div>
       </div>
 
-      <div style="display:flex; gap:8px;">
-        <button class="start-hero-btn" style="padding:11px; font-size:16px; margin:0; flex:1;" onclick="saveSettings()">
-          💾 儲存題庫與設定 (Auto-Save)
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <button class="start-hero-btn" style="padding:10px; font-size:15px; margin:0; flex:1;" onclick="saveSettings()">
+          💾 儲存題庫與設定
         </button>
         <button class="mini-btn" style="border-color:var(--gold); color:var(--gold);" onclick="parentAddBonusKeys()">
           ➕ 獎勵 +2🔑
         </button>
         <button class="mini-btn" style="border-color:var(--red); color:#fda4af;" onclick="executeFullReset()">
-          🗑️ RESET 戰績
+          🗑️ 清除戰績
         </button>
       </div>
     </div>
@@ -912,52 +975,36 @@
   </div>
 </div>
 
-<!-- =========================================
-     📸 相片旋轉預覽與智能 OCR 識別視窗
-     ========================================= -->
+<!-- 相片旋轉預覽視窗 -->
 <div class="modal-overlay hidden" id="photoRotateModal">
   <div class="ocr-modal-card interactive">
-    <h3 style="color:#e879f9; font-size:18px;">📸 步驟 1：請確保文字方向「打橫擺正」</h3>
-    <p style="font-size:12px; color:#cbd5e1; margin-top:4px;">
-      ⚠️ 如果相片好似生字表咁「打直咗 90 度」，請撳下面 <b>「↻ 向右轉 90°」</b> 轉返正先開始識別！
-    </p>
-
+    <h3 style="color:#e879f9; font-size:16px;">📸 請確保文字是「打橫正常方向」</h3>
     <canvas id="ocrPreviewCanvas"></canvas>
-
-    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:12px;">
-      <button class="mini-btn" onclick="rotatePreviewImage(-90)">↺ 向左轉 90°</button>
-      <button class="mini-btn" style="border-color:var(--gold); color:var(--gold);" onclick="rotatePreviewImage(90)">↻ 向右轉 90° (擺正文字)</button>
+    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:10px;">
+      <button class="mini-btn" onclick="rotatePreviewImage(-90)">↺ 左轉 90°</button>
+      <button class="mini-btn" style="border-color:var(--gold); color:var(--gold);" onclick="rotatePreviewImage(90)">↻ 右轉 90° (擺正文字)</button>
     </div>
-
-    <div id="modalOcrProgress" style="font-size:13px; color:var(--gold); font-weight:800; margin-bottom:10px;">
-      準備就緒：文字擺正後請撳下方按鈕開始提取生字
+    <div id="modalOcrProgress" style="font-size:12px; color:var(--gold); font-weight:800; margin-bottom:8px;">
+      準備就緒
     </div>
-
-    <div style="display:flex; gap:10px;">
-      <button class="start-hero-btn" id="btnRunOCR" style="padding:12px; font-size:16px; margin:0; flex:1;" onclick="runSmartOCR()">
-        🔍 開始智能識別表格生字
+    <div style="display:flex; gap:8px;">
+      <button class="start-hero-btn" id="btnRunOCR" style="padding:10px; font-size:15px; margin:0; flex:1;" onclick="runSmartOCR()">
+        🔍 開始智能識別生字
       </button>
       <button class="mini-btn" onclick="closePhotoRotateModal()">✕ 取消</button>
     </div>
   </div>
 </div>
 
-<!-- =========================================
-     🔐 家長密碼鎖視窗 (預設密碼: 1234)
-     ========================================= -->
+<!-- 家長密碼鎖視窗 (預設密碼: 1234) -->
 <div class="modal-overlay hidden" id="pinModal">
   <div class="pin-card interactive">
-    <div style="font-size:28px;">🔒</div>
-    <h3 style="color:var(--gold); font-size:18px; margin-top:4px;">家長密碼鎖</h3>
-    <p style="font-size:12px; color:#94a3b8; margin-top:2px;">請輸入 4 位數家長密碼 (預設: 1234)</p>
-
+    <div style="font-size:26px;">🔒</div>
+    <h3 style="color:var(--gold); font-size:17px;">家長密碼鎖</h3>
+    <p style="font-size:11px; color:#94a3b8;">請輸入 4 位數家長密碼 (預設: 1234)</p>
     <div class="pin-dots" id="pinDots">
-      <div class="pin-dot"></div>
-      <div class="pin-dot"></div>
-      <div class="pin-dot"></div>
-      <div class="pin-dot"></div>
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
-
     <div class="pin-pad">
       <button class="pin-key" onclick="tapPin('1')">1</button>
       <button class="pin-key" onclick="tapPin('2')">2</button>
@@ -968,78 +1015,94 @@
       <button class="pin-key" onclick="tapPin('7')">7</button>
       <button class="pin-key" onclick="tapPin('8')">8</button>
       <button class="pin-key" onclick="tapPin('9')">9</button>
-      <button class="pin-key" style="font-size:14px; color:#fda4af;" onclick="clearPin()">清除</button>
+      <button class="pin-key" style="font-size:13px; color:#fda4af;" onclick="clearPin()">清除</button>
       <button class="pin-key" onclick="tapPin('0')">0</button>
-      <button class="pin-key" style="font-size:14px; color:#94a3b8;" onclick="closePinModal()">取消</button>
+      <button class="pin-key" style="font-size:13px; color:#94a3b8;" onclick="closePinModal()">取消</button>
     </div>
   </div>
 </div>
 
 <script>
 /* =========================================================
-   1. 預設分課生字題庫 & 內置常用字典
+   0. 註冊 Service Worker (確保每次更新後 APP 自動升級!) & Chrome 安裝按鈕
    ========================================================= */
-const DEFAULT_UNIT_WORDS = `[Unit 1: Environment 環境與自然]
-environment, 環境 (n.)
-pollution, 污染 (n.)
-temperature, 溫度 (n.)
-protect, 保護 (v.)
-recycle, 循環再造 (v.)
-electricity, 電力 (n.)
+let deferredInstallPrompt = null;
 
-[Unit 2: School & Competition 校園與比賽]
-competition, 比賽/競爭 (n.)
-celebrate, 慶祝 (v.)
-invitation, 邀請 (n.)
-communicate, 溝通 (v.)
-instrument, 樂器/儀器 (n.)
-volunteer, 義工 (n.)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // 每次開啟 App 自動向伺服器檢查有無新版 sw.js
+      reg.update();
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // 發現新版本，自動重新載入最新遊戲！
+            window.location.reload();
+          }
+        });
+      });
+    }).catch((err) => console.warn('SW registration skipped:', err));
 
-[Unit 3: Travel & Adventure 旅遊與探索]
-adventure, 冒險 (n.)
-passenger, 乘客 (n.)
-comfortable, 舒適的 (adj.)
-delicious, 美味的 (adj.)
-ingredient, 材料/成分 (n.)
-discovery, 發現 (n.)
-government, 政府 (n.)
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  });
+}
 
-[Unit 4: WSR01-2 動物保育與態度]
-aim, 目標/旨在 (n./v.)
-observe, 觀察 (v.)
-conservation, 保育/保護 (n.)
-progress, 進步/進展 (n.)
-relieved, 如釋重負的/放心的 (adj.)
-endangered, 瀕臨絕種的 (adj.)
-predator, 捕食者/天敵 (n.)
-attitude, 態度 (n.)
-succeed, 成功 (v.)
-resist, 抵抗/抗拒 (v.)
-extinct, 絕種的 (adj.)
-presenter, 節目主持/講者 (n.)
-develop, 發展/培養 (v.)
-interrupted, 被打斷的 (adj./v.)
-connection, 聯繫/連接 (n.)
-habitat, 棲息地 (n.)
-species, 物種 (n.)
-open-minded, 思想開明的 (adj.)
-protect, 保護 (v.)
-steady, 穩定的 (adj.)
-prey, 獵物 (n.)
-navigate, 導航/引領 (v.)
-fail, 失敗 (v.)
-barely, 幾乎不/勉強 (adv.)
-reality, 現實 (n.)`;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+async function installPWAApp() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredInstallPrompt = null;
+    }
+  } else {
+    alert('📲 安裝全螢幕 APP 方法：\n\n• Android Chrome：請點選瀏覽器右上角「⋮」選單 ➔ 選擇「安裝應用程式」或「加到主畫面」。\n• iPad / iPhone Safari：請點選頂部或底部的「分享」按鈕 ➔ 選擇「加入主畫面」。\n\n(若你已安裝此 App，代表目前已是最新全螢幕版本！)');
+  }
+}
+
+/* =========================================================
+   1. 要求 4：清除每個玩家的舊 DATABASE，預設只保留 2 題簡單試玩！
+   ========================================================= */
+const DEFAULT_UNIT_WORDS = `[Unit 1: 簡單試玩 (Demo)]
+apple, 蘋果 (n.)
+water, 水 (n.)`;
+
+// 執行一次性 v8.0 資料庫徹底重置 (清除所有舊版測試遺留的題庫、Keys 與裝備)
+(function cleanDatabaseForV8Once() {
+  if (!localStorage.getItem('rv8_clean_init_done')) {
+    const keepAzKey = localStorage.getItem('rv2_az_key') || '';
+    const keepAzReg = localStorage.getItem('rv2_az_reg') || 'eastasia';
+    const keepGemKey = localStorage.getItem('rv7_gemini_key') || '';
+    localStorage.clear();
+    if (keepAzKey) localStorage.setItem('rv2_az_key', keepAzKey);
+    if (keepAzReg) localStorage.setItem('rv2_az_reg', keepAzReg);
+    if (keepGemKey) localStorage.setItem('rv7_gemini_key', keepGemKey);
+    localStorage.setItem('rv8_clean_init_done', 'true');
+  }
+})();
 
 const BUILTIN_DICT = {
-  environment: '環境', pollution: '污染', temperature: '溫度', protect: '保護', recycle: '循環再造',
-  electricity: '電力', competition: '比賽', celebrate: '慶祝', invitation: '邀請', communicate: '溝通',
-  instrument: '樂器', volunteer: '義工', adventure: '冒險', passenger: '乘客', comfortable: '舒適的',
-  delicious: '美味的', ingredient: '材料', discovery: '發現', government: '政府',
-  aim: '目標 (n./v.)', observe: '觀察 (v.)', conservation: '保育 (n.)', progress: '進步 (n.)',
-  relieved: '放心的 (adj.)', endangered: '瀕危的 (adj.)', predator: '捕食者 (n.)', attitude: '態度 (n.)',
-  succeed: '成功 (v.)', resist: '抵抗 (v.)', extinct: '絕種的 (adj.)', presenter: '主持人 (n.)',
-  develop: '發展 (v.)', interrupted: '被打斷 (v.)', connection: '聯繫 (n.)', habitat: '棲息地 (n.)',
+  apple: '蘋果 (n.)', water: '水 (n.)', environment: '環境', pollution: '污染',
+  temperature: '溫度', protect: '保護', recycle: '循環再造', electricity: '電力',
+  competition: '比賽', celebrate: '慶祝', invitation: '邀請', communicate: '溝通',
+  instrument: '樂器', volunteer: '義工', adventure: '冒險', passenger: '乘客',
+  comfortable: '舒適的', delicious: '美味的', ingredient: '材料', discovery: '發現',
+  government: '政府', aim: '目標 (n./v.)', observe: '觀察 (v.)', conservation: '保育 (n.)',
+  progress: '進步 (n.)', relieved: '放心的 (adj.)', endangered: '瀕危的 (adj.)',
+  predator: '捕食者 (n.)', attitude: '態度 (n.)', succeed: '成功 (v.)', resist: '抵抗 (v.)',
+  extinct: '絕種的 (adj.)', presenter: '主持人 (n.)', develop: '發展 (v.)',
+  interrupted: '被打斷 (v.)', connection: '聯繫 (n.)', habitat: '棲息地 (n.)',
   species: '物種 (n.)', 'open-minded': '思想開明的 (adj.)', openminded: '思想開明的 (adj.)',
   steady: '穩定的 (adj.)', prey: '獵物 (n.)', navigate: '導航 (v.)', fail: '失敗 (v.)',
   barely: '勉強/幾乎不 (adv.)', reality: '現實 (n.)'
@@ -1082,20 +1145,20 @@ const BOSS_PROFILES = [
 ];
 
 /* =========================================================
-   3. 永久 Auto-Save 儲存引擎 + 舊版本紀錄自動遷移
+   3. 獨立玩家檔案與永久 Auto-Save
    ========================================================= */
 let config = {
-  playerName: localStorage.getItem('rv5_active_prof') || 'JUSTIN',
+  playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
   mode: 'mix',
   diff: 'progressive',
-  wordOrder: localStorage.getItem('rv6_word_order') || 'random',
+  wordOrder: localStorage.getItem('rv8_word_order') || 'random',
   seqIndex: 0,
-  parentPin: localStorage.getItem('rv6_parent_pin') || '1234',
+  parentPin: localStorage.getItem('rv8_parent_pin') || '1234',
   geminiKey: localStorage.getItem('rv7_gemini_key') || '',
   weaponId: 'cyber',
   armorId: 'shield',
   keys: 0,
-  coins: 45,
+  coins: 30,
   streak: 0,
   selectedUnits: ['ALL'],
   unitsMap: {},
@@ -1104,41 +1167,7 @@ let config = {
   azureVoice: localStorage.getItem('rv2_az_voice') || 'en-GB-SoniaNeural'
 };
 
-function getProfKey(suffix) { return `rv5_${config.playerName}_${suffix}`; }
-
-function migrateLegacySavesIfNeeded(profName) {
-  const migFlag = localStorage.getItem(`rv7_migrated_${profName}`);
-  if (migFlag) return;
-
-  const curKeys = parseInt(localStorage.getItem(`rv5_${profName}_keys`) || '0', 10);
-  const curCoins = parseInt(localStorage.getItem(`rv5_${profName}_coins`) || '45', 10);
-  const curStreak = parseInt(localStorage.getItem(`rv5_${profName}_streak`) || '0', 10);
-
-  const legacyKeys = Math.max(
-    curKeys,
-    parseInt(localStorage.getItem('rv3_keys') || '0', 10),
-    parseInt(localStorage.getItem('rv2_keys') || '0', 10),
-    parseInt(localStorage.getItem('rivals_keys') || '0', 10)
-  );
-  const legacyCoins = Math.max(curCoins, parseInt(localStorage.getItem('rv3_coins') || '45', 10));
-  const legacyStreak = Math.max(
-    curStreak,
-    parseInt(localStorage.getItem('rv3_streak') || '0', 10),
-    parseInt(localStorage.getItem('rv2_streak') || '0', 10)
-  );
-
-  localStorage.setItem(`rv5_${profName}_keys`, legacyKeys);
-  localStorage.setItem(`rv5_${profName}_coins`, legacyCoins);
-  localStorage.setItem(`rv5_${profName}_streak`, legacyStreak);
-
-  const existingWords = localStorage.getItem(`rv5_${profName}_words`) || '';
-  if (existingWords && !existingWords.includes('WSR01-2')) {
-    const unit4Block = DEFAULT_UNIT_WORDS.substring(DEFAULT_UNIT_WORDS.indexOf('[Unit 4:'));
-    localStorage.setItem(`rv5_${profName}_words`, existingWords.trim() + '\n\n' + unit4Block);
-  }
-
-  localStorage.setItem(`rv7_migrated_${profName}`, 'true');
-}
+function getProfKey(suffix) { return `rv8_${config.playerName}_${suffix}`; }
 
 let toastTimer = null;
 function showAutoSaveToast() {
@@ -1151,16 +1180,14 @@ function showAutoSaveToast() {
 function loadProfileData(profName) {
   config.playerName = profName;
   config.seqIndex = 0;
-  localStorage.setItem('rv5_active_prof', profName);
-
-  migrateLegacySavesIfNeeded(profName);
+  localStorage.setItem('rv8_active_prof', profName);
 
   document.querySelectorAll('.prof-btn').forEach(btn => {
     btn.classList.toggle('active', btn.textContent === profName);
   });
 
   config.keys = parseInt(localStorage.getItem(getProfKey('keys')) || '0', 10);
-  config.coins = parseInt(localStorage.getItem(getProfKey('coins')) || '45', 10);
+  config.coins = parseInt(localStorage.getItem(getProfKey('coins')) || '30', 10);
   config.streak = parseInt(localStorage.getItem(getProfKey('streak')) || '0', 10);
   config.weaponId = localStorage.getItem(getProfKey('weapon')) || 'cyber';
   config.armorId = localStorage.getItem(getProfKey('armor')) || 'shield';
@@ -1187,7 +1214,7 @@ function loadProfileData(profName) {
 
 function saveProfileData(silent = false) {
   try {
-    localStorage.setItem('rv5_active_prof', config.playerName);
+    localStorage.setItem('rv8_active_prof', config.playerName);
     localStorage.setItem(getProfKey('uw'), JSON.stringify(WEAPONS.filter(w => w.unlocked).map(w => w.id)));
     localStorage.setItem(getProfKey('ua'), JSON.stringify(ARMORS.filter(a => a.unlocked).map(a => a.id)));
     localStorage.setItem(getProfKey('weapon'), config.weaponId);
@@ -1196,12 +1223,6 @@ function saveProfileData(silent = false) {
     localStorage.setItem(getProfKey('coins'), String(config.coins));
     localStorage.setItem(getProfKey('streak'), String(config.streak));
     localStorage.setItem(getProfKey('sel_units'), JSON.stringify(config.selectedUnits));
-    const backupSnapshot = {
-      keys: config.keys, coins: config.coins, streak: config.streak,
-      uw: WEAPONS.filter(w => w.unlocked).map(w => w.id),
-      ua: ARMORS.filter(a => a.unlocked).map(a => a.id)
-    };
-    localStorage.setItem(`rv7_backup_${config.playerName}`, JSON.stringify(backupSnapshot));
     if (!silent) showAutoSaveToast();
   } catch (e) {}
 }
@@ -1210,20 +1231,12 @@ window.addEventListener('visibilitychange', () => { if (document.visibilityState
 window.addEventListener('pagehide', () => saveProfileData(true));
 window.addEventListener('beforeunload', () => saveProfileData(true));
 
-/* --- 新增要求 1：一鍵清空題庫內容鍵 & 還原預設題庫鍵 --- */
 function clearWordListContent() {
   if (!confirm(`🧹 確定要清空【${config.playerName}】目前的題庫文字框，以便貼上新一批生字嗎？`)) return;
   const textarea = document.getElementById('wordInput');
   textarea.value = `[Unit 1: 新一期默書生字]\n`;
   textarea.focus();
   document.getElementById('ocrStatusText').textContent = '✨ 已清空！請直接貼上新英文生字，或按「📸 影相識別」。';
-  sfx('good');
-}
-
-function restoreDefaultWords() {
-  if (!confirm('🔄 確定要載入系統預設的 Unit 1 ~ Unit 4 題庫嗎？')) return;
-  document.getElementById('wordInput').value = DEFAULT_UNIT_WORDS;
-  document.getElementById('ocrStatusText').textContent = '✅ 已載入預設題庫，請按下方「💾 儲存題庫」。';
   sfx('good');
 }
 
@@ -1241,7 +1254,7 @@ function exportFullSaveBackup() {
   const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullData))));
   navigator.clipboard.writeText(code).then(() => {
     sfx('good');
-    alert(`✅ 已複製【${config.playerName}】的完整進度備份碼（含 🔑${config.keys} 鎖匙、💰${config.coins} 金幣、武器及題庫）！`);
+    alert(`✅ 已複製【${config.playerName}】的完整進度備份碼！`);
   }).catch(() => {
     prompt('請複製以下備份碼保存：', code);
   });
@@ -1267,7 +1280,7 @@ function importFullSaveBackup() {
     renderGearLists();
     updateTopHUD();
     sfx('portal');
-    alert(`🎉 成功還原【${config.playerName}】的鎖匙、金幣、裝備與題庫！`);
+    alert(`🎉 成功還原【${config.playerName}】的進度與題庫！`);
   } catch (e) {
     sfx('bad');
     alert('❌ 備份碼格式不正確！');
@@ -1402,7 +1415,7 @@ async function runSmartOCR() {
         body: JSON.stringify({
           contents: [{
             parts: [
-              { text: 'Extract all vocabulary words from this worksheet table. Ignore instructions like "You are not required to spell". Return ONLY lines in format: english_word, 繁體中文解釋 (詞性).' },
+              { text: 'Extract all vocabulary words from this worksheet table. Ignore instructions. Return ONLY lines in format: english_word, 繁體中文解釋 (詞性).' },
               { inlineData: { mimeType: 'image/jpeg', data: base64Data } }
             ]
           }]
@@ -1450,7 +1463,7 @@ async function runSmartOCR() {
     }
 
     if (extractedWords.length === 0) {
-      progEl.textContent = '⚠️ 未能識別文字，請檢查相片是否已撳「↻ 向右轉 90°」擺正！';
+      progEl.textContent = '⚠️ 未能識別文字，請檢查相片是否已撳「↻ 右轉 90°」擺正！';
       btn.disabled = false;
       return;
     }
@@ -1513,7 +1526,6 @@ function switchDashTab(tabName) {
     document.getElementById('geminiKeyInput').value = config.geminiKey;
     document.getElementById('azureKey').value = config.azureKey;
     document.getElementById('azureRegion').value = config.azureRegion;
-    document.getElementById('azureVoice').value = config.azureVoice;
     document.getElementById('parentPinInput').value = config.parentPin;
   }
 }
@@ -1555,7 +1567,7 @@ function verifyPin() {
 function setWordOrder(order) {
   config.wordOrder = order;
   config.seqIndex = 0;
-  localStorage.setItem('rv6_word_order', order);
+  localStorage.setItem('rv8_word_order', order);
   updateWordOrderUI();
   sfx('good');
 }
@@ -1597,7 +1609,10 @@ function parseUnitsFromText(rawText) {
     }
   }
   if (Object.keys(map).length === 0) {
-    map['Unit 1'] = [{ word: 'adventure', meaning: '冒險 (n.)', unit: 'Unit 1' }];
+    map['Unit 1'] = [
+      { word: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' },
+      { word: 'water', meaning: '水 (n.)', unit: 'Unit 1' }
+    ];
   }
   config.unitsMap = map;
 }
@@ -1702,7 +1717,7 @@ async function autoTranslateMissingChinese() {
   textarea.value = updatedLines.join('\n');
   btn.textContent = '✅ 已補全中文！';
   setTimeout(() => {
-    btn.textContent = '🌐 自動補全中文解釋';
+    btn.textContent = '🌐 自動補全中文';
     btn.disabled = false;
   }, 1800);
   sfx('good');
@@ -1711,7 +1726,7 @@ async function autoTranslateMissingChinese() {
 function insertNewUnitTemplate() {
   const textarea = document.getElementById('wordInput');
   const count = (textarea.value.match(/\[Unit/gi) || []).length + 1;
-  textarea.value += `\n\n[Unit ${count}: 新課題]\nexample\n`;
+  textarea.value += `\n\n[Unit ${count}: 新課題]\n`;
   textarea.scrollTop = textarea.scrollHeight;
 }
 
@@ -1861,44 +1876,41 @@ function triggerDeathLootDrop() {
     config.coins -= lostCoins;
     saveProfileData();
     updateTopHUD();
-    return `💀 陣亡掉落金錢：噴掉了 -${lostCoins} 金幣 💰！(鎖匙與武器已受 Auto-Save 保護)`;
+    return `💀 陣亡掉落金錢：噴掉了 -${lostCoins} 金幣 💰！`;
   }
-  return `💀 陣亡！(鎖匙與武器已受 Auto-Save 保護)`;
+  return `💀 陣亡！`;
 }
 
 /* =========================================================
-   8. 競技場地圖與 HUD 防遮擋邊界設定 (TOP_HUD_SAFE_Y = 155)
+   8. 競技場地圖與遊戲迴圈 (頂部 HUD 已完全獨立，整個 1200x660 競技場 100% 無遮擋!)
    ========================================================= */
+const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const ARENA = { w: 1200, h: 700 };
-
-// 修正重點 2：定義頂部 HUD 安全禁飛區高度 (Y < 155 絕不生成或飛入任何字母球/回血包)
-const TOP_HUD_SAFE_Y = 155;
+const ARENA = { w: 1200, h: 660 };
 
 let obstacles = [];
 
 const PORTALS = [
-  { x: 190, y: 185, r: 28, color: '#38bdf8', targetIdx: 1 },
-  { x: 1010, y: 590, r: 28, color: '#38bdf8', targetIdx: 0 },
-  { x: 190, y: 590, r: 28, color: '#a855f7', targetIdx: 3 },
-  { x: 1010, y: 185, r: 28, color: '#a855f7', targetIdx: 2 }
+  { x: 190, y: 100, r: 28, color: '#38bdf8', targetIdx: 1 },
+  { x: 1010, y: 560, r: 28, color: '#38bdf8', targetIdx: 0 },
+  { x: 190, y: 560, r: 28, color: '#a855f7', targetIdx: 3 },
+  { x: 1010, y: 100, r: 28, color: '#a855f7', targetIdx: 2 }
 ];
 
 const SPEED_PADS = [
-  { x: 460, y: 380, r: 26 },
-  { x: 740, y: 380, r: 26 }
+  { x: 460, y: 330, r: 26 },
+  { x: 740, y: 330, r: 26 }
 ];
 
-// 障礙物全部生成於 Y: 165 以下，絕不頂住上方單字框
 function generateRandomObstacles() {
   obstacles = [];
   const zones = [
-    { minX: 280, maxX: 370, minY: 165, maxY: 250 },
-    { minX: 280, maxX: 370, minY: 430, maxY: 530 },
-    { minX: 530, maxX: 610, minY: 250, maxY: 380 },
-    { minX: 760, maxX: 840, minY: 165, maxY: 250 },
-    { minX: 760, maxX: 840, minY: 430, maxY: 530 }
+    { minX: 280, maxX: 370, minY: 90, maxY: 200 },
+    { minX: 280, maxX: 370, minY: 390, maxY: 490 },
+    { minX: 530, maxX: 610, minY: 210, maxY: 340 },
+    { minX: 760, maxX: 840, minY: 90, maxY: 200 },
+    { minX: 760, maxX: 840, minY: 390, maxY: 490 }
   ];
   zones.forEach(z => {
     const w = 70 + Math.floor(Math.random() * 28);
@@ -1930,7 +1942,7 @@ let round = {
 };
 
 let player = {
-  x: 130, y: 380, r: 25,
+  x: 130, y: 330, r: 25,
   hp: 100, maxHp: 100,
   shield: 0, maxShield: 45,
   spawnProtected: true,
@@ -1946,14 +1958,14 @@ let player = {
 };
 
 let rival = {
-  x: 1060, y: 380, r: 27,
+  x: 1060, y: 330, r: 27,
   hp: 100, maxHp: 100,
   speed: 3.1,
   angle: Math.PI,
   shielded: false,
   stun: 0,
   fireCd: 60,
-  wp: { x: 900, y: 240 },
+  wp: { x: 900, y: 200 },
   stuckFrames: 0,
   enragedBoost: 0,
   profile: BOSS_PROFILES[0]
@@ -1962,6 +1974,7 @@ let rival = {
 function startMatch() {
   saveProfileData(true);
   document.getElementById('lobbyModal').classList.add('hidden');
+  resize();
   match.active = true;
   match.round = 1;
   match.you = 0;
@@ -1973,7 +1986,7 @@ function startMatch() {
 function pickNewRivalWaypoint() {
   for (let tries = 0; tries < 15; tries++) {
     const tx = 380 + Math.random() * 740;
-    const ty = TOP_HUD_SAFE_Y + 25 + Math.random() * (ARENA.h - TOP_HUD_SAFE_Y - 85);
+    const ty = 70 + Math.random() * (ARENA.h - 140);
     let insideOb = false;
     for (const ob of obstacles) {
       if (circleRect(tx, ty, rival.r + 15, ob.x, ob.y, ob.w, ob.h)) {
@@ -1985,11 +1998,12 @@ function pickNewRivalWaypoint() {
       return;
     }
   }
-  rival.wp = { x: 920, y: 380 };
+  rival.wp = { x: 920, y: 330 };
 }
 
 function initRound() {
   generateRandomObstacles();
+  resize();
 
   const modes = ['sniper', 'assault', 'breaker'];
   round.mode = config.mode === 'mix' ? modes[(match.round - 1) % 3] : config.mode;
@@ -2001,7 +2015,7 @@ function initRound() {
   rival.profile = BOSS_PROFILES[Math.floor(Math.random() * BOSS_PROFILES.length)];
   round.hintHighlightChar = null;
 
-  player.x = 130; player.y = 380;
+  player.x = 130; player.y = 330;
   player.vx = 0; player.vy = 0;
   player.hp = 100;
   player.spawnProtected = true;
@@ -2012,7 +2026,7 @@ function initRound() {
   player.speed = config.armorId === 'boots' ? 5.7 : 4.4;
   player.portalCd = 0; player.speedBuff = 0;
 
-  rival.x = 1060; rival.y = 380;
+  rival.x = 1060; rival.y = 330;
   rival.hp = 100; rival.stun = 0; rival.fireCd = 75;
   rival.speed = 3.1;
   rival.enragedBoost = 0;
@@ -2020,10 +2034,9 @@ function initRound() {
 
   round.bullets = []; round.orbs = []; round.crates = [];
   round.particles = []; round.droppedLoot = []; round.texts = [];
-  // 修正重點 2：回血紅心位置下移至 Y: 195 與 Y: 600，完全避開頂部單字框！
   round.medkits = [
-    { x: 600, y: 195, r: 22, active: true },
-    { x: 600, y: 600, r: 22, active: true }
+    { x: 600, y: 95, r: 22, active: true },
+    { x: 600, y: 565, r: 22, active: true }
   ];
 
   buildSlots(round.wordObj.word, round.mode, round.diff);
@@ -2140,7 +2153,6 @@ function useHint() {
   }
 }
 
-// 修正重點 2：Sniper 字母靶生成於 Y: 210 以下，絕不被頂部單字框遮掩
 function spawnSniperOrbs() {
   round.orbs = [];
   round.hintHighlightChar = null;
@@ -2158,7 +2170,7 @@ function spawnSniperOrbs() {
   pool.forEach((ch, i) => {
     round.orbs.push({
       x: 430 + (i % 3) * 155,
-      y: 220 + Math.floor(i / 3) * 330 + (Math.random() * 30 - 15),
+      y: 120 + Math.floor(i / 3) * 380 + (Math.random() * 30 - 15),
       vx: (Math.random() - 0.5) * 2.5,
       vy: (Math.random() - 0.5) * 2.5,
       r: 26,
@@ -2231,7 +2243,6 @@ function handleQuickTileTap(ch, btn) {
   }
 }
 
-// Breaker 字母箱位置同樣下移至 Y: 195 以下，避免被頂部 HUD 遮擋
 function spawnBreakerCrates() {
   round.crates = [];
   const correct = round.missingChunk;
@@ -2243,7 +2254,7 @@ function spawnBreakerCrates() {
   if (d2 === correct) d2 = 'ou';
 
   const opts = [correct, d1, d2].sort(() => Math.random() - 0.5);
-  const pos = [{ x: 460, y: 195 }, { x: 600, y: 585 }, { x: 740, y: 195 }];
+  const pos = [{ x: 460, y: 110 }, { x: 600, y: 550 }, { x: 740, y: 110 }];
   opts.forEach((txt, i) => {
     round.crates.push({ x: pos[i].x, y: pos[i].y, r: 34, text: txt, isCorrect: txt === correct });
   });
@@ -2304,7 +2315,7 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🛡️ 開場無敵保護罩 (移動即解除)', 0, 56);
+    ctx.fillText('🛡️ 開場無敵保護罩', 0, 54);
   }
 
   if (shield > 0) {
@@ -2483,7 +2494,7 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
 }
 
 /* =========================================================
-   10. 遊戲更新與碰撞邏輯 (含頂部單字框防遮擋反彈邊界)
+   10. 遊戲更新與碰撞邏輯
    ========================================================= */
 function circleRect(cx, cy, cr, rx, ry, rw, rh) {
   const nx = Math.max(rx, Math.min(cx, rx + rw));
@@ -2539,8 +2550,7 @@ function update() {
   player.vx *= 0.82; player.vy *= 0.82;
 
   let okX = nx > player.r && nx < ARENA.w - player.r;
-  // 玩家移動亦不會走入頂部單字框背後
-  let okY = ny > TOP_HUD_SAFE_Y && ny < ARENA.h - player.r;
+  let okY = ny > player.r + 35 && ny < ARENA.h - player.r;
   for (const ob of obstacles) {
     if (circleRect(nx, player.y, player.r, ob.x, ob.y, ob.w, ob.h)) okX = false;
     if (circleRect(player.x, ny, player.r, ob.x, ob.y, ob.w, ob.h)) okY = false;
@@ -2581,20 +2591,13 @@ function update() {
     }
   }
 
-  // 修正重點 2：Sniper 字母靶遇到頂部單字框安全線 (Y = TOP_HUD_SAFE_Y + r) 即時向下反彈！
   if (round.mode === 'sniper') {
     for (const o of round.orbs) {
       o.x += o.vx; o.y += o.vy;
       if (o.x < 340) { o.x = 340; o.vx = Math.abs(o.vx); }
       if (o.x > ARENA.w - 70) { o.x = ARENA.w - 70; o.vx = -Math.abs(o.vx); }
-      if (o.y < TOP_HUD_SAFE_Y + o.r) {
-        o.y = TOP_HUD_SAFE_Y + o.r;
-        o.vy = Math.abs(o.vy);
-      }
-      if (o.y > ARENA.h - 70) {
-        o.y = ARENA.h - 70;
-        o.vy = -Math.abs(o.vy);
-      }
+      if (o.y < o.r + 25) { o.y = o.r + 25; o.vy = Math.abs(o.vy); }
+      if (o.y > ARENA.h - 60) { o.y = ARENA.h - 60; o.vy = -Math.abs(o.vy); }
     }
   }
 
@@ -2620,8 +2623,7 @@ function update() {
     const ry = rival.y + Math.sin(ang) * aiSpd;
 
     let rOkX = rx > rival.r + 300 && rx < ARENA.w - rival.r;
-    // 敵人 Boss 同樣不會走入頂部單字框後方
-    let rOkY = ry > TOP_HUD_SAFE_Y + 25 && ry < ARENA.h - rival.r;
+    let rOkY = ry > rival.r + 45 && ry < ARENA.h - rival.r;
     for (const ob of obstacles) {
       if (circleRect(rx, rival.y, rival.r + 4, ob.x, ob.y, ob.w, ob.h)) rOkX = false;
       if (circleRect(rival.x, ry, rival.r + 4, ob.x, ob.y, ob.w, ob.h)) rOkY = false;
@@ -2834,7 +2836,7 @@ function finishRound(won) {
       addCoins(25);
       saveProfileData();
       announceRound(`🏆 ${config.playerName} 贏得總決賽!`,
-        `獲得 +${earnedKeys} 把鎖匙 🔑 & +25 金幣 💰 (已自動儲存) | 連勝 🔥${config.streak}`);
+        `獲得 +${earnedKeys} 把鎖匙 🔑 & +25 金幣 💰 | 連勝 🔥${config.streak}`);
     } else {
       config.streak = 0;
       saveProfileData();
@@ -2853,18 +2855,19 @@ function finishRound(won) {
 }
 
 /* =========================================================
-   11. 畫面繪製
+   11. 畫面繪製 (根據下方獨立 Arena Stage 自動縮放)
    ========================================================= */
 let scale = 1, offX = 0, offY = 0;
 function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const rect = stageEl.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
   scale = Math.min(canvas.width / ARENA.w, canvas.height / ARENA.h);
   offX = (canvas.width - ARENA.w * scale) / 2;
   offY = (canvas.height - ARENA.h * scale) / 2;
 }
 window.addEventListener('resize', resize);
-resize();
+setTimeout(resize, 50);
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2880,15 +2883,6 @@ function draw() {
   for (let y = 0; y <= ARENA.h; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ARENA.w, y); ctx.stroke(); }
   ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4;
   ctx.strokeRect(2, 2, ARENA.w - 4, ARENA.h - 4);
-
-  // 繪製頂部 HUD 安全分隔微光線，視覺更清晰
-  ctx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
-  ctx.setLineDash([8, 8]);
-  ctx.beginPath();
-  ctx.moveTo(20, TOP_HUD_SAFE_Y - 15);
-  ctx.lineTo(ARENA.w - 20, TOP_HUD_SAFE_Y - 15);
-  ctx.stroke();
-  ctx.setLineDash([]);
 
   const spin = performance.now() * 0.004;
   for (const p of PORTALS) {
@@ -3005,18 +2999,20 @@ joyZone.addEventListener('touchend', e => {
 });
 function moveJoy(cx, cy) {
   let vx = cx - joy.sx, vy = cy - joy.sy;
-  const d = Math.hypot(vx, vy), max = 46;
+  const d = Math.hypot(vx, vy), max = 42;
   if (d > max) { vx = (vx / d) * max; vy = (vy / d) * max; }
   joy.dx = vx / max; joy.dy = vy / max;
 }
 function drawJoystickUI() {
+  const stageRect = stageEl.getBoundingClientRect();
   const r = joyZone.getBoundingClientRect();
-  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const cx = (r.left - stageRect.left) + r.width / 2;
+  const cy = (r.top - stageRect.top) + r.height / 2;
   ctx.save();
-  ctx.beginPath(); ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+  ctx.beginPath(); ctx.arc(cx, cy, 42, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
   ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + joy.dx * 38, cy + joy.dy * 38, 20, 0, Math.PI * 2);
+  ctx.beginPath(); ctx.arc(cx + joy.dx * 34, cy + joy.dy * 34, 18, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(56, 189, 248, 0.8)'; ctx.fill();
   ctx.restore();
 }
@@ -3030,7 +3026,9 @@ window.addEventListener('mouseup', () => { firingHeld = false; });
 
 canvas.addEventListener('pointerdown', e => {
   if (!match.active) return;
-  const wx = (e.clientX - offX) / scale, wy = (e.clientY - offY) / scale;
+  const rect = canvas.getBoundingClientRect();
+  const wx = (e.clientX - rect.left - offX) / scale;
+  const wy = (e.clientY - rect.top - offY) / scale;
   player.angle = Math.atan2(wy - player.y, wx - player.x);
   shoot(true);
 });
@@ -3220,7 +3218,6 @@ function saveSettings() {
   const raw = document.getElementById('wordInput').value.trim() || DEFAULT_UNIT_WORDS;
   localStorage.setItem(getProfKey('words'), raw);
   parseUnitsFromText(raw);
-  // 若清空後重新儲存了新課題，自動重設為選取 ALL 確保不會選中舊的空課題
   config.selectedUnits = ['ALL'];
   config.seqIndex = 0;
   renderUnitSelectorBar();
@@ -3228,14 +3225,12 @@ function saveSettings() {
   config.geminiKey = document.getElementById('geminiKeyInput').value.trim();
   config.azureKey = document.getElementById('azureKey').value.trim();
   config.azureRegion = document.getElementById('azureRegion').value.trim() || 'eastasia';
-  config.azureVoice = document.getElementById('azureVoice').value;
   config.parentPin = document.getElementById('parentPinInput').value.trim() || '1234';
 
   localStorage.setItem('rv7_gemini_key', config.geminiKey);
   localStorage.setItem('rv2_az_key', config.azureKey);
   localStorage.setItem('rv2_az_reg', config.azureRegion);
-  localStorage.setItem('rv2_az_voice', config.azureVoice);
-  localStorage.setItem('rv6_parent_pin', config.parentPin);
+  localStorage.setItem('rv8_parent_pin', config.parentPin);
 
   saveProfileData();
   switchDashTab('play');
