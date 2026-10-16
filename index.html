@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v9.0.1</title>
+<title>RIVALS: Word Arena v9.1</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -866,7 +866,7 @@
 </div>
 
 <!-- =========================================================
-     v9.0.1 響應式主大廳 (DASHBOARD)
+     v9.1 響應式主大廳 (DASHBOARD)
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -966,7 +966,7 @@
         🚀 進入競技場對決 (START MATCH)
       </button>
       <div style="text-align:center; font-size:10px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 9.0.1 (已載入 3 人專屬題庫 & 思考保護區)
+        PWA Auto-Update Ready • Version 9.1.0 (已內置 Azure 語音服務 & 3 人題庫)
       </div>
     </div>
 
@@ -982,7 +982,7 @@
       <div class="armory-grid" id="armorList"></div>
     </div>
 
-    <!-- TAB 3: 家長題庫與設定 (受密碼 1234 保護) -->
+    <!-- TAB 3: 家長題庫與設定 (Azure 金鑰已隱藏內置於底層，不顯示於畫面) -->
     <div class="dash-body hidden" id="tabContentParent">
       <div class="step-card" style="border-color:var(--purple);">
         <div class="step-header">
@@ -1004,21 +1004,13 @@
         <label style="font-size:11px; color:#cbd5e1; font-weight:700;">
           📝 分課生字表（支援單字或片語 Phrase，括號內文字會自動變成提示，空格與斜線自動跳過免串）：
         </label>
-        <textarea class="form-textarea" id="wordInput" style="height:125px; font-family:monospace; line-height:1.4;"></textarea>
+        <textarea class="form-textarea" id="wordInput" style="height:135px; font-family:monospace; line-height:1.4;"></textarea>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:12px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
         <div>
-          <label style="font-size:10px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填)</label>
-          <input type="password" class="form-input" id="geminiKeyInput" placeholder="AI 相片識別">
-        </div>
-        <div>
-          <label style="font-size:10px; color:#cbd5e1;">Azure TTS Key</label>
-          <input type="password" class="form-input" id="azureKey" placeholder="留空用內置發音">
-        </div>
-        <div>
-          <label style="font-size:10px; color:#cbd5e1;">Azure Region</label>
-          <input type="text" class="form-input" id="azureRegion" placeholder="eastasia">
+          <label style="font-size:10px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填 - 供 AI 相片識別用)</label>
+          <input type="password" class="form-input" id="geminiKeyInput" placeholder="選填">
         </div>
         <div>
           <label style="font-size:10px; color:var(--gold);">🔐 家長密碼</label>
@@ -1135,7 +1127,14 @@ async function installPWAApp() {
 }
 
 /* =========================================================
-   1. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫！(已修復語法錯誤)
+   1. 內置隱藏的 Azure Speech 語音服務設定 (my-dictation-tts / East Asia)
+   ========================================================= */
+const EMBEDDED_AZURE_KEY = '7rqTKvFwVlRmh84vQ8bQDNgPZjitlh44KMkom9ZMOAFYMWASiWngJQQJ99CIAC3pKaRXJ3w3AAAYACOGJ8DS';
+const EMBEDDED_AZURE_REGION = 'eastasia';
+const EMBEDDED_AZURE_VOICE = 'en-GB-SoniaNeural';
+
+/* =========================================================
+   2. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫
    ========================================================= */
 const INITIAL_PROFILE_WORDS = {
   MARCUS: `[Unit 1]
@@ -1215,16 +1214,10 @@ read the newspaper, 睇報紙
 read magazines, 睇雜誌`
 };
 
-// 自動寫入三位玩家的專屬題庫（若之前為空或為舊版 apple/water 試玩題庫，自動替換為新題庫）
 (function seedV9ProfileWordsOnce() {
   if (!localStorage.getItem('rv9_fixed_seeded')) {
     ['JUSTIN', 'FUNG', 'MARCUS'].forEach(prof => {
-      const currentSaved = localStorage.getItem(`rv8_${prof}_words`) || '';
-      if (!currentSaved || currentSaved.includes('簡單試玩') || currentSaved.length < 35) {
-        localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
-      } else {
-        localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
-      }
+      localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
       localStorage.setItem(`rv8_${prof}_sel_units`, '["ALL"]');
     });
     localStorage.setItem('rv9_fixed_seeded', 'true');
@@ -1246,7 +1239,7 @@ const BUILTIN_DICT = {
 };
 
 /* =========================================================
-   2. 16 款武器與裝甲 & 8 款 Boss
+   3. 16 款武器與裝甲 & 8 款 Boss
    ========================================================= */
 const WEAPONS = [
   { id: 'cyber', name: '💻 藍翼全息炮', desc: '標準藍光數據彈', color: '#38bdf8', dmg: 14, costKey: 0, unlocked: true },
@@ -1282,7 +1275,7 @@ const BOSS_PROFILES = [
 ];
 
 /* =========================================================
-   3. 獨立玩家檔案與智慧片語解析引擎
+   4. 獨立玩家檔案與智慧片語解析引擎
    ========================================================= */
 let config = {
   playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
@@ -1298,10 +1291,7 @@ let config = {
   coins: 30,
   streak: 0,
   selectedUnits: ['ALL'],
-  unitsMap: {},
-  azureKey: localStorage.getItem('rv2_az_key') || '',
-  azureRegion: localStorage.getItem('rv2_az_reg') || 'eastasia',
-  azureVoice: localStorage.getItem('rv2_az_voice') || 'en-GB-SoniaNeural'
+  unitsMap: {}
 };
 
 function getProfKey(suffix) { return `rv8_${config.playerName}_${suffix}`; }
@@ -1522,7 +1512,7 @@ function switchProfile(profName) {
 }
 
 /* =========================================================
-   4. 📸 相片旋轉預覽 + 智能 OCR 識別引擎
+   5. 📸 相片旋轉預覽 + 智能 OCR 識別引擎
    ========================================================= */
 let rawUploadedImage = null;
 let currentRotationDeg = 0;
@@ -1722,7 +1712,7 @@ function appendRecognizedBlock(linesText, titleLabel) {
 }
 
 /* =========================================================
-   5. 分頁切換、家長密碼鎖 & 題庫工具
+   6. 分頁切換、家長密碼鎖 & 題庫工具
    ========================================================= */
 let enteredPin = '';
 let pinTargetAction = '';
@@ -1741,8 +1731,6 @@ function switchDashTab(tabName) {
     const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
     document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
     document.getElementById('geminiKeyInput').value = config.geminiKey;
-    document.getElementById('azureKey').value = config.azureKey;
-    document.getElementById('azureRegion').value = config.azureRegion;
     document.getElementById('parentPinInput').value = config.parentPin;
   }
 }
@@ -1935,35 +1923,34 @@ function executeFullReset() {
 }
 
 /* =========================================================
-   6. 語音合成 & 音效
+   7. 語音合成 (直接使用隱藏內置的 Azure Key 與 East Asia 端點) & 音效
    ========================================================= */
 let currentAudio = null;
 async function speakText(text) {
   if (!text) return;
-  if (config.azureKey && config.azureRegion) {
-    try {
-      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-      const res = await fetch(`https://${config.azureRegion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-        method: 'POST',
-        headers: {
-          'Ocp-Apim-Subscription-Key': config.azureKey,
-          'Content-Type': 'application/ssml+xml',
-          'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
-        },
-        body: `<speak version='1.0' xml:lang='en-US'><voice name='${config.azureVoice}'><prosody rate='-8%'>${text}</prosody></voice></speak>`
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        currentAudio = new Audio(URL.createObjectURL(blob));
-        await currentAudio.play();
-        return;
-      }
-    } catch (e) {}
-  }
+  try {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    const res = await fetch(`https://${EMBEDDED_AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: 'POST',
+      headers: {
+        'Ocp-Apim-Subscription-Key': EMBEDDED_AZURE_KEY,
+        'Content-Type': 'application/ssml+xml',
+        'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
+      },
+      body: `<speak version='1.0' xml:lang='en-US'><voice name='${EMBEDDED_AZURE_VOICE}'><prosody rate='-8%'>${text}</prosody></voice></speak>`
+    });
+    if (res.ok) {
+      const blob = await res.blob();
+      currentAudio = new Audio(URL.createObjectURL(blob));
+      await currentAudio.play();
+      return;
+    }
+  } catch (e) {}
+
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = config.azureVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
+    u.lang = 'en-GB';
     u.rate = 0.86;
     window.speechSynthesis.speak(u);
   }
@@ -2022,7 +2009,7 @@ function addCoins(amount) {
 }
 
 /* =========================================================
-   7. 錯字母扣血機制 & 陣亡隨機掉落懲罰
+   8. 錯字母扣血機制 & 陣亡隨機掉落懲罰
    ========================================================= */
 function flashDamageScreen() {
   const el = document.getElementById('damageFlash');
@@ -2073,7 +2060,7 @@ function triggerDeathLootDrop() {
 }
 
 /* =========================================================
-   8. 競技場地圖、「休息思考保護區 (SAFE_ZONE)」與「暫停鍵」
+   9. 競技場地圖、「休息思考保護區 (SAFE_ZONE)」與「暫停鍵」
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
@@ -2507,7 +2494,7 @@ function spawnBreakerCrates() {
 }
 
 /* =========================================================
-   9. 繪製「休息思考保護區」、主角、紅心與 Boss
+   10. 繪製「休息思考保護區」、主角、紅心與 Boss
    ========================================================= */
 function drawSafeSanctuaryZone() {
   ctx.save();
@@ -2766,7 +2753,7 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
 }
 
 /* =========================================================
-   10. 遊戲更新與碰撞邏輯
+   11. 遊戲更新與碰撞邏輯
    ========================================================= */
 function circleRect(cx, cy, cr, rx, ry, rw, rh) {
   const nx = Math.max(rx, Math.min(cx, rx + rw));
@@ -3137,7 +3124,7 @@ function finishRound(won) {
 }
 
 /* =========================================================
-   11. 畫面繪製
+   12. 畫面繪製
    ========================================================= */
 let scale = 1, offX = 0, offY = 0;
 function resize() {
@@ -3258,7 +3245,7 @@ function draw() {
 }
 
 /* =========================================================
-   12. 觸控搖桿、開火與 UI 控制
+   13. 觸控搖桿、開火與 UI 控制
    ========================================================= */
 let keys = {};
 window.addEventListener('keydown', e => {
@@ -3543,13 +3530,9 @@ function saveSettings() {
   renderUnitSelectorBar();
 
   config.geminiKey = document.getElementById('geminiKeyInput').value.trim();
-  config.azureKey = document.getElementById('azureKey').value.trim();
-  config.azureRegion = document.getElementById('azureRegion').value.trim() || 'eastasia';
   config.parentPin = document.getElementById('parentPinInput').value.trim() || '1234';
 
   localStorage.setItem('rv7_gemini_key', config.geminiKey);
-  localStorage.setItem('rv2_az_key', config.azureKey);
-  localStorage.setItem('rv2_az_reg', config.azureRegion);
   localStorage.setItem('rv8_parent_pin', config.parentPin);
 
   saveProfileData();
