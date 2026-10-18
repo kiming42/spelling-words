@@ -7,13 +7,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v10.3</title>
+<title>RIVALS: Word Arena v9.4</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
     --bg-dark: #090d16;
     --card-bg: #131c2e;
-    --panel: rgba(15, 23, 42, 0.95);
+    --panel: rgba(15, 23, 42, 0.94);
     --blue: #38bdf8;
     --gold: #facc15;
     --red: #f43f5e;
@@ -35,21 +35,20 @@
     overflow: hidden;
     background: var(--bg-dark);
     color: #fff;
-    font-size: 16px;
     touch-action: none;
   }
   .hidden { display: none !important; }
 
   #autoSaveToast {
     position: fixed;
-    bottom: 12px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(34, 197, 94, 0.96);
+    background: rgba(34, 197, 94, 0.95);
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 900;
-    padding: 6px 18px;
+    padding: 4px 14px;
     border-radius: 99px;
     z-index: 100;
     pointer-events: none;
@@ -58,7 +57,7 @@
   }
 
   /* =========================================================
-     主遊戲視窗架構 (上下獨立分區，字體全面放大清晰易讀)
+     主遊戲視窗架構 (上下獨立分區，100% 零遮擋競技場)
      ========================================================= */
   .app-viewport {
     position: absolute;
@@ -71,16 +70,17 @@
     overflow: hidden;
   }
 
+  /* 頂部獨立 HUD 區 */
   .top-hud-strip {
     position: relative;
     z-index: 15;
     background: #0b111e;
     border-bottom: 2px solid #1e293b;
-    padding: 6px 14px;
+    padding: 5px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     flex-shrink: 0;
   }
 
@@ -91,105 +91,105 @@
     background: #131c2e;
     border: 1.5px solid #334155;
     border-radius: 99px;
-    padding: 6px 14px;
+    padding: 4px 12px;
     font-weight: 900;
-    font-size: 15px;
+    font-size: 13px;
     white-space: nowrap;
   }
-  .s-you { color: var(--green); font-size: 18px; }
-  .s-total { color: var(--blue); font-size: 18px; }
+  .s-you { color: var(--green); font-size: 16px; }
+  .s-total { color: var(--blue); font-size: 16px; }
 
   .word-pill {
     flex: 1;
-    max-width: 720px;
+    max-width: 680px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: #131c2e;
-    border: 2px solid var(--blue);
-    border-radius: 14px;
-    padding: 6px 14px;
+    border: 1.5px solid var(--blue);
+    border-radius: 12px;
+    padding: 4px 10px;
     box-shadow: 0 2px 12px rgba(56, 189, 248, 0.18);
   }
   .word-top-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
+    gap: 6px;
+    margin-bottom: 3px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .mode-badge {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 900;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 2px 6px;
+    border-radius: 5px;
     background: var(--blue);
     color: #000;
   }
   .unit-badge {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 2px 6px;
+    border-radius: 5px;
     background: #334155;
     color: var(--gold);
   }
   .meaning-text {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 900;
     color: #fff;
   }
   .action-chip-btn {
-    background: rgba(56, 189, 248, 0.22);
-    border: 1.5px solid var(--blue);
+    background: rgba(56, 189, 248, 0.2);
+    border: 1px solid var(--blue);
     color: #fff;
-    border-radius: 8px;
-    padding: 5px 11px;
-    font-size: 13px;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 11px;
     font-weight: 800;
     cursor: pointer;
   }
   .action-chip-btn.slow {
-    background: rgba(168, 85, 247, 0.25);
+    background: rgba(168, 85, 247, 0.22);
     border-color: var(--purple);
     color: #e9d5ff;
   }
   .action-chip-btn.gold {
-    background: rgba(250, 204, 21, 0.22);
+    background: rgba(250, 204, 21, 0.2);
     border-color: var(--gold);
     color: var(--gold);
   }
 
   .word-slots {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     flex-wrap: wrap;
     justify-content: center;
     max-width: 100%;
   }
   .slot {
-    width: 24px;
-    height: 28px;
-    border-bottom: 3px solid #64748b;
+    width: 20px;
+    height: 24px;
+    border-bottom: 2.5px solid #64748b;
     background: rgba(30, 41, 59, 0.9);
-    border-radius: 5px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 900;
     text-transform: lowercase;
   }
   .word-slots.compact .slot {
-    width: 19px;
-    height: 24px;
-    font-size: 15px;
+    width: 15px;
+    height: 20px;
+    font-size: 12px;
   }
   .slot.space-slot {
     background: transparent;
     border-bottom: none;
-    width: 12px;
+    width: 10px;
     color: #64748b;
   }
   .slot.filled {
@@ -203,19 +203,20 @@
     box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
   }
 
+  /* Assault Mode 字母按鈕列嵌入頂部 HUD 區內 */
   .quick-spell-dock {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 6px;
-    padding-top: 6px;
+    margin-top: 5px;
+    padding-top: 5px;
     border-top: 1px dashed rgba(250, 204, 21, 0.45);
     width: 100%;
     flex-wrap: wrap;
   }
   .dock-hint {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 900;
     color: var(--gold);
     white-space: nowrap;
@@ -224,18 +225,18 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 7px;
+    gap: 6px;
     justify-content: center;
   }
   .quick-tile {
-    width: 42px;
-    height: 40px;
+    width: 38px;
+    height: 36px;
     background: #1e293b;
     border: 2px solid var(--gold);
     border-bottom-width: 4px;
     border-radius: 8px;
     color: #fff;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 900;
     text-transform: lowercase;
     cursor: pointer;
@@ -250,7 +251,7 @@
 
   .top-right-btns {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
   }
   .mini-btn {
@@ -258,8 +259,8 @@
     border: 1.5px solid #475569;
     color: #fff;
     border-radius: 10px;
-    padding: 7px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     white-space: nowrap;
@@ -269,6 +270,7 @@
     color: var(--gold);
   }
 
+  /* 中央競技場容器 */
   .arena-stage {
     position: relative;
     flex: 1;
@@ -293,6 +295,7 @@
     transition: opacity 0.15s;
   }
 
+  /* 底部雙手觸控層 */
   .bottom-touch-layer {
     position: absolute;
     left: 0; right: 0; bottom: 0;
@@ -313,8 +316,8 @@
   }
 
   .joy-zone {
-    width: 128px;
-    height: 128px;
+    width: 126px;
+    height: 126px;
     position: relative;
     flex-shrink: 0;
   }
@@ -338,25 +341,38 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   }
   .round-btn:active { transform: scale(0.92); }
-  .btn-dash { width: 64px; height: 64px; background: radial-gradient(circle, #38bdf8, #0284c7); }
-  .btn-fire { width: 90px; height: 90px; background: radial-gradient(circle, #f43f5e, #be123c); }
+  .btn-dash { width: 60px; height: 60px; background: radial-gradient(circle, #38bdf8, #0284c7); }
+  .btn-fire { width: 86px; height: 86px; background: radial-gradient(circle, #f43f5e, #be123c); }
 
   @media (orientation: landscape) and (max-height: 520px) {
-    .top-hud-strip { padding: 4px 10px; }
-    .word-pill { padding: 4px 10px; }
+    .top-hud-strip { padding: 3px 8px; }
+    .word-pill { padding: 3px 8px; }
     .word-top-row { margin-bottom: 2px; }
     .quick-spell-dock { margin-top: 3px; padding-top: 3px; }
-    .quick-tile { width: 38px; height: 34px; font-size: 18px; }
-    .bottom-touch-layer { padding: 6px 6vw 11vh 6vw; }
-    .joy-zone { width: 114px; height: 114px; }
-    .btn-fire { width: 78px; height: 78px; }
-    .btn-dash { width: 54px; height: 54px; }
+    .quick-tile { width: 34px; height: 32px; font-size: 16px; }
+    .bottom-touch-layer {
+      padding: 6px 6vw 11vh 6vw;
+    }
+    .joy-zone { width: 112px; height: 112px; }
+    .btn-fire { width: 76px; height: 76px; }
+    .btn-dash { width: 52px; height: 52px; }
   }
 
   @media (orientation: portrait), (max-width: 680px) {
-    .top-hud-strip { flex-wrap: wrap; padding: 6px 10px; }
-    .word-pill { order: 3; min-width: 100%; margin-top: 4px; }
-    .quick-tile { width: 44px; height: 44px; font-size: 20px; }
+    .top-hud-strip {
+      flex-wrap: wrap;
+      padding: 6px 10px;
+    }
+    .word-pill {
+      order: 3;
+      min-width: 100%;
+      margin-top: 4px;
+    }
+    .quick-tile {
+      width: 42px;
+      height: 42px;
+      font-size: 19px;
+    }
     .bottom-touch-layer {
       position: relative;
       background: #0b111e;
@@ -364,18 +380,18 @@
       padding: 12px 8vw 22px 8vw;
       flex-shrink: 0;
     }
-    .joy-zone { width: 118px; height: 118px; }
-    .btn-fire { width: 82px; height: 82px; }
-    .btn-dash { width: 58px; height: 58px; }
+    .joy-zone { width: 115px; height: 115px; }
+    .btn-fire { width: 80px; height: 80px; }
+    .btn-dash { width: 56px; height: 56px; }
   }
 
   /* =========================================================
-     DASHBOARD & PHONICS STUDY MODE 樣式 (字體全面放大!)
+     DASHBOARD & MODALS
      ========================================================= */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(6, 10, 19, 0.92);
+    background: rgba(6, 10, 19, 0.9);
     backdrop-filter: blur(10px);
     z-index: 30;
     display: flex;
@@ -387,8 +403,8 @@
   .dashboard-shell {
     background: #0f172a;
     border: 2px solid #334155;
-    border-radius: 22px;
-    max-width: 900px;
+    border-radius: 20px;
+    max-width: 840px;
     width: 100%;
     max-height: 96vh;
     overflow: hidden;
@@ -399,22 +415,22 @@
 
   .dash-topbar {
     background: #090d16;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-bottom: 1px solid #1e293b;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
   .brand-box {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
   .title-grad {
-    font-size: 22px;
+    font-size: 19px;
     font-weight: 900;
     background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e);
     -webkit-background-clip: text;
@@ -423,20 +439,20 @@
   }
   .stat-badges {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     background: #131c2e;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 99px;
-    border: 1.5px solid #334155;
-    font-size: 14px;
+    border: 1px solid #334155;
+    font-size: 12px;
     font-weight: 900;
     color: var(--gold);
     align-items: center;
     white-space: nowrap;
   }
   .autosave-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--green);
     display: inline-block;
@@ -447,9 +463,9 @@
     background: linear-gradient(135deg, #a855f7, #7e22ce);
     border: 1.5px solid #e9d5ff;
     color: #fff;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 900;
-    padding: 6px 13px;
+    padding: 5px 11px;
     border-radius: 99px;
     cursor: pointer;
     display: inline-flex;
@@ -462,20 +478,20 @@
   .profile-switcher {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     background: #131c2e;
-    padding: 4px;
-    border-radius: 12px;
-    border: 1.5px solid #334155;
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid #334155;
   }
   .prof-btn {
     background: transparent;
     border: none;
     color: #94a3b8;
     font-weight: 900;
-    font-size: 14px;
-    padding: 6px 12px;
-    border-radius: 8px;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 7px;
     cursor: pointer;
   }
   .prof-btn.active {
@@ -485,7 +501,7 @@
 
   .dash-tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     background: #131c2e;
     border-bottom: 2px solid #1e293b;
     flex-shrink: 0;
@@ -493,11 +509,11 @@
   .tab-btn {
     background: transparent;
     border: none;
-    border-bottom: 3.5px solid transparent;
+    border-bottom: 3px solid transparent;
     color: #94a3b8;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 900;
-    padding: 12px 4px;
+    padding: 10px 4px;
     cursor: pointer;
     text-align: center;
   }
@@ -508,28 +524,28 @@
   }
 
   .dash-body {
-    padding: 14px 16px;
+    padding: 12px 14px;
     overflow-y: auto;
     flex: 1;
   }
 
   .step-card {
     background: #131c2e;
-    border: 1.5px solid #26334d;
-    border-radius: 16px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
+    border: 1px solid #26334d;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
   }
   .step-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: 4px;
+    margin-bottom: 8px;
   }
   .step-title {
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 900;
     color: var(--blue);
     text-transform: uppercase;
@@ -538,20 +554,20 @@
   .unit-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
   .unit-chip {
     background: #090d16;
-    border: 2px solid #334155;
+    border: 1.5px solid #334155;
     color: #cbd5e1;
-    border-radius: 12px;
-    padding: 8px 14px;
-    font-size: 15px;
+    border-radius: 10px;
+    padding: 6px 11px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
   }
   .unit-chip.active {
-    background: rgba(34, 197, 94, 0.2);
+    background: rgba(34, 197, 94, 0.18);
     border-color: var(--green);
     color: #fff;
   }
@@ -559,37 +575,37 @@
   .mode-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .mode-card {
     background: #090d16;
     border: 2px solid #334155;
-    border-radius: 14px;
-    padding: 12px 8px;
+    border-radius: 12px;
+    padding: 10px 6px;
     text-align: center;
     cursor: pointer;
   }
   .mode-card.active {
     border-color: var(--blue);
-    background: rgba(56, 189, 248, 0.16);
+    background: rgba(56, 189, 248, 0.15);
   }
-  .mode-card .m-icon { font-size: 26px; display: block; margin-bottom: 4px; }
-  .mode-card .m-title { font-size: 16px; font-weight: 900; color: #fff; }
-  .mode-card .m-desc { font-size: 13px; color: #94a3b8; margin-top: 3px; }
+  .mode-card .m-icon { font-size: 22px; display: block; margin-bottom: 3px; }
+  .mode-card .m-title { font-size: 13px; font-weight: 900; color: #fff; }
+  .mode-card .m-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
 
   .settings-split {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
   .seg-group {
     display: flex;
-    gap: 5px;
+    gap: 4px;
     background: #090d16;
-    padding: 5px;
-    border-radius: 12px;
-    border: 1.5px solid #334155;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #334155;
   }
   .seg-btn {
     flex: 1;
@@ -597,9 +613,9 @@
     border: none;
     color: #94a3b8;
     font-weight: 800;
-    font-size: 14px;
-    padding: 8px 6px;
-    border-radius: 8px;
+    font-size: 12px;
+    padding: 7px 4px;
+    border-radius: 7px;
     cursor: pointer;
     text-align: center;
     white-space: nowrap;
@@ -607,16 +623,16 @@
   .seg-btn.active {
     background: #1e293b;
     color: var(--gold);
-    border: 1.5px solid var(--gold);
+    border: 1px solid var(--gold);
   }
 
   .start-hero-btn {
     width: 100%;
-    padding: 15px;
-    font-size: 20px;
+    padding: 13px;
+    font-size: 18px;
     font-weight: 900;
     border: none;
-    border-radius: 16px;
+    border-radius: 14px;
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: #fff;
     cursor: pointer;
@@ -627,234 +643,29 @@
   .armory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 8px;
+    margin-bottom: 12px;
   }
   .gear-card {
     background: #131c2e;
     border: 2px solid #334155;
-    border-radius: 14px;
-    padding: 10px 8px;
+    border-radius: 12px;
+    padding: 8px 6px;
     text-align: center;
     cursor: pointer;
   }
   .gear-card.active {
     border-color: var(--green);
-    background: rgba(34, 197, 94, 0.16);
+    background: rgba(34, 197, 94, 0.15);
   }
-  .gear-card .g-name { font-size: 15px; font-weight: 900; color: #fff; }
-  .gear-card .g-desc { font-size: 12px; color: #94a3b8; margin: 4px 0; }
-  .gear-card .g-cost { font-size: 13px; font-weight: 900; color: var(--gold); }
+  .gear-card .g-name { font-size: 12px; font-weight: 900; color: #fff; }
+  .gear-card .g-desc { font-size: 10px; color: #94a3b8; margin: 2px 0; }
+  .gear-card .g-cost { font-size: 11px; font-weight: 900; color: var(--gold); }
 
   @media (max-width: 680px) {
     .mode-grid { grid-template-columns: repeat(2, 1fr); }
     .armory-grid { grid-template-columns: repeat(2, 1fr); }
     .settings-split { grid-template-columns: 1fr; }
-    .tab-btn { font-size: 13px; padding: 10px 2px; }
-  }
-
-  /* =========================================================
-     Phonics 溫習室樣式 (字體與音節積木大幅放大!)
-     ========================================================= */
-  .phonics-study-wrap {
-    background: #090d16;
-    border: 2px solid #1e293b;
-    border-radius: 18px;
-    padding: 16px;
-    text-align: center;
-  }
-  .sub-tab {
-    background: #131c2e;
-    border: 2px solid #334155;
-    color: #cbd5e1;
-    font-weight: 900;
-    font-size: 15px;
-    padding: 8px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-  }
-  .sub-tab.active {
-    border-color: var(--gold);
-    background: rgba(250, 204, 21, 0.16);
-    color: var(--gold);
-  }
-  .study-top-banner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 16px;
-  }
-  .whole-word-preview {
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 0.5px;
-    background: #131c2e;
-    padding: 10px 24px;
-    border-radius: 14px;
-    border: 2px solid #334155;
-    cursor: pointer;
-    display: inline-flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    line-height: 1.3;
-  }
-  .meaning-badge-study {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(56, 189, 248, 0.16);
-    border: 2px solid var(--blue);
-    color: #bae6fd;
-    font-size: 19px;
-    font-weight: 900;
-    padding: 8px 20px;
-    border-radius: 99px;
-  }
-  .syllables-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 10px 0 18px 0;
-    min-height: 98px;
-  }
-  .syl-block {
-    position: relative;
-    min-width: 82px;
-    padding: 12px 20px;
-    border-radius: 16px;
-    font-size: 34px;
-    font-weight: 900;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 2.5px solid transparent;
-    border-bottom-width: 6px;
-    transition: transform 0.15s;
-  }
-  .syl-block:active {
-    transform: translateY(2px) scale(0.96);
-  }
-  .syl-block.speaking {
-    transform: translateY(-8px) scale(1.08);
-    filter: brightness(1.25);
-    box-shadow: 0 10px 25px rgba(255,255,255,0.2);
-  }
-  .syl-ipa-tag {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-top: 4px;
-    font-weight: 700;
-    font-family: monospace;
-    background: rgba(0,0,0,0.4);
-    padding: 2px 8px;
-    border-radius: 99px;
-  }
-  .syl-dot { font-size: 24px; color: #475569; font-weight: 900; }
-  .syl-word-gap {
-    width: 20px;
-    height: 42px;
-    border-right: 2.5px dashed rgba(148, 163, 184, 0.4);
-    margin-right: 10px;
-  }
-  .syl-c0 { background: rgba(56, 189, 248, 0.18); border-color: #38bdf8; color: #7dd3fc; }
-  .syl-c1 { background: rgba(34, 197, 94, 0.18); border-color: #22c55e; color: #86efac; }
-  .syl-c2 { background: rgba(250, 204, 21, 0.18); border-color: #facc15; color: #fef08a; }
-  .syl-c3 { background: rgba(232, 121, 249, 0.18); border-color: #e879f9; color: #f5d0fe; }
-  .syl-c4 { background: rgba(251, 146, 60, 0.18); border-color: #fb923c; color: #fed7aa; }
-
-  .audio-controls {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .act-btn {
-    border: none;
-    border-radius: 14px;
-    padding: 12px 20px;
-    font-size: 15px;
-    font-weight: 900;
-    color: #fff;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-blend { background: linear-gradient(135deg, #f59e0b, #d97706); }
-  .btn-whole { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-  .btn-slow { background: #1e293b; border: 2px solid var(--purple); color: #e9d5ff; }
-
-  .nav-btn {
-    flex: 1;
-    background: #1e293b;
-    border: 2px solid #475569;
-    color: #fff;
-    padding: 12px;
-    border-radius: 14px;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-  }
-  .nav-btn.primary {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    border: none;
-  }
-
-  .build-slots-area {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 14px;
-    min-height: 68px;
-    padding: 10px;
-    background: #131c2e;
-    border-radius: 14px;
-    border: 2px dashed #475569;
-  }
-  .build-slot-empty {
-    min-width: 74px;
-    height: 58px;
-    border-radius: 12px;
-    border: 2px dashed #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
-    font-weight: 900;
-    font-size: 14px;
-  }
-
-  .word-chips-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #1e293b;
-  }
-  .w-chip {
-    background: #131c2e;
-    border: 2px solid #334155;
-    color: #cbd5e1;
-    padding: 7px 14px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.12s;
-  }
-  .w-chip.active {
-    border-color: var(--blue);
-    color: #fff;
-    background: rgba(56, 189, 248, 0.22);
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
   }
 
   /* 暫停視窗與密碼視窗 */
@@ -862,9 +673,9 @@
     background: #131c2e;
     border: 2px solid var(--gold);
     border-radius: 22px;
-    width: 360px;
+    width: 340px;
     max-width: 94vw;
-    padding: 20px;
+    padding: 18px;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.9);
   }
@@ -872,11 +683,11 @@
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin: 14px 0;
+    margin: 12px 0;
   }
   .pin-dot {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     border: 2px solid var(--gold);
   }
@@ -891,9 +702,9 @@
     border: 1px solid #475569;
     border-radius: 12px;
     color: #fff;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
-    padding: 12px 0;
+    padding: 11px 0;
     cursor: pointer;
   }
 
@@ -901,9 +712,9 @@
     background: #131c2e;
     border: 2px solid var(--purple);
     border-radius: 20px;
-    max-width: 580px;
+    max-width: 560px;
     width: 100%;
-    padding: 18px;
+    padding: 16px;
     text-align: center;
   }
   #ocrPreviewCanvas {
@@ -918,16 +729,16 @@
 
   .tool-btn {
     background: #1e293b;
-    border: 1.5px solid var(--blue);
+    border: 1px solid var(--blue);
     color: #bae6fd;
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 13px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
     font-weight: 800;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
   }
   .tool-btn.photo { background: rgba(168, 85, 247, 0.25); border-color: var(--purple); color: #f3e8ff; }
   .tool-btn.danger { background: rgba(244, 63, 94, 0.2); border-color: var(--red); color: #fecdd3; }
@@ -935,13 +746,13 @@
 
   .form-input, .form-textarea, .form-select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     background: #090d16;
-    border: 1.5px solid #475569;
+    border: 1px solid #475569;
     border-radius: 8px;
     color: #fff;
-    font-size: 14px;
-    margin-top: 4px;
+    font-size: 12px;
+    margin-top: 3px;
   }
 
   #centerBanner {
@@ -952,7 +763,7 @@
     background: rgba(15, 23, 42, 0.95);
     border: 3px solid var(--gold);
     border-radius: 16px;
-    padding: 14px 24px;
+    padding: 12px 22px;
     text-align: center;
     z-index: 25;
     pointer-events: none;
@@ -971,14 +782,14 @@
      ========================================================= -->
 <div class="app-viewport">
 
-  <!-- 1. 頂部獨立狀態與單字列 -->
+  <!-- 1. 頂部獨立狀態與單字列 (新增 🐢 慢讀快速鍵) -->
   <div class="top-hud-strip">
     <div class="score-pill">
-      <span style="font-size:14px; color:#94a3b8;">🎯進度:</span>
+      <span style="font-size:12px; color:#94a3b8;">🎯進度:</span>
       <span class="s-you" id="scoreYou">0</span>
-      <span style="font-size:14px; color:#94a3b8;">/</span>
+      <span style="font-size:12px; color:#94a3b8;">/</span>
       <span class="s-total" id="scoreTotal">0</span>
-      <span style="font-size:14px; color:var(--gold); margin-left:4px;">
+      <span style="font-size:12px; color:var(--gold); margin-left:4px;">
         🔥<span id="streakNum">0</span> | 🔑<span id="keysNum">0</span> | 💰<span id="coinsNum">0</span>
       </span>
     </div>
@@ -1012,8 +823,8 @@
     <div id="damageFlash"></div>
 
     <div id="centerBanner" class="hidden">
-      <div id="bannerTitle" style="font-size:23px; font-weight:900; color:var(--gold);">STAGE 1</div>
-      <div id="bannerSub" style="font-size:15px; color:#e2e8f0; margin-top:4px;"></div>
+      <div id="bannerTitle" style="font-size:21px; font-weight:900; color:var(--gold);">STAGE 1</div>
+      <div id="bannerSub" style="font-size:13px; color:#e2e8f0; margin-top:4px;"></div>
     </div>
   </div>
 
@@ -1024,12 +835,12 @@
 
       <div class="right-actions interactive">
         <button class="round-btn btn-dash" onclick="triggerDash()">
-          <span style="font-size:18px;">💨</span>
-          <span style="font-size:11px;">閃避</span>
+          <span style="font-size:16px;">💨</span>
+          <span style="font-size:9px;">閃避</span>
         </button>
         <button class="round-btn btn-fire" id="btnFire">
-          <span style="font-size:18px;">🎯FIRE</span>
-          <span style="font-size:11px;" id="ammoLabel">AUTO</span>
+          <span style="font-size:16px;">🎯FIRE</span>
+          <span style="font-size:9px;" id="ammoLabel">AUTO</span>
         </button>
       </div>
     </div>
@@ -1038,21 +849,23 @@
 </div>
 
 <!-- =========================================================
-     ⏸️ 暫停視窗
+     ⏸️ 暫停視窗 (內置即時更換聲音與語速!)
      ========================================================= -->
 <div class="modal-overlay hidden" id="pauseModal">
   <div class="pin-card interactive">
-    <div style="font-size:36px; margin-bottom:4px;">⏸️</div>
-    <h3 style="color:var(--gold); font-size:22px; margin-bottom:6px;">遊戲已暫停 (PAUSED)</h3>
-    <div style="background:#090d16; border:1px solid #334155; border-radius:12px; padding:12px; margin-bottom:14px; text-align:left;">
-      <div style="font-size:13px; color:var(--blue); font-weight:900; margin-bottom:6px;">🔊 語音角色與速度設定</div>
+    <div style="font-size:30px; margin-bottom:2px;">⏸️</div>
+    <h3 style="color:var(--gold); font-size:19px; margin-bottom:6px;">遊戲已暫停 (PAUSED)</h3>
+
+    <!-- 戰鬥中隨時調整聲音與語速 -->
+    <div style="background:#090d16; border:1px solid #334155; border-radius:12px; padding:10px; margin-bottom:12px; text-align:left;">
+      <div style="font-size:11px; color:var(--blue); font-weight:900; margin-bottom:4px;">🔊 語音角色與速度設定</div>
       <select class="form-select" id="pauseVoiceSelect" onchange="changeVoice(this.value)" style="margin-bottom:8px;">
-        <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia)</option>
-        <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan)</option>
-        <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie)</option>
-        <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava)</option>
-        <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew)</option>
-        <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana)</option>
+        <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia - 學校標準)</option>
+        <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan - 沉穩清晰)</option>
+        <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie - 小朋友聲)</option>
+        <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava - 自然流暢)</option>
+        <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew - 陽光清晰)</option>
+        <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana - 可愛小朋友聲)</option>
       </select>
       <div class="seg-group" id="pauseSpeedGroup">
         <button class="seg-btn" data-spd="-35%" onclick="setVoiceSpeed('-35%')">🐢 超慢</button>
@@ -1061,17 +874,18 @@
         <button class="seg-btn" data-spd="+10%" onclick="setVoiceSpeed('+10%')">⚡ 快速</button>
       </div>
     </div>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <button class="start-hero-btn" style="padding:12px; font-size:18px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
-      <button class="mini-btn" style="padding:11px; font-size:15px;" onclick="speakCurrentWord()">🔊 重聽目標生字讀音</button>
-      <button class="mini-btn" style="padding:11px; font-size:15px;" onclick="restartCurrentRound()">🔄 重新開始本題</button>
-      <button class="mini-btn" style="padding:11px; font-size:15px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="start-hero-btn" style="padding:11px; font-size:16px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px;" onclick="speakCurrentWord()">🔊 用目前語速重聽讀音</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px;" onclick="restartCurrentRound()">🔄 重新開始本題</button>
+      <button class="mini-btn" style="padding:10px; font-size:13px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
     </div>
   </div>
 </div>
 
 <!-- =========================================================
-     v10.3 響應式主大廳 (全介面字體放大 + 音節發音修復)
+     v9.4 響應式主大廳 (DASHBOARD)
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -1093,19 +907,17 @@
       </div>
 
       <div class="profile-switcher">
-        <span style="font-size:13px; color:#94a3b8; padding:0 6px; font-weight:800;">👤</span>
+        <span style="font-size:11px; color:#94a3b8; padding:0 4px; font-weight:800;">👤</span>
         <button class="prof-btn active" onclick="switchProfile('JUSTIN')">JUSTIN</button>
         <button class="prof-btn" onclick="switchProfile('FUNG')">FUNG</button>
         <button class="prof-btn" onclick="switchProfile('MARCUS')">MARCUS</button>
       </div>
     </div>
 
-    <!-- 4 大分頁 Tab -->
     <div class="dash-tabs">
       <button class="tab-btn active" id="tabBtnPlay" onclick="switchDashTab('play')">⚔️ 出戰大廳</button>
-      <button class="tab-btn" id="tabBtnArmory" onclick="switchDashTab('armory')">🎒 軍械庫</button>
-      <button class="tab-btn" id="tabBtnPhonics" onclick="switchDashTab('phonics')">🧩 Phonics 音習</button>
-      <button class="tab-btn" id="tabBtnParent" onclick="requestParentPin('parentTab')">🔒 家長題庫</button>
+      <button class="tab-btn" id="tabBtnArmory" onclick="switchDashTab('armory')">🎒 軍械庫商店</button>
+      <button class="tab-btn" id="tabBtnParent" onclick="requestParentPin('parentTab')">🔒 家長題庫(PIN)</button>
     </div>
 
     <!-- TAB 1: 出戰大廳 -->
@@ -1113,7 +925,7 @@
       <div class="step-card">
         <div class="step-header">
           <span class="step-title">📚 STEP 1. 揀選溫習課題 (<span id="lobbyProfLabel" style="color:var(--gold);">JUSTIN</span> — 完成所選全部題目即通關!)</span>
-          <span style="font-size:13px; color:var(--green); font-weight:800;" id="activePoolCountText">已選生字</span>
+          <span style="font-size:11px; color:var(--green); font-weight:800;" id="activePoolCountText">已選生字</span>
         </div>
         <div class="unit-bar" id="unitSelectBar"></div>
       </div>
@@ -1169,20 +981,22 @@
         </div>
       </div>
 
+      <!-- 新增要求 2：STEP 5 語音角色與多段朗讀速度選擇器 -->
       <div class="step-card" style="margin-bottom:8px;">
         <div class="step-header">
           <span class="step-title">🔊 STEP 5. 英文發音角色 & 朗讀速度</span>
           <button class="action-chip-btn" onclick="previewVoiceSample()">🔊 試聽發音</button>
         </div>
         <div class="settings-split" style="margin-bottom:0; align-items:center;">
-          <select class="form-select" id="lobbyVoiceSelect" style="margin-top:0; height:38px;" onchange="changeVoice(this.value)">
-            <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia)</option>
-            <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan)</option>
-            <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie)</option>
-            <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava)</option>
-            <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew)</option>
-            <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana)</option>
+          <select class="form-select" id="lobbyVoiceSelect" style="margin-top:0; height:36px;" onchange="changeVoice(this.value)">
+            <option value="en-GB-SoniaNeural">🇬🇧 英式女聲 (Sonia - 學校標準)</option>
+            <option value="en-GB-RyanNeural">🇬🇧 英式男聲 (Ryan - 沉穩清晰)</option>
+            <option value="en-GB-MaisieNeural">🇬🇧 英式童聲 (Maisie - 小朋友聲)</option>
+            <option value="en-US-AvaMultilingualNeural">🇺🇸 美式女聲 (Ava - 自然流暢)</option>
+            <option value="en-US-AndrewMultilingualNeural">🇺🇸 美式男聲 (Andrew - 陽光清晰)</option>
+            <option value="en-US-AnaNeural">🇺🇸 美式童聲 (Ana - 可愛小朋友聲)</option>
           </select>
+
           <div class="seg-group" id="lobbySpeedGroup">
             <button class="seg-btn" data-spd="-35%" onclick="setVoiceSpeed('-35%')">🐢 超慢</button>
             <button class="seg-btn" data-spd="-20%" onclick="setVoiceSpeed('-20%')">🚶 慢速</button>
@@ -1192,126 +1006,64 @@
         </div>
       </div>
 
-      <button class="start-hero-btn" id="btnStartChallenge" onclick="startMatch()">
+      <button class="start-hero-btn" id="btnStartChallenge" onclick="startMatch()" style="margin-top:6px;">
         🚀 開始挑戰所選題庫 (START)
       </button>
-      <div style="text-align:center; font-size:12px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 10.3.0 (大字體清晰版 + 音節即時發音)
+      <div style="text-align:center; font-size:10px; color:#64748b; margin-top:6px;">
+        PWA Auto-Update Ready • Version 9.4.0 (敵人減速優化 + 6款聲音與4段語速)
       </div>
     </div>
 
     <!-- TAB 2: 軍械庫商店 -->
     <div class="dash-body hidden" id="tabContentArmory">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <span class="step-title">🔫 攻擊武器庫 (8 款神武 — 用 🔑 解鎖)</span>
-        <span style="font-size:15px; color:var(--gold); font-weight:900;">擁有鎖匙：🔑 <span id="armoryKeysNum">0</span></span>
+        <span style="font-size:12px; color:var(--gold); font-weight:900;">擁有鎖匙：🔑 <span id="armoryKeysNum">0</span></span>
       </div>
       <div class="armory-grid" id="weaponList"></div>
 
-      <div class="step-title" style="margin-bottom:10px;">🛡️ 戰術裝甲與無人機 (8 款裝甲 — 用 🔑 解鎖)</div>
+      <div class="step-title" style="margin-bottom:8px;">🛡️ 戰術裝甲與無人機 (8 款裝甲 — 用 🔑 解鎖)</div>
       <div class="armory-grid" id="armorList"></div>
     </div>
 
-    <!-- TAB 3: 🧩 Phonics 音節拆字溫習室 -->
-    <div class="dash-body hidden" id="tabContentPhonics">
-      <div class="step-card" style="margin-bottom:10px; padding:10px 14px;">
-        <div class="step-header" style="margin-bottom:8px;">
-          <span class="step-title">📚 1. 先揀選要溫習的課題 (Unit)</span>
-          <span style="font-size:13px; color:var(--gold); font-weight:800;" id="studyUnitLabel">目前課題</span>
-        </div>
-        <div class="unit-bar" id="studyUnitBar"></div>
-      </div>
-
-      <div class="phonics-study-wrap">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <div style="display:flex; gap:8px;">
-            <button class="sub-tab active" id="tabStudy" onclick="setStudyMode('learn')">📖 拆字跟讀</button>
-            <button class="sub-tab" id="tabBuild" onclick="setStudyMode('build')">🧩 聽音砌音節</button>
-          </div>
-          <div style="font-size:14px; color:#94a3b8; font-weight:900;">
-            本課進度：<span id="studyIdxText" style="color:var(--gold);">1 / 1</span>
-          </div>
-        </div>
-
-        <div class="study-top-banner">
-          <div class="whole-word-preview" id="studyWholeWord" onclick="speakStudyWord('-12%')" title="點擊朗讀完整生字或片語"></div>
-          <div class="meaning-badge-study" id="studyWordMeaning">目標</div>
-        </div>
-
-        <div id="studyLearnArea">
-          <div class="syllables-container" id="studySyllablesBox"></div>
-          <div style="font-size:13px; color:#94a3b8; margin-bottom:12px;">
-            👆 點擊上方任何一個「彩色音節塊」即刻聽單音，或點擊頂部彩色全字讀全句！
-          </div>
-        </div>
-
-        <div id="studyBuildArea" class="hidden">
-          <div style="font-size:14px; color:var(--gold); font-weight:800; margin-bottom:8px;">
-            👇 請按正確順序點擊下方音節積木，拼出目標生字或片語：
-          </div>
-          <div class="build-slots-area" id="studyBuildSlots"></div>
-          <div class="syllables-container" id="studyBuildPool" style="min-height:80px; margin-bottom:8px;"></div>
-        </div>
-
-        <div class="audio-controls" style="margin-bottom:14px;">
-          <button class="act-btn btn-blend" onclick="playStudyBlend()">
-            🔗 逐個音節拼讀
-          </button>
-          <button class="act-btn btn-whole" onclick="speakStudyWord('-10%')">
-            🔊 讀出全字/全句
-          </button>
-          <button class="act-btn btn-slow" onclick="speakStudyWord('-38%')">
-            🐢 超慢速
-          </button>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:8px;">
-          <button class="nav-btn" onclick="prevStudyWord()">⬅️ 上一個</button>
-          <button class="nav-btn primary" onclick="nextStudyWord()">下一個 ➡️</button>
-        </div>
-
-        <div class="word-chips-grid" id="studyWordChips"></div>
-      </div>
-    </div>
-
-    <!-- TAB 4: 家長題庫與設定 -->
+    <!-- TAB 3: 家長題庫與設定 -->
     <div class="dash-body hidden" id="tabContentParent">
       <div class="step-card" style="border-color:var(--purple);">
         <div class="step-header">
           <span class="step-title" style="color:#e879f9;">📸 題庫編輯與相片識別 (<span id="parentProfName" style="color:var(--gold);">JUSTIN</span>)</span>
-          <span id="ocrStatusText" style="font-size:13px; color:var(--gold); font-weight:800;"></span>
+          <span id="ocrStatusText" style="font-size:11px; color:var(--gold); font-weight:800;"></span>
         </div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
           <button class="tool-btn danger" onclick="clearWordListContent()">🧹 一鍵清空題庫</button>
           <button class="tool-btn photo" onclick="triggerPhotoInput()">📸 影相/揀相片識別</button>
           <button class="tool-btn" id="btnAutoTrans" onclick="autoTranslateMissingChinese()">🌐 自動補全中文</button>
           <button class="tool-btn" onclick="insertNewUnitTemplate()">➕ 新增 [Unit X]</button>
-          <button class="tool-btn" onclick="restorePlayerDefaultWords()">🔄 還原預設題庫</button>
+          <button class="tool-btn" onclick="restorePlayerDefaultWords()">🔄 還原此玩家預設題庫</button>
           <button class="tool-btn backup" onclick="exportFullSaveBackup()">💾 匯出備份碼</button>
           <button class="tool-btn backup" onclick="importFullSaveBackup()">📥 還原備份碼</button>
         </div>
       </div>
 
-      <div style="margin-bottom:12px;">
-        <label style="font-size:13px; color:#cbd5e1; font-weight:700;">
-          📝 分課生字表（支援單字或片語 Phrase，括號內文字會自動變成提示）：
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px; color:#cbd5e1; font-weight:700;">
+          📝 分課生字表（支援單字或片語 Phrase，括號內文字會自動變成提示，空格與斜線自動跳過免串）：
         </label>
-        <textarea class="form-textarea" id="wordInput" style="height:135px; font-family:monospace; line-height:1.45;"></textarea>
+        <textarea class="form-textarea" id="wordInput" style="height:135px; font-family:monospace; line-height:1.4;"></textarea>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
         <div>
-          <label style="font-size:12px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填)</label>
+          <label style="font-size:10px; color:#e879f9; font-weight:800;">🌟 Gemini Key (選填 - 供 AI 相片識別用)</label>
           <input type="password" class="form-input" id="geminiKeyInput" placeholder="選填">
         </div>
         <div>
-          <label style="font-size:12px; color:var(--gold);">🔐 家長密碼</label>
+          <label style="font-size:10px; color:var(--gold);">🔐 家長密碼</label>
           <input type="text" class="form-input" id="parentPinInput" maxlength="6" value="1234">
         </div>
       </div>
 
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
-        <button class="start-hero-btn" style="padding:12px; font-size:16px; margin:0; flex:1;" onclick="saveSettings()">
+        <button class="start-hero-btn" style="padding:10px; font-size:15px; margin:0; flex:1;" onclick="saveSettings()">
           💾 儲存題庫與設定
         </button>
         <button class="mini-btn" style="border-color:var(--gold); color:var(--gold);" onclick="parentAddBonusKeys()">
@@ -1329,17 +1081,17 @@
 <!-- 相片旋轉預覽視窗 -->
 <div class="modal-overlay hidden" id="photoRotateModal">
   <div class="ocr-modal-card interactive">
-    <h3 style="color:#e879f9; font-size:18px;">📸 請確保文字是「打橫正常方向」</h3>
+    <h3 style="color:#e879f9; font-size:16px;">📸 請確保文字是「打橫正常方向」</h3>
     <canvas id="ocrPreviewCanvas"></canvas>
     <div style="display:flex; justify-content:center; gap:8px; margin-bottom:10px;">
       <button class="mini-btn" onclick="rotatePreviewImage(-90)">↺ 左轉 90°</button>
       <button class="mini-btn" style="border-color:var(--gold); color:var(--gold);" onclick="rotatePreviewImage(90)">↻ 右轉 90° (擺正文字)</button>
     </div>
-    <div id="modalOcrProgress" style="font-size:14px; color:var(--gold); font-weight:800; margin-bottom:8px;">
+    <div id="modalOcrProgress" style="font-size:12px; color:var(--gold); font-weight:800; margin-bottom:8px;">
       準備就緒
     </div>
     <div style="display:flex; gap:8px;">
-      <button class="start-hero-btn" id="btnRunOCR" style="padding:12px; font-size:16px; margin:0; flex:1;" onclick="runSmartOCR()">
+      <button class="start-hero-btn" id="btnRunOCR" style="padding:10px; font-size:15px; margin:0; flex:1;" onclick="runSmartOCR()">
         🔍 開始智能識別生字
       </button>
       <button class="mini-btn" onclick="closePhotoRotateModal()">✕ 取消</button>
@@ -1347,12 +1099,12 @@
   </div>
 </div>
 
-<!-- 家長密碼鎖視窗 -->
+<!-- 家長密碼鎖視窗 (預設密碼: 1234) -->
 <div class="modal-overlay hidden" id="pinModal">
   <div class="pin-card interactive">
-    <div style="font-size:28px;">🔒</div>
-    <h3 style="color:var(--gold); font-size:19px;">家長密碼鎖</h3>
-    <p style="font-size:13px; color:#94a3b8;">請輸入 4 位數家長密碼 (預設: 1234)</p>
+    <div style="font-size:26px;">🔒</div>
+    <h3 style="color:var(--gold); font-size:17px;">家長密碼鎖</h3>
+    <p style="font-size:11px; color:#94a3b8;">請輸入 4 位數家長密碼 (預設: 1234)</p>
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
@@ -1366,9 +1118,9 @@
       <button class="pin-key" onclick="tapPin('7')">7</button>
       <button class="pin-key" onclick="tapPin('8')">8</button>
       <button class="pin-key" onclick="tapPin('9')">9</button>
-      <button class="pin-key" style="font-size:15px; color:#fda4af;" onclick="clearPin()">清除</button>
+      <button class="pin-key" style="font-size:13px; color:#fda4af;" onclick="clearPin()">清除</button>
       <button class="pin-key" onclick="tapPin('0')">0</button>
-      <button class="pin-key" style="font-size:15px; color:#94a3b8;" onclick="closePinModal()">取消</button>
+      <button class="pin-key" style="font-size:13px; color:#94a3b8;" onclick="closePinModal()">取消</button>
     </div>
   </div>
 </div>
@@ -1419,11 +1171,10 @@ async function installPWAApp() {
 }
 
 /* =========================================================
-   1. 內置隱藏的 Azure Speech 語音服務設定
+   1. 內置隱藏的 Azure Speech 語音服務設定 (my-dictation-tts / East Asia)
    ========================================================= */
 const EMBEDDED_AZURE_KEY = '7rqTKvFwVlRmh84vQ8bQDNgPZjitlh44KMkom9ZMOAFYMWASiWngJQQJ99CIAC3pKaRXJ3w3AAAYACOGJ8DS';
 const EMBEDDED_AZURE_REGION = 'eastasia';
-const COLOR_HEX = ['#38bdf8', '#22c55e', '#facc15', '#e879f9', '#fb923c'];
 
 /* =========================================================
    2. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫
@@ -1567,93 +1318,833 @@ const BOSS_PROFILES = [
 ];
 
 /* =========================================================
-   4. Phonics IPA 國際音標字典 + 自然拼讀保底發音映射表
+   4. 獨立玩家檔案、語音與語速設定
    ========================================================= */
-const PHONICS_IPA_DICT = {
-  'arrive':       [{ t: 'ar', ipa: 'ə', ph: 'uh' }, { t: 'rive', ipa: 'raɪv', ph: 'raiv' }],
-  'school':       [{ t: 'school', ipa: 'skuːl', ph: 'skool' }],
-  'early':        [{ t: 'ear', ipa: 'ɜː', ph: 'er' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'late':         [{ t: 'late', ipa: 'leɪt', ph: 'leit' }],
-  'dress':        [{ t: 'dress', ipa: 'dres', ph: 'dres' }],
-  'wait':         [{ t: 'wait', ipa: 'weɪt', ph: 'weit' }],
-  'eat':          [{ t: 'eat', ipa: 'iːt', ph: 'eet' }],
-  'speak':        [{ t: 'speak', ipa: 'spiːk', ph: 'speek' }],
-  'rudely':       [{ t: 'rude', ipa: 'ruːd', ph: 'rood' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'softly':       [{ t: 'soft', ipa: 'sɒft', ph: 'soft' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'loudly':       [{ t: 'loud', ipa: 'laʊd', ph: 'laud' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'offer':        [{ t: 'of', ipa: 'ɒf', ph: 'of' }, { t: 'fer', ipa: 'ə', ph: 'fer' }],
-  'other':        [{ t: 'oth', ipa: 'ʌð', ph: 'uth' }, { t: 'er', ipa: 'ə', ph: 'er' }],
-  'argue':        [{ t: 'ar', ipa: 'ɑː', ph: 'ah' }, { t: 'gue', ipa: 'ɡjuː', ph: 'gyoo' }],
-  'discuss':      [{ t: 'dis', ipa: 'dɪ', ph: 'dis' }, { t: 'cuss', ipa: 'skʌs', ph: 'kus' }],
-  'agree':        [{ t: 'a', ipa: 'ə', ph: 'uh' }, { t: 'gree', ipa: 'ɡriː', ph: 'gree' }],
-  'sorry':        [{ t: 'sor', ipa: 'sɒr', ph: 'sor' }, { t: 'ry', ipa: 'i', ph: 'ree' }],
-  'indoor':       [{ t: 'in', ipa: 'ɪn', ph: 'in' }, { t: 'door', ipa: 'dɔː', ph: 'dor' }],
-  'public':       [{ t: 'pub', ipa: 'pʌb', ph: 'pub' }, { t: 'lic', ipa: 'lɪk', ph: 'lik' }],
-  'online':       [{ t: 'on', ipa: 'ɒn', ph: 'on' }, { t: 'line', ipa: 'laɪn', ph: 'lain' }],
-  'video':        [{ t: 'vid', ipa: 'vɪd', ph: 'vid' }, { t: 'e', ipa: 'i', ph: 'ee' }, { t: 'o', ipa: 'əʊ', ph: 'oh' }],
-  'untidily':     [{ t: 'un', ipa: 'ʌn', ph: 'uhn' }, { t: 'ti', ipa: 'taɪ', ph: 'tai' }, { t: 'di', ipa: 'dɪ', ph: 'dih' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'tidily':       [{ t: 'ti', ipa: 'taɪ', ph: 'tai' }, { t: 'di', ipa: 'dɪ', ph: 'dih' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'disappointed': [{ t: 'dis', ipa: 'dɪs', ph: 'dis' }, { t: 'ap', ipa: 'ə', ph: 'uh' }, { t: 'poin', ipa: 'pɔɪn', ph: 'poin' }, { t: 'ted', ipa: 'tɪd', ph: 'tid' }],
-  'embarrassed':  [{ t: 'em', ipa: 'ɪm', ph: 'im' }, { t: 'bar', ipa: 'bæ', ph: 'ba' }, { t: 'rassed', ipa: 'rəst', ph: 'rust' }],
-  'impatiently':  [{ t: 'im', ipa: 'ɪm', ph: 'im' }, { t: 'pa', ipa: 'peɪ', ph: 'pei' }, { t: 'tient', ipa: 'ʃənt', ph: 'shunt' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'patiently':    [{ t: 'pa', ipa: 'peɪ', ph: 'pei' }, { t: 'tient', ipa: 'ʃənt', ph: 'shunt' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'politely':     [{ t: 'po', ipa: 'pə', ph: 'puh' }, { t: 'lite', ipa: 'laɪt', ph: 'lait' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'quietly':      [{ t: 'qui', ipa: 'kwaɪ', ph: 'kwai' }, { t: 'et', ipa: 'ət', ph: 'uht' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'noisily':      [{ t: 'noi', ipa: 'nɔɪ', ph: 'noi' }, { t: 'si', ipa: 'zɪ', ph: 'zih' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'passengers':   [{ t: 'pas', ipa: 'pæs', ph: 'pas' }, { t: 'sen', ipa: 'sən', ph: 'sun' }, { t: 'gers', ipa: 'dʒəz', ph: 'jerz' }],
-  'disagree':     [{ t: 'dis', ipa: 'dɪs', ph: 'dis' }, { t: 'a', ipa: 'ə', ph: 'uh' }, { t: 'gree', ipa: 'ɡriː', ph: 'gree' }],
-  'quarrel':      [{ t: 'quar', ipa: 'kwɒ', ph: 'kwo' }, { t: 'rel', ipa: 'rəl', ph: 'rul' }],
-  'jealous':      [{ t: 'jeal', ipa: 'dʒe', ph: 'je' }, { t: 'ous', ipa: 'ləs', ph: 'lus' }],
-  'puzzled':      [{ t: 'puz', ipa: 'pʌ', ph: 'puh' }, { t: 'zled', ipa: 'zəld', ph: 'zuld' }],
-  'annoyed':      [{ t: 'an', ipa: 'ə', ph: 'uh' }, { t: 'noyed', ipa: 'nɔɪd', ph: 'noid' }],
-  'shocked':      [{ t: 'shock', ipa: 'ʃɒk', ph: 'shok' }, { t: 'ed', ipa: 't', ph: 't' }],
-  'upset':        [{ t: 'up', ipa: 'ʌp', ph: 'uhp' }, { t: 'set', ipa: 'set', ph: 'set' }],
-  'conservation': [{ t: 'con', ipa: 'kɒn', ph: 'kon' }, { t: 'ser', ipa: 'sə', ph: 'ser' }, { t: 'va', ipa: 'veɪ', ph: 'vei' }, { t: 'tion', ipa: 'ʃən', ph: 'shun' }],
-  'endangered':   [{ t: 'en', ipa: 'ɪn', ph: 'in' }, { t: 'dan', ipa: 'deɪn', ph: 'dein' }, { t: 'gered', ipa: 'dʒəd', ph: 'jerd' }],
-  'interrupted':  [{ t: 'in', ipa: 'ɪn', ph: 'in' }, { t: 'ter', ipa: 'tə', ph: 'ter' }, { t: 'rup', ipa: 'rʌp', ph: 'rup' }, { t: 'ted', ipa: 'tɪd', ph: 'tid' }],
-  'connection':   [{ t: 'con', ipa: 'kə', ph: 'kuh' }, { t: 'nec', ipa: 'nek', ph: 'nek' }, { t: 'tion', ipa: 'ʃən', ph: 'shun' }],
-  'presenter':    [{ t: 'pre', ipa: 'prɪ', ph: 'prih' }, { t: 'sen', ipa: 'zen', ph: 'zen' }, { t: 'ter', ipa: 'tə', ph: 'ter' }],
-  'predator':     [{ t: 'pred', ipa: 'pred', ph: 'pred' }, { t: 'a', ipa: 'ə', ph: 'uh' }, { t: 'tor', ipa: 'tə', ph: 'ter' }],
-  'attitude':     [{ t: 'at', ipa: 'æt', ph: 'at' }, { t: 'ti', ipa: 'tɪ', ph: 'tih' }, { t: 'tude', ipa: 'tjuːd', ph: 'tyood' }],
-  'habitat':      [{ t: 'hab', ipa: 'hæb', ph: 'hab' }, { t: 'i', ipa: 'ɪ', ph: 'ih' }, { t: 'tat', ipa: 'tæt', ph: 'tat' }],
-  'navigate':     [{ t: 'nav', ipa: 'næv', ph: 'nav' }, { t: 'i', ipa: 'ɪ', ph: 'ih' }, { t: 'gate', ipa: 'ɡeɪt', ph: 'geit' }],
-  'develop':      [{ t: 'de', ipa: 'dɪ', ph: 'dih' }, { t: 'vel', ipa: 'vel', ph: 'vel' }, { t: 'op', ipa: 'əp', ph: 'uhp' }],
-  'observe':      [{ t: 'ob', ipa: 'əb', ph: 'uhb' }, { t: 'serve', ipa: 'zɜːv', ph: 'zerv' }],
-  'progress':     [{ t: 'pro', ipa: 'prəʊ', ph: 'proh' }, { t: 'gress', ipa: 'ɡres', ph: 'gres' }],
-  'relieved':     [{ t: 're', ipa: 'rɪ', ph: 'rih' }, { t: 'lieved', ipa: 'liːvd', ph: 'leevd' }],
-  'succeed':      [{ t: 'suc', ipa: 'sək', ph: 'suk' }, { t: 'ceed', ipa: 'siːd', ph: 'seed' }],
-  'resist':       [{ t: 're', ipa: 'rɪ', ph: 'rih' }, { t: 'sist', ipa: 'zɪst', ph: 'zist' }],
-  'extinct':      [{ t: 'ex', ipa: 'ɪk', ph: 'ik' }, { t: 'tinct', ipa: 'stɪŋkt', ph: 'stinkt' }],
-  'species':      [{ t: 'spe', ipa: 'spiː', ph: 'spee' }, { t: 'cies', ipa: 'ʃiːz', ph: 'sheez' }],
-  'open-minded':  [{ t: 'o', ipa: 'əʊ', ph: 'oh' }, { t: 'pen', ipa: 'pən', ph: 'pun' }, { t: 'min', ipa: 'maɪn', ph: 'main' }, { t: 'ded', ipa: 'dɪd', ph: 'did' }],
-  'openminded':   [{ t: 'o', ipa: 'əʊ', ph: 'oh' }, { t: 'pen', ipa: 'pən', ph: 'pun' }, { t: 'min', ipa: 'maɪn', ph: 'main' }, { t: 'ded', ipa: 'dɪd', ph: 'did' }],
-  'protect':      [{ t: 'pro', ipa: 'prə', ph: 'pruh' }, { t: 'tect', ipa: 'tekt', ph: 'tekt' }],
-  'steady':       [{ t: 'stea', ipa: 'ste', ph: 'ste' }, { t: 'dy', ipa: 'di', ph: 'dee' }],
-  'barely':       [{ t: 'bare', ipa: 'beə', ph: 'bair' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
-  'reality':      [{ t: 're', ipa: 'ri', ph: 'ree' }, { t: 'al', ipa: 'æ', ph: 'al' }, { t: 'i', ipa: 'lɪ', ph: 'ih' }, { t: 'ty', ipa: 'ti', ph: 'tee' }],
-  'aim':          [{ t: 'aim', ipa: 'eɪm', ph: 'eim' }],
-  'prey':         [{ t: 'prey', ipa: 'preɪ', ph: 'prei' }],
-  'fail':         [{ t: 'fail', ipa: 'feɪl', ph: 'feil' }],
-  'playground':   [{ t: 'play', ipa: 'pleɪ', ph: 'plei' }, { t: 'ground', ipa: 'ɡraʊnd', ph: 'graund' }],
-  'volleyball':   [{ t: 'vol', ipa: 'vɒ', ph: 'vol' }, { t: 'ley', ipa: 'li', ph: 'lee' }, { t: 'ball', ipa: 'bɔːl', ph: 'bawl' }],
-  'newspaper':    [{ t: 'news', ipa: 'njuːz', ph: 'nyooz' }, { t: 'pa', ipa: 'peɪ', ph: 'pei' }, { t: 'per', ipa: 'pə', ph: 'per' }],
-  'magazines':    [{ t: 'mag', ipa: 'mæɡ', ph: 'mag' }, { t: 'a', ipa: 'ə', ph: 'uh' }, { t: 'zines', ipa: 'ziːnz', ph: 'zeenz' }],
-  'library':      [{ t: 'li', ipa: 'laɪ', ph: 'lai' }, { t: 'bra', ipa: 'brə', ph: 'bruh' }, { t: 'ry', ipa: 'ri', ph: 'ree' }],
-  'climbing':     [{ t: 'climb', ipa: 'klaɪm', ph: 'klaim' }, { t: 'ing', ipa: 'ɪŋ', ph: 'ing' }],
-  'cycling':      [{ t: 'cy', ipa: 'saɪ', ph: 'sai' }, { t: 'cling', ipa: 'klɪŋ', ph: 'kling' }],
-  'skating':      [{ t: 'ska', ipa: 'skeɪ', ph: 'skei' }, { t: 'ting', ipa: 'tɪŋ', ph: 'ting' }],
-  'iceskating':   [{ t: 'ice', ipa: 'aɪs', ph: 'ais' }, { t: 'ska', ipa: 'skeɪ', ph: 'skei' }, { t: 'ting', ipa: 'tɪŋ', ph: 'ting' }],
-  'jogging':      [{ t: 'jog', ipa: 'dʒɒɡ', ph: 'jog' }, { t: 'ging', ipa: 'ɪŋ', ph: 'ing' }],
-  'tennis':       [{ t: 'ten', ipa: 'ten', ph: 'ten' }, { t: 'nis', ipa: 'ɪs', ph: 'nis' }]
+let config = {
+  playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
+  mode: 'mix',
+  diff: 'progressive',
+  wordOrder: localStorage.getItem('rv8_word_order') || 'random',
+  seqIndex: 0,
+  voiceName: localStorage.getItem('rv94_voice_name') || 'en-GB-SoniaNeural',
+  voiceRate: localStorage.getItem('rv94_voice_rate') || '-15%', // '-35%', '-20%', '-5%', '+10%'
+  parentPin: localStorage.getItem('rv8_parent_pin') || '1234',
+  geminiKey: localStorage.getItem('rv7_gemini_key') || '',
+  weaponId: 'cyber',
+  armorId: 'shield',
+  keys: 0,
+  coins: 30,
+  streak: 0,
+  selectedUnits: ['ALL'],
+  unitsMap: {}
 };
-<script>
+
+function getProfKey(suffix) { return `rv8_${config.playerName}_${suffix}`; }
+
+let toastTimer = null;
+function showAutoSaveToast() {
+  const t = document.getElementById('autoSaveToast');
+  t.style.opacity = '1';
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1200);
+}
+
+function loadProfileData(profName) {
+  config.playerName = profName;
+  config.seqIndex = 0;
+  localStorage.setItem('rv8_active_prof', profName);
+
+  document.querySelectorAll('.prof-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === profName);
+  });
+  document.getElementById('lobbyProfLabel').textContent = profName;
+
+  config.keys = parseInt(localStorage.getItem(getProfKey('keys')) || '0', 10);
+  config.coins = parseInt(localStorage.getItem(getProfKey('coins')) || '30', 10);
+  config.streak = parseInt(localStorage.getItem(getProfKey('streak')) || '0', 10);
+  config.weaponId = localStorage.getItem(getProfKey('weapon')) || 'cyber';
+  config.armorId = localStorage.getItem(getProfKey('armor')) || 'shield';
+
+  try {
+    const uw = JSON.parse(localStorage.getItem(getProfKey('uw')) || '["cyber"]');
+    WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber') || uw.includes(w.id); });
+    const ua = JSON.parse(localStorage.getItem(getProfKey('ua')) || '["shield"]');
+    ARMORS.forEach(a => { a.unlocked = (a.id === 'shield') || ua.includes(a.id); });
+  } catch (e) {}
+
+  const defaultForProf = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  let rawWords = localStorage.getItem(getProfKey('words'));
+  if (!rawWords || !rawWords.trim()) {
+    rawWords = defaultForProf;
+    localStorage.setItem(getProfKey('words'), rawWords);
+  }
+  parseUnitsFromText(rawWords);
+
+  try {
+    config.selectedUnits = JSON.parse(localStorage.getItem(getProfKey('sel_units')) || '["ALL"]');
+  } catch (e) { config.selectedUnits = ['ALL']; }
+
+  renderUnitSelectorBar();
+  renderGearLists();
+  updateTopHUD();
+  updateWordOrderUI();
+  syncVoiceControlsUI();
+}
+
+function saveProfileData(silent = false) {
+  try {
+    localStorage.setItem('rv8_active_prof', config.playerName);
+    localStorage.setItem(getProfKey('uw'), JSON.stringify(WEAPONS.filter(w => w.unlocked).map(w => w.id)));
+    localStorage.setItem(getProfKey('ua'), JSON.stringify(ARMORS.filter(a => a.unlocked).map(a => a.id)));
+    localStorage.setItem(getProfKey('weapon'), config.weaponId);
+    localStorage.setItem(getProfKey('armor'), config.armorId);
+    localStorage.setItem(getProfKey('keys'), String(config.keys));
+    localStorage.setItem(getProfKey('coins'), String(config.coins));
+    localStorage.setItem(getProfKey('streak'), String(config.streak));
+    localStorage.setItem(getProfKey('sel_units'), JSON.stringify(config.selectedUnits));
+    if (!silent) showAutoSaveToast();
+  } catch (e) {}
+}
+
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveProfileData(true); });
+window.addEventListener('pagehide', () => saveProfileData(true));
+window.addEventListener('beforeunload', () => saveProfileData(true));
+
+/* --- 要求 2：多款聲音與多段語速切換控制 --- */
+function changeVoice(newVoice) {
+  config.voiceName = newVoice;
+  localStorage.setItem('rv94_voice_name', newVoice);
+  syncVoiceControlsUI();
+  previewVoiceSample();
+}
+
+function setVoiceSpeed(newRate) {
+  config.voiceRate = newRate;
+  localStorage.setItem('rv94_voice_rate', newRate);
+  syncVoiceControlsUI();
+  previewVoiceSample();
+}
+
+function syncVoiceControlsUI() {
+  const lv = document.getElementById('lobbyVoiceSelect');
+  const pv = document.getElementById('pauseVoiceSelect');
+  if (lv) lv.value = config.voiceName;
+  if (pv) pv.value = config.voiceName;
+
+  document.querySelectorAll('#lobbySpeedGroup .seg-btn, #pauseSpeedGroup .seg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-spd') === config.voiceRate);
+  });
+}
+
+function previewVoiceSample() {
+  const samplePool = getActiveWordPool();
+  const sampleWord = (round.wordObj && match.active)
+    ? (round.wordObj.ttsText || round.wordObj.word)
+    : (samplePool[0] ? samplePool[0].ttsText : 'Welcome to Rivals Word Arena');
+  speakText(sampleWord);
+}
+
+function parseUnitsFromText(rawText) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+  const map = {};
+  let currentUnit = 'Unit 1';
+
+  for (const line of lines) {
+    if (line.startsWith('[') && line.endsWith(']')) {
+      currentUnit = line.slice(1, -1).trim() || 'Unit 1';
+      if (!map[currentUnit]) map[currentUnit] = [];
+      continue;
+    }
+
+    let splitIdx = -1;
+    let parenDepth = 0;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '(' || line[i] === '（') parenDepth++;
+      else if (line[i] === ')' || line[i] === '）') parenDepth = Math.max(0, parenDepth - 1);
+      else if (parenDepth === 0 && (line[i] === ',' || line[i] === '，' || line[i] === '\t')) {
+        splitIdx = i;
+        break;
+      }
+    }
+
+    let rawEng = splitIdx !== -1 ? line.slice(0, splitIdx).trim() : line.trim();
+    let meaning = splitIdx !== -1 ? line.slice(splitIdx + 1).trim() : '';
+
+    let parenNotes = [];
+    let spellTarget = rawEng.replace(/\(([^)]+)\)/g, (_, inner) => {
+      parenNotes.push(`(${inner})`);
+      return '';
+    });
+
+    spellTarget = spellTarget.toLowerCase()
+      .replace(/[\/\.]+/g, ' ')
+      .replace(/[^a-z\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const pureLetters = spellTarget.replace(/[^a-z]/g, '');
+    if (pureLetters.length >= 2) {
+      if (!meaning) {
+        meaning = BUILTIN_DICT[rawEng.toLowerCase()] || BUILTIN_DICT[pureLetters] || '（點擊🔊聽讀音）';
+      }
+      if (parenNotes.length > 0 && !meaning.includes('(')) {
+        meaning += ' ' + parenNotes.join(' ');
+      }
+      const ttsPhrase = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
+      if (!map[currentUnit]) map[currentUnit] = [];
+      map[currentUnit].push({
+        word: spellTarget,
+        pureWord: pureLetters,
+        ttsText: ttsPhrase,
+        meaning,
+        unit: currentUnit
+      });
+    }
+  }
+
+  if (Object.keys(map).length === 0) {
+    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' }];
+  }
+  config.unitsMap = map;
+}
+
+function clearWordListContent() {
+  if (!confirm(`🧹 確定要清空【${config.playerName}】目前的題庫文字框，以便貼上新一批生字嗎？`)) return;
+  const textarea = document.getElementById('wordInput');
+  textarea.value = `[Unit 1]\n`;
+  textarea.focus();
+  document.getElementById('ocrStatusText').textContent = '✨ 已清空！請直接貼上新英文生字，或按「📸 影相識別」。';
+  sfx('good');
+}
+
+function restorePlayerDefaultWords() {
+  if (!confirm(`🔄 確定要還原【${config.playerName}】的預設專屬題庫嗎？`)) return;
+  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  document.getElementById('wordInput').value = def;
+  document.getElementById('ocrStatusText').textContent = `✅ 已載入 ${config.playerName} 的預設題庫，請按下方「💾 儲存題庫與設定」。`;
+  sfx('good');
+}
+
+function exportFullSaveBackup() {
+  saveProfileData(true);
+  const fullData = {
+    prof: config.playerName,
+    keys: config.keys,
+    coins: config.coins,
+    streak: config.streak,
+    uw: WEAPONS.filter(w => w.unlocked).map(w => w.id),
+    ua: ARMORS.filter(a => a.unlocked).map(a => a.id),
+    words: document.getElementById('wordInput').value.trim()
+  };
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullData))));
+  navigator.clipboard.writeText(code).then(() => {
+    sfx('good');
+    alert(`✅ 已複製【${config.playerName}】的完整進度備份碼！`);
+  }).catch(() => {
+    prompt('請複製以下備份碼保存：', code);
+  });
+}
+
+function importFullSaveBackup() {
+  const code = prompt('請貼上之前匯出的「完整進度備份碼」：');
+  if (!code || !code.trim()) return;
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+    config.keys = data.keys ?? config.keys;
+    config.coins = data.coins ?? config.coins;
+    config.streak = data.streak ?? config.streak;
+    if (Array.isArray(data.uw)) WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber') || data.uw.includes(w.id); });
+    if (Array.isArray(data.ua)) ARMORS.forEach(a => { a.unlocked = (a.id === 'shield') || data.ua.includes(a.id); });
+    if (data.words) {
+      localStorage.setItem(getProfKey('words'), data.words);
+      document.getElementById('wordInput').value = data.words;
+      parseUnitsFromText(data.words);
+    }
+    saveProfileData();
+    renderUnitSelectorBar();
+    renderGearLists();
+    updateTopHUD();
+    sfx('portal');
+    alert(`🎉 成功還原【${config.playerName}】的進度與題庫！`);
+  } catch (e) {
+    sfx('bad');
+    alert('❌ 備份碼格式不正確！');
+  }
+}
+
+function parentAddBonusKeys() {
+  config.keys += 2;
+  config.coins += 50;
+  saveProfileData();
+  updateTopHUD();
+  renderGearLists();
+  sfx('portal');
+  alert(`🎁 已為【${config.playerName}】補發 +2 把鎖匙 🔑 及 +50 金幣 💰！`);
+}
+
+function switchProfile(profName) {
+  saveProfileData(true);
+  sfx('good');
+  loadProfileData(profName);
+  document.getElementById('parentProfName').textContent = config.playerName;
+  const def = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
+}
+
 /* =========================================================
-   10. 遊戲主引擎與物理繪圖系統
+   5. 📸 相片旋轉預覽 + 智能 OCR 識別引擎
+   ========================================================= */
+let rawUploadedImage = null;
+let currentRotationDeg = 0;
+
+function triggerPhotoInput() {
+  document.getElementById('ocrFileInput').click();
+}
+
+function openPhotoRotateModal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      rawUploadedImage = img;
+      currentRotationDeg = 0;
+      renderRotatedPreview();
+      document.getElementById('modalOcrProgress').textContent = '請確認上方文字是「打橫正常方向」，然後撳開始識別';
+      document.getElementById('photoRotateModal').classList.remove('hidden');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function closePhotoRotateModal() {
+  document.getElementById('photoRotateModal').classList.add('hidden');
+}
+
+function rotatePreviewImage(deltaDeg) {
+  currentRotationDeg = (currentRotationDeg + deltaDeg + 360) % 360;
+  renderRotatedPreview();
+  sfx('good');
+}
+
+function renderRotatedPreview() {
+  if (!rawUploadedImage) return;
+  const pCanvas = document.getElementById('ocrPreviewCanvas');
+  const pCtx = pCanvas.getContext('2d');
+
+  const maxDim = 1200;
+  let w = rawUploadedImage.width;
+  let h = rawUploadedImage.height;
+  if (Math.max(w, h) > maxDim) {
+    const r = maxDim / Math.max(w, h);
+    w = Math.round(w * r);
+    h = Math.round(h * r);
+  }
+
+  if (currentRotationDeg === 90 || currentRotationDeg === 270) {
+    pCanvas.width = h;
+    pCanvas.height = w;
+  } else {
+    pCanvas.width = w;
+    pCanvas.height = h;
+  }
+
+  pCtx.save();
+  pCtx.fillStyle = '#ffffff';
+  pCtx.fillRect(0, 0, pCanvas.width, pCanvas.height);
+  pCtx.translate(pCanvas.width / 2, pCanvas.height / 2);
+  pCtx.rotate((currentRotationDeg * Math.PI) / 180);
+  pCtx.drawImage(rawUploadedImage, -w / 2, -h / 2, w, h);
+  pCtx.restore();
+}
+
+function getPreprocessedCanvasForOCR() {
+  const srcCanvas = document.getElementById('ocrPreviewCanvas');
+  const outCanvas = document.createElement('canvas');
+  outCanvas.width = srcCanvas.width;
+  outCanvas.height = srcCanvas.height;
+  const oCtx = outCanvas.getContext('2d');
+  oCtx.drawImage(srcCanvas, 0, 0);
+
+  const imgData = oCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    const v = gray < 145 ? 0 : 255;
+    d[i] = d[i + 1] = d[i + 2] = v;
+  }
+  oCtx.putImageData(imgData, 0, 0);
+  return outCanvas;
+}
+
+async function runSmartOCR() {
+  const progEl = document.getElementById('modalOcrProgress');
+  const btn = document.getElementById('btnRunOCR');
+  btn.disabled = true;
+
+  const pCanvas = document.getElementById('ocrPreviewCanvas');
+  const gemKey = document.getElementById('geminiKeyInput').value.trim() || config.geminiKey;
+
+  try {
+    let extractedWords = [];
+
+    if (gemKey) {
+      progEl.textContent = '🌟 正在使用 Gemini AI 視覺引擎識別表格生字...';
+      const base64Data = pCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${gemKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: 'Extract all vocabulary words or phrases from this worksheet. Return ONLY lines in format: english_word_or_phrase, 繁體中文解釋.' },
+              { inlineData: { mimeType: 'image/jpeg', data: base64Data } }
+            ]
+          }]
+        })
+      });
+      if (resp.ok) {
+        const json = await resp.json();
+        const aiText = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (aiText.trim()) {
+          appendRecognizedBlock(aiText.trim(), 'AI 相片匯入');
+          btn.disabled = false;
+          closePhotoRotateModal();
+          return;
+        }
+      }
+    }
+
+    progEl.textContent = '🌐 正在透過雲端表格 OCR 引擎識別生字 (1/2)...';
+    try {
+      const base64Img = pCanvas.toDataURL('image/jpeg', 0.82);
+      const formData = new FormData();
+      formData.append('base64Image', base64Img);
+      formData.append('language', 'eng');
+      formData.append('isTable', 'true');
+      formData.append('OCREngine', '2');
+
+      const ocrRes = await fetch('https://api.ocr.space/parse/image', {
+        method: 'POST',
+        headers: { 'apikey': 'helloworld' },
+        body: formData
+      });
+      if (ocrRes.ok) {
+        const ocrJson = await ocrRes.json();
+        const parsedTxt = ocrJson?.ParsedResults?.[0]?.ParsedText || '';
+        extractedWords = filterValidEnglishWords(parsedTxt);
+      }
+    } catch (cloudErr) {}
+
+    if (extractedWords.length < 3) {
+      progEl.textContent = '🔍 正在使用本地高對比增強引擎識別生字 (2/2)...';
+      const cleanCanvas = getPreprocessedCanvasForOCR();
+      const res = await Tesseract.recognize(cleanCanvas, 'eng');
+      const localWords = filterValidEnglishWords(res.data.text || '');
+      extractedWords = [...new Set([...extractedWords, ...localWords])];
+    }
+
+    if (extractedWords.length === 0) {
+      progEl.textContent = '⚠️ 未能識別文字，請檢查相片是否已撳「↻ 右轉 90°」擺正！';
+      btn.disabled = false;
+      return;
+    }
+
+    progEl.textContent = `✅ 成功識別 ${extractedWords.length} 個生字！正在自動配對中文解釋...`;
+    appendRecognizedBlock(extractedWords.join('\n'), `相片匯入 (${extractedWords.length}字)`);
+    await autoTranslateMissingChinese();
+    closePhotoRotateModal();
+  } catch (err) {
+    progEl.textContent = '❌ 識別發生錯誤，請重試。';
+  }
+  btn.disabled = false;
+}
+
+function filterValidEnglishWords(rawText) {
+  const stopWords = new Set([
+    'you', 'are', 'not', 'required', 'spell', 'the', 'words', 'wsr', 'wwsr',
+    'and', 'for', 'but', 'all', 'can', 'her', 'was', 'one', 'our', 'out',
+    'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old',
+    'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say',
+    'she', 'too', 'use', 'unit', 'page', 'name', 'class', 'date', 'module'
+  ]);
+  const matches = rawText.match(/[a-zA-Z]+(?:-[a-zA-Z]+)?/g) || [];
+  const unique = [];
+  matches.forEach(w => {
+    const clean = w.toLowerCase();
+    if (clean.length >= 3 && clean.length <= 18 && !stopWords.has(clean) && !unique.includes(clean)) {
+      unique.push(clean);
+    }
+  });
+  return unique;
+}
+
+function appendRecognizedBlock(linesText, titleLabel) {
+  const textarea = document.getElementById('wordInput');
+  const unitNum = (textarea.value.match(/\[Unit/gi) || []).length + 1;
+  textarea.value = textarea.value.trim() + `\n\n[Unit ${unitNum}: ${titleLabel}]\n` + linesText;
+  document.getElementById('ocrStatusText').textContent = `🎉 已匯入 Unit ${unitNum}！請按下方「💾 儲存題庫」。`;
+  sfx('portal');
+}
+
+/* =========================================================
+   6. 分頁切換、家長密碼鎖 & 題庫工具
+   ========================================================= */
+let enteredPin = '';
+let pinTargetAction = '';
+
+function switchDashTab(tabName) {
+  document.getElementById('tabBtnPlay').classList.toggle('active', tabName === 'play');
+  document.getElementById('tabBtnArmory').classList.toggle('active', tabName === 'armory');
+  document.getElementById('tabBtnParent').classList.toggle('active', tabName === 'parent');
+
+  document.getElementById('tabContentPlay').classList.toggle('hidden', tabName !== 'play');
+  document.getElementById('tabContentArmory').classList.toggle('hidden', tabName !== 'armory');
+  document.getElementById('tabContentParent').classList.toggle('hidden', tabName !== 'parent');
+
+  if (tabName === 'parent') {
+    document.getElementById('parentProfName').textContent = config.playerName;
+    const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+    document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
+    document.getElementById('geminiKeyInput').value = config.geminiKey;
+    document.getElementById('parentPinInput').value = config.parentPin;
+  }
+}
+
+function requestParentPin(action) {
+  pinTargetAction = action;
+  enteredPin = '';
+  updatePinDots();
+  document.getElementById('pinModal').classList.remove('hidden');
+}
+
+function closePinModal() { document.getElementById('pinModal').classList.add('hidden'); }
+
+function tapPin(digit) {
+  if (enteredPin.length < 4) {
+    enteredPin += digit;
+    sfx('good');
+    updatePinDots();
+    if (enteredPin.length === 4) setTimeout(verifyPin, 120);
+  }
+}
+function clearPin() { enteredPin = ''; updatePinDots(); }
+function updatePinDots() {
+  document.querySelectorAll('#pinDots .pin-dot').forEach((d, idx) => d.classList.toggle('filled', idx < enteredPin.length));
+}
+function verifyPin() {
+  if (enteredPin === config.parentPin) {
+    sfx('portal');
+    closePinModal();
+    if (pinTargetAction === 'parentTab') switchDashTab('parent');
+  } else {
+    sfx('bad');
+    enteredPin = '';
+    updatePinDots();
+    alert('❌ 家長密碼錯誤！(預設密碼為 1234)');
+  }
+}
+
+function setWordOrder(order) {
+  config.wordOrder = order;
+  config.seqIndex = 0;
+  localStorage.setItem('rv8_word_order', order);
+  updateWordOrderUI();
+  sfx('good');
+}
+function updateWordOrderUI() {
+  document.getElementById('orderBtnRandom').classList.toggle('active', config.wordOrder === 'random');
+  document.getElementById('orderBtnSeq').classList.toggle('active', config.wordOrder === 'sequential');
+}
+
+function getActiveWordPool() {
+  const unitNames = Object.keys(config.unitsMap);
+  if (config.selectedUnits.includes('ALL') || config.selectedUnits.length === 0) {
+    return unitNames.flatMap(u => config.unitsMap[u]);
+  }
+  let pool = [];
+  config.selectedUnits.forEach(u => {
+    if (config.unitsMap[u]) pool = pool.concat(config.unitsMap[u]);
+  });
+  return pool.length > 0 ? pool : unitNames.flatMap(u => config.unitsMap[u]);
+}
+
+function renderUnitSelectorBar() {
+  const bar = document.getElementById('unitSelectBar');
+  bar.innerHTML = '';
+  const unitNames = Object.keys(config.unitsMap);
+
+  const allChip = document.createElement('div');
+  const isAll = config.selectedUnits.includes('ALL');
+  allChip.className = 'unit-chip' + (isAll ? ' active' : '');
+  const totalWords = unitNames.reduce((acc, u) => acc + config.unitsMap[u].length, 0);
+  allChip.textContent = `🌟 全部課題 (${totalWords}題)`;
+  allChip.onclick = () => {
+    config.selectedUnits = ['ALL'];
+    config.seqIndex = 0;
+    saveProfileData();
+    renderUnitSelectorBar();
+    sfx('good');
+  };
+  bar.appendChild(allChip);
+
+  unitNames.forEach(uName => {
+    const chip = document.createElement('div');
+    const active = !isAll && config.selectedUnits.includes(uName);
+    chip.className = 'unit-chip' + (active ? ' active' : '');
+    chip.textContent = `📘 ${uName.split(':')[0]} (${config.unitsMap[uName].length}題)`;
+    chip.onclick = () => {
+      if (config.selectedUnits.includes('ALL')) {
+        config.selectedUnits = [uName];
+      } else {
+        const idx = config.selectedUnits.indexOf(uName);
+        if (idx >= 0) {
+          config.selectedUnits.splice(idx, 1);
+          if (config.selectedUnits.length === 0) config.selectedUnits = ['ALL'];
+        } else {
+          config.selectedUnits.push(uName);
+        }
+      }
+      config.seqIndex = 0;
+      saveProfileData();
+      renderUnitSelectorBar();
+      sfx('good');
+    };
+    bar.appendChild(chip);
+  });
+
+  const activePool = getActiveWordPool();
+  document.getElementById('activePoolCountText').textContent = `目標：完成全部 ${activePool.length} 題即通關`;
+  const startBtn = document.getElementById('btnStartChallenge');
+  if (startBtn) {
+    startBtn.textContent = `🚀 開始挑戰所選題庫 (共 ${activePool.length} 題)`;
+  }
+}
+
+async function autoTranslateMissingChinese() {
+  const textarea = document.getElementById('wordInput');
+  const lines = textarea.value.split('\n');
+  const btn = document.getElementById('btnAutoTrans');
+  btn.textContent = '⏳ 翻譯中...';
+  btn.disabled = true;
+
+  const updatedLines = [];
+  for (let rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || (line.startsWith('[') && line.endsWith(']'))) {
+      updatedLines.push(rawLine);
+      continue;
+    }
+    let hasComma = false;
+    let pDepth = 0;
+    for (let c of line) {
+      if (c === '(') pDepth++;
+      else if (c === ')') pDepth = Math.max(0, pDepth - 1);
+      else if (pDepth === 0 && (c === ',' || c === '，')) hasComma = true;
+    }
+
+    if (!hasComma) {
+      const cleanQuery = line.replace(/\.\.\./g, ' ').trim();
+      if (BUILTIN_DICT[cleanQuery.toLowerCase()]) {
+        updatedLines.push(`${line}, ${BUILTIN_DICT[cleanQuery.toLowerCase()]}`);
+      } else {
+        try {
+          const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dt=t&q=${encodeURIComponent(cleanQuery)}`);
+          const data = await res.json();
+          const trans = (data && data[0] && data[0][0] && data[0][0][0]) ? data[0][0][0] : '生字/片語';
+          updatedLines.push(`${line}, ${trans}`);
+        } catch (e) {
+          updatedLines.push(`${line}, (聽讀音串字)`);
+        }
+      }
+    } else {
+      updatedLines.push(rawLine);
+    }
+  }
+
+  textarea.value = updatedLines.join('\n');
+  btn.textContent = '✅ 已補全中文！';
+  setTimeout(() => {
+    btn.textContent = '🌐 自動補全中文';
+    btn.disabled = false;
+  }, 1800);
+  sfx('good');
+}
+
+function insertNewUnitTemplate() {
+  const textarea = document.getElementById('wordInput');
+  const count = (textarea.value.match(/\[Unit/gi) || []).length + 1;
+  textarea.value += `\n\n[Unit ${count}]\n`;
+  textarea.scrollTop = textarea.scrollHeight;
+}
+
+function executeFullReset() {
+  if (!confirm(`⚠️ 確定要清除【${config.playerName}】的所有連勝、鎖匙、金幣與已解鎖裝備嗎？`)) return;
+  sfx('portal');
+  config.keys = 0; config.coins = 30; config.streak = 0;
+  config.weaponId = 'cyber'; config.armorId = 'shield';
+  WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber'); });
+  ARMORS.forEach(a => { a.unlocked = (a.id === 'shield'); });
+  saveProfileData();
+  updateTopHUD();
+  renderGearLists();
+  alert(`✅ 已重設【${config.playerName}】的所有戰績與裝備！`);
+}
+
+/* =========================================================
+   7. 語音合成 (支援 6 款聲音角色與 4 段自訂語速) & 音效
+   ========================================================= */
+let currentAudio = null;
+async function speakText(text, customRate = null) {
+  if (!text) return;
+  const activeVoice = config.voiceName || 'en-GB-SoniaNeural';
+  const activeRate = customRate || config.voiceRate || '-15%';
+
+  try {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    const res = await fetch(`https://${EMBEDDED_AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: 'POST',
+      headers: {
+        'Ocp-Apim-Subscription-Key': EMBEDDED_AZURE_KEY,
+        'Content-Type': 'application/ssml+xml',
+        'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
+      },
+      body: `<speak version='1.0' xml:lang='en-US'><voice name='${activeVoice}'><prosody rate='${activeRate}'>${text}</prosody></voice></speak>`
+    });
+    if (res.ok) {
+      const blob = await res.blob();
+      currentAudio = new Audio(URL.createObjectURL(blob));
+      await currentAudio.play();
+      return;
+    }
+  } catch (e) {}
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = activeVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
+    const rateMap = { '-35%': 0.62, '-20%': 0.78, '-5%': 0.94, '+10%': 1.1 };
+    u.rate = rateMap[activeRate] || 0.85;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+function speakCurrentWord(overrideRate = null) {
+  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word, overrideRate);
+}
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function sfx(type) {
+  try {
+    if (!actx) actx = new AudioCtx();
+    if (actx.state === 'suspended') actx.resume();
+    const osc = actx.createOscillator();
+    const g = actx.createGain();
+    osc.connect(g); g.connect(actx.destination);
+    const now = actx.currentTime;
+    if (type === 'shoot') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(540, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+      g.gain.setValueAtTime(0.14, now);
+      g.gain.linearRampToValueAtTime(0.01, now + 0.08);
+      osc.start(now); osc.stop(now + 0.08);
+    } else if (type === 'good') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(620, now);
+      osc.frequency.setValueAtTime(920, now + 0.06);
+      g.gain.setValueAtTime(0.22, now);
+      g.gain.linearRampToValueAtTime(0.01, now + 0.18);
+      osc.start(now); osc.stop(now + 0.18);
+    } else if (type === 'bad') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.setValueAtTime(95, now + 0.18);
+      g.gain.setValueAtTime(0.26, now);
+      g.gain.linearRampToValueAtTime(0.01, now + 0.25);
+      osc.start(now); osc.stop(now + 0.25);
+    } else if (type === 'portal') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(900, now + 0.22);
+      g.gain.setValueAtTime(0.2, now);
+      g.gain.linearRampToValueAtTime(0.01, now + 0.22);
+      osc.start(now); osc.stop(now + 0.22);
+    }
+  } catch (e) {}
+}
+
+function addCoins(amount) {
+  const mult = config.armorId === 'coinchip' ? 2 : 1;
+  config.coins += amount * mult;
+  saveProfileData(true);
+  updateTopHUD();
+}
+
+/* =========================================================
+   8. 錯字母扣血機制 & 陣亡隨機掉落懲罰
+   ========================================================= */
+function flashDamageScreen() {
+  const el = document.getElementById('damageFlash');
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 220);
+}
+
+function applyWrongLetterPenalty(reasonText, x, y) {
+  sfx('bad');
+  flashDamageScreen();
+  const WRONG_DMG = 15;
+  player.hp = Math.max(0, player.hp - WRONG_DMG);
+  spawnParticles(player.x, player.y, '#f43f5e', 14);
+  addText(x || player.x, (y || player.y) - 28, `${reasonText} 💔-${WRONG_DMG} HP!`, '#f43f5e');
+
+  if (player.hp <= 0) {
+    if (config.armorId === 'phoenix' && !player.reviveUsed) {
+      player.reviveUsed = true;
+      player.hp = 100;
+      sfx('portal');
+      spawnParticles(player.x, player.y, '#facc15', 25);
+      addText(player.x, player.y - 40, '🔥 鳳凰核心觸發！滿血復活！', '#facc15');
+    } else {
+      finishRound(false);
+    }
+  }
+}
+
+function triggerDeathLootDrop() {
+  for (let i = 0; i < 6; i++) {
+    const ang = (Math.PI * 2 * i) / 6;
+    round.droppedLoot.push({
+      x: player.x, y: player.y,
+      vx: Math.cos(ang) * (3 + Math.random() * 3),
+      vy: Math.sin(ang) * (3 + Math.random() * 3),
+      icon: i % 2 === 0 ? '💰' : '📦'
+    });
+  }
+
+  if (config.coins > 0) {
+    const lostCoins = Math.min(config.coins, 8 + Math.floor(Math.random() * 10));
+    config.coins -= lostCoins;
+    saveProfileData();
+    updateTopHUD();
+    return `💀 陣亡掉落金錢：噴掉了 -${lostCoins} 金幣 💰！`;
+  }
+  return `💀 陣亡！`;
+}
+
+/* =========================================================
+   9. 競技場地圖、「完成題庫隊列制 (Word Queue)」與敵人減速設定
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const ARENA = { w: 1200, h: 660 };
+
 const SAFE_ZONE = { x: 115, y: 330, r: 78 };
 
 let obstacles = [];
@@ -1734,6 +2225,7 @@ let player = {
   dashCd: 0
 };
 
+// 要求 1：敵人基礎移動速度減慢至 2.2 (原本為 3.1)，追擊瞄準更輕鬆！
 let rival = {
   x: 1060, y: 330, r: 27,
   hp: 100, maxHp: 100,
@@ -1748,51 +2240,13 @@ let rival = {
   profile: BOSS_PROFILES[0]
 };
 
-function flashDamageScreen() {
-  const el = document.getElementById('damageFlash');
-  el.style.opacity = '1';
-  setTimeout(() => { el.style.opacity = '0'; }, 220);
-}
-
-function applyWrongLetterPenalty(reasonText, x, y) {
-  sfx('bad');
-  flashDamageScreen();
-  const WRONG_DMG = 15;
-  player.hp = Math.max(0, player.hp - WRONG_DMG);
-  spawnParticles(player.x, player.y, '#f43f5e', 14);
-  addText(x || player.x, (y || player.y) - 28, `${reasonText} 💔-${WRONG_DMG} HP!`, '#f43f5e');
-
-  if (player.hp <= 0) {
-    if (config.armorId === 'phoenix' && !player.reviveUsed) {
-      player.reviveUsed = true;
-      player.hp = 100;
-      sfx('portal');
-      spawnParticles(player.x, player.y, '#facc15', 25);
-      addText(player.x, player.y - 40, '🔥 鳳凰核心觸發！滿血復活！', '#facc15');
-    } else {
-      finishRound(false);
-    }
-  }
-}
-
-function triggerDeathLootDrop() {
-  for (let i = 0; i < 6; i++) {
-    const ang = (Math.PI * 2 * i) / 6;
-    round.droppedLoot.push({
-      x: player.x, y: player.y,
-      vx: Math.cos(ang) * (3 + Math.random() * 3),
-      vy: Math.sin(ang) * (3 + Math.random() * 3),
-      icon: i % 2 === 0 ? '💰' : '📦'
-    });
-  }
-  if (config.coins > 0) {
-    const lostCoins = Math.min(config.coins, 8 + Math.floor(Math.random() * 10));
-    config.coins -= lostCoins;
-    saveProfileData();
-    updateTopHUD();
-    return `💀 陣亡掉落金錢：噴掉了 -${lostCoins} 金幣 💰！`;
-  }
-  return `💀 陣亡！`;
+function togglePause() {
+  if (!match.active) return;
+  match.paused = !match.paused;
+  firingHeld = false;
+  syncVoiceControlsUI();
+  document.getElementById('pauseModal').classList.toggle('hidden', !match.paused);
+  sfx('good');
 }
 
 function restartCurrentRound() {
@@ -1805,6 +2259,32 @@ function quitToLobbyFromPause() {
   match.paused = false;
   document.getElementById('pauseModal').classList.add('hidden');
   openLobby();
+}
+
+function startMatch() {
+  saveProfileData(true);
+  document.getElementById('lobbyModal').classList.add('hidden');
+  document.getElementById('pauseModal').classList.add('hidden');
+  resize();
+
+  const pool = [...getActiveWordPool()];
+  if (config.wordOrder === 'random') {
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+  }
+
+  match.queue = pool;
+  match.totalWords = pool.length;
+  match.you = 0;
+  match.bot = 0;
+  match.round = 1;
+  match.active = true;
+  match.paused = false;
+
+  updateTopHUD();
+  initRound();
 }
 
 function pickNewRivalWaypoint() {
@@ -1853,7 +2333,7 @@ function initRound() {
 
   rival.x = 1060; rival.y = 330;
   rival.hp = 100; rival.stun = 0; rival.fireCd = 75;
-  rival.speed = 2.2;
+  rival.speed = 2.2; // 減慢敵人移動速度
   rival.enragedBoost = 0;
   pickNewRivalWaypoint();
 
@@ -2113,25 +2593,32 @@ function spawnBreakerCrates() {
   });
 }
 
+/* =========================================================
+   10. 繪製「休息思考保護區」、主角、紅心與 Boss
+   ========================================================= */
 function drawSafeSanctuaryZone() {
   ctx.save();
   ctx.translate(SAFE_ZONE.x, SAFE_ZONE.y);
+
   const pulse = Math.sin(performance.now() * 0.005) * 4;
   ctx.beginPath();
   ctx.arc(0, 0, SAFE_ZONE.r + pulse, 0, Math.PI * 2);
   ctx.fillStyle = player.inSafeZone ? 'rgba(34, 197, 94, 0.22)' : 'rgba(34, 197, 94, 0.1)';
   ctx.fill();
+
   ctx.lineWidth = 3;
   ctx.strokeStyle = player.inSafeZone ? '#4ade80' : 'rgba(74, 222, 128, 0.55)';
   ctx.setLineDash([12, 8]);
   ctx.stroke();
   ctx.setLineDash([]);
+
   ctx.fillStyle = player.inSafeZone ? '#86efac' : 'rgba(134, 239, 172, 0.7)';
   ctx.font = '900 13px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('🛡️ 休息思考保護區', 0, -SAFE_ZONE.r - 10);
   ctx.font = '700 11px sans-serif';
   ctx.fillText('(站入內擋子彈 + 慢速回血)', 0, SAFE_ZONE.r + 18);
+
   ctx.restore();
 }
 
@@ -2140,10 +2627,12 @@ function drawHeartMedkit(x, y) {
   const beat = 1 + Math.sin(performance.now() * 0.008) * 0.1;
   ctx.translate(x, y);
   ctx.scale(beat, beat);
+
   ctx.beginPath();
   ctx.arc(0, 0, 24, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(244, 63, 94, 0.22)';
   ctx.fill();
+
   ctx.fillStyle = '#f43f5e';
   ctx.strokeStyle = '#fda4af';
   ctx.lineWidth = 2.5;
@@ -2158,16 +2647,19 @@ function drawHeartMedkit(x, y) {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+
   ctx.fillStyle = 'rgba(255,255,255,0.65)';
   ctx.beginPath();
   ctx.arc(-11, -4, 3.5, 0, Math.PI * 2);
   ctx.fill();
+
   ctx.restore();
 }
 
 function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtected) {
   ctx.save();
   ctx.translate(x, y);
+
   if (spawnProtected || player.inSafeZone) {
     const pulse = 42 + Math.sin(performance.now() * 0.01) * 3;
     ctx.beginPath();
@@ -2184,6 +2676,7 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
     ctx.textAlign = 'center';
     ctx.fillText(player.inSafeZone ? '🛡️ 思考保護中 (走出圈外開火)' : '🛡️ 開場無敵保護罩', 0, 52);
   }
+
   if (shield > 0) {
     ctx.beginPath();
     ctx.arc(0, 0, 35, 0, Math.PI * 2);
@@ -2193,6 +2686,7 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
     ctx.strokeStyle = '#38bdf8';
     ctx.stroke();
   }
+
   const flap = Math.sin(performance.now() * 0.008) * 4;
   ctx.fillStyle = '#0284c7';
   ctx.strokeStyle = '#7dd3fc';
@@ -2267,12 +2761,14 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
   ctx.font = '900 12px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(config.playerName, 0, -50);
+
   ctx.restore();
 }
 
 function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
   ctx.save();
   ctx.translate(x, y);
+
   if (shielded) {
     ctx.beginPath();
     ctx.arc(0, 0, 42, 0, Math.PI * 2);
@@ -2282,6 +2778,7 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
     ctx.strokeStyle = '#c084fc';
     ctx.stroke();
   }
+
   const flap = Math.cos(performance.now() * 0.009) * 5;
   ctx.fillStyle = profile.wingColor;
   if (profile.style === 'kraken') {
@@ -2295,6 +2792,7 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
     ctx.beginPath(); ctx.moveTo(-10, 0); ctx.lineTo(-42, -22 + flap); ctx.lineTo(-30, 12); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(42, -22 + flap); ctx.lineTo(30, 12); ctx.closePath(); ctx.fill();
   }
+
   ctx.save();
   ctx.rotate(angle);
   ctx.fillStyle = profile.wingColor;
@@ -2339,16 +2837,28 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
     ctx.moveTo(11, -26); ctx.lineTo(19, -37); ctx.lineTo(4, -26);
     ctx.fill();
   }
+
   const bw = 60;
   ctx.fillStyle = 'rgba(0,0,0,0.7)';
   ctx.fillRect(-bw / 2, -46, bw, 7);
   ctx.fillStyle = '#f43f5e';
   ctx.fillRect(-bw / 2, -46, bw * (hp / maxHp), 7);
+
   ctx.fillStyle = '#fda4af';
   ctx.font = '900 11px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(profile.name, 0, -51);
+
   ctx.restore();
+}
+
+/* =========================================================
+   11. 遊戲更新與碰撞邏輯 (敵人減速優化)
+   ========================================================= */
+function circleRect(cx, cy, cr, rx, ry, rw, rh) {
+  const nx = Math.max(rx, Math.min(cx, rx + rw));
+  const ny = Math.max(ry, Math.min(cy, ry + rh));
+  return Math.hypot(cx - nx, cy - ny) < cr;
 }
 
 function update() {
@@ -2470,6 +2980,7 @@ function update() {
     if (Math.hypot(rival.wp.x - rival.x, rival.wp.y - rival.y) < 35) {
       pickNewRivalWaypoint();
     }
+    // 要求 1：敵人移動速度減慢，加速倍率亦調低，方便玩家追擊瞄準
     const aiSpd = rival.speed * (rival.enragedBoost > 0 ? 1.2 : 1) * (round.mode === 'assault' ? 1.05 : 1);
     const ang = Math.atan2(rival.wp.y - rival.y, rival.wp.x - rival.x);
     const rx = rival.x + Math.cos(ang) * aiSpd;
@@ -2722,61 +3233,9 @@ function finishRound(won) {
   }
 }
 
-function spawnParticles(x, y, color, cnt) {
-  for (let i = 0; i < cnt; i++) {
-    const a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 4.5;
-    round.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, color, life: 18 });
-  }
-}
-function addText(x, y, text, color) { round.texts.push({ x, y, text, color, life: 48 }); }
-
-function updateWordHUD() {
-  const names = { sniper: '🎯 SNIPER', assault: '⚡ ASSAULT', breaker: '🛡️ BREAKER' };
-  document.getElementById('hudModeBadge').textContent = names[round.mode];
-  document.getElementById('hudUnitBadge').textContent = round.wordObj ? round.wordObj.unit.split(':')[0] : 'Unit';
-  document.getElementById('hudMeaning').textContent = round.wordObj ? round.wordObj.meaning : '';
-  const box = document.getElementById('hudSlots');
-  box.innerHTML = '';
-  box.classList.toggle('compact', round.slots.length > 12);
-
-  round.slots.forEach((s, i) => {
-    const d = document.createElement('div');
-    if (s.isSpace) {
-      d.className = 'slot space-slot';
-      d.textContent = '␣';
-    } else {
-      d.className = 'slot' + (s.filled ? ' filled' : '') + (i === round.nextIdx ? ' target' : '');
-      d.textContent = s.filled ? s.char : '_';
-    }
-    box.appendChild(d);
-  });
-}
-
-function updateTopHUD() {
-  document.getElementById('scoreYou').textContent = match.you;
-  document.getElementById('scoreTotal').textContent = match.totalWords || getActiveWordPool().length;
-  document.getElementById('streakNum').textContent = config.streak;
-  document.getElementById('keysNum').textContent = config.keys;
-  document.getElementById('coinsNum').textContent = config.coins;
-  document.getElementById('lobbyStreak').textContent = config.streak;
-  document.getElementById('lobbyKeys').textContent = config.keys;
-  document.getElementById('lobbyCoins').textContent = config.coins;
-  document.getElementById('armoryKeysNum').textContent = config.keys;
-}
-
-function announceRound(t, s) {
-  const b = document.getElementById('centerBanner');
-  const subs = {
-    sniper: '順序射擊正確字母球！(可隨時回左邊綠色保護區思考)',
-    assault: '篤頂部字母補彈 ➔ 走出綠色保護區追擊敵人！',
-    breaker: '射爆或拾取正確字母箱破盾！(小心假箱扣 15 HP)'
-  };
-  document.getElementById('bannerTitle').textContent = t || `STAGE ${match.you + 1} / ${match.totalWords} vs ${rival.profile.title}`;
-  document.getElementById('bannerSub').textContent = s || subs[round.mode];
-  b.classList.remove('hidden');
-  setTimeout(() => b.classList.add('hidden'), 2300);
-}
-
+/* =========================================================
+   12. 畫面繪製
+   ========================================================= */
 let scale = 1, offX = 0, offY = 0;
 function resize() {
   const rect = stageEl.getBoundingClientRect();
@@ -2888,14 +3347,16 @@ function draw() {
   }
   for (const t of round.texts) {
     ctx.fillStyle = t.color; ctx.font = '900 18px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(t.text, t.x, t.y);
+    ctx.textAlign = 'center'; ctx.fillText(t.text, t.x, t.y);
   }
 
   ctx.restore();
   drawJoystickUI();
 }
 
+/* =========================================================
+   13. 觸控搖桿、開火與 UI 控制
+   ========================================================= */
 let keys = {};
 window.addEventListener('keydown', e => {
   keys[e.key.toLowerCase()] = true;
@@ -3041,6 +3502,153 @@ function triggerDash() {
   player.vx = Math.cos(ang) * 14;
   player.vy = Math.sin(ang) * 14;
   spawnParticles(player.x, player.y, '#38bdf8', 10);
+}
+
+function spawnParticles(x, y, color, cnt) {
+  for (let i = 0; i < cnt; i++) {
+    const a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 4.5;
+    round.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, color, life: 18 });
+  }
+}
+function addText(x, y, text, color) { round.texts.push({ x, y, text, color, life: 48 }); }
+
+function updateWordHUD() {
+  const names = { sniper: '🎯 SNIPER', assault: '⚡ ASSAULT', breaker: '🛡️ BREAKER' };
+  document.getElementById('hudModeBadge').textContent = names[round.mode];
+  document.getElementById('hudUnitBadge').textContent = round.wordObj ? round.wordObj.unit.split(':')[0] : 'Unit';
+  document.getElementById('hudMeaning').textContent = round.wordObj ? round.wordObj.meaning : '';
+  const box = document.getElementById('hudSlots');
+  box.innerHTML = '';
+  box.classList.toggle('compact', round.slots.length > 12);
+
+  round.slots.forEach((s, i) => {
+    const d = document.createElement('div');
+    if (s.isSpace) {
+      d.className = 'slot space-slot';
+      d.textContent = '␣';
+    } else {
+      d.className = 'slot' + (s.filled ? ' filled' : '') + (i === round.nextIdx ? ' target' : '');
+      d.textContent = s.filled ? s.char : '_';
+    }
+    box.appendChild(d);
+  });
+}
+
+function updateTopHUD() {
+  document.getElementById('scoreYou').textContent = match.you;
+  document.getElementById('scoreTotal').textContent = match.totalWords || getActiveWordPool().length;
+  document.getElementById('streakNum').textContent = config.streak;
+  document.getElementById('keysNum').textContent = config.keys;
+  document.getElementById('coinsNum').textContent = config.coins;
+  document.getElementById('lobbyStreak').textContent = config.streak;
+  document.getElementById('lobbyKeys').textContent = config.keys;
+  document.getElementById('lobbyCoins').textContent = config.coins;
+  document.getElementById('armoryKeysNum').textContent = config.keys;
+}
+
+function announceRound(t, s) {
+  const b = document.getElementById('centerBanner');
+  const subs = {
+    sniper: '順序射擊正確字母球！(可隨時回左邊綠色保護區思考)',
+    assault: '篤頂部字母補彈 ➔ 走出綠色保護區追擊敵人！',
+    breaker: '射爆或拾取正確字母箱破盾！(小心假箱扣 15 HP)'
+  };
+  document.getElementById('bannerTitle').textContent = t || `STAGE ${match.you + 1} / ${match.totalWords} vs ${rival.profile.title}`;
+  document.getElementById('bannerSub').textContent = s || subs[round.mode];
+  b.classList.remove('hidden');
+  setTimeout(() => b.classList.add('hidden'), 2300);
+}
+
+function setMode(m, el) {
+  config.mode = m;
+  document.querySelectorAll('#modeRow .mode-card').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  sfx('good');
+}
+function setDiff(d, el) {
+  config.diff = d;
+  document.querySelectorAll('#diffRow .seg-btn').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  sfx('good');
+}
+
+function renderGearLists() {
+  const wBox = document.getElementById('weaponList');
+  wBox.innerHTML = '';
+  WEAPONS.forEach(w => {
+    const d = document.createElement('div');
+    d.className = 'gear-card' + (config.weaponId === w.id ? ' active' : '');
+    const priceTag = w.unlocked ? '✅ 已裝備/擁有' : `🔒 需要 🔑${w.costKey}`;
+    d.innerHTML = `<div class="g-name">${w.name}</div>
+      <div class="g-desc">${w.desc}</div>
+      <div class="g-cost" style="color:${w.unlocked ? '#22c55e' : '#facc15'};">${priceTag}</div>`;
+    d.onclick = () => {
+      if (w.unlocked) {
+        config.weaponId = w.id; saveProfileData(); renderGearLists(); sfx('good');
+      } else if (config.keys >= w.costKey) {
+        config.keys -= w.costKey; w.unlocked = true; config.weaponId = w.id;
+        saveProfileData(); updateTopHUD(); renderGearLists(); sfx('portal');
+      } else {
+        sfx('bad');
+      }
+    };
+    wBox.appendChild(d);
+  });
+
+  const aBox = document.getElementById('armorList');
+  aBox.innerHTML = '';
+  ARMORS.forEach(a => {
+    const d = document.createElement('div');
+    d.className = 'gear-card' + (config.armorId === a.id ? ' active' : '');
+    const priceTag = a.unlocked ? '✅ 已裝備/擁有' : `🔒 需要 🔑${a.costKey}`;
+    d.innerHTML = `<div class="g-name">${a.name}</div>
+      <div class="g-desc">${a.desc}</div>
+      <div class="g-cost" style="color:${a.unlocked ? '#22c55e' : '#facc15'};">${priceTag}</div>`;
+    d.onclick = () => {
+      if (a.unlocked) {
+        config.armorId = a.id; saveProfileData(); renderGearLists(); sfx('good');
+      } else if (config.keys >= a.costKey) {
+        config.keys -= a.costKey; a.unlocked = true; config.armorId = a.id;
+        saveProfileData(); updateTopHUD(); renderGearLists(); sfx('portal');
+      } else {
+        sfx('bad');
+      }
+    };
+    aBox.appendChild(d);
+  });
+}
+
+function openLobby() {
+  match.active = false;
+  match.paused = false;
+  saveProfileData(true);
+  switchDashTab('play');
+  updateTopHUD();
+  renderUnitSelectorBar();
+  renderGearLists();
+  syncVoiceControlsUI();
+  document.getElementById('pauseModal').classList.add('hidden');
+  document.getElementById('lobbyModal').classList.remove('hidden');
+}
+
+function saveSettings() {
+  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
+  const raw = document.getElementById('wordInput').value.trim() || def;
+  localStorage.setItem(getProfKey('words'), raw);
+  parseUnitsFromText(raw);
+  config.selectedUnits = ['ALL'];
+  config.seqIndex = 0;
+  renderUnitSelectorBar();
+
+  config.geminiKey = document.getElementById('geminiKeyInput').value.trim();
+  config.parentPin = document.getElementById('parentPinInput').value.trim() || '1234';
+
+  localStorage.setItem('rv7_gemini_key', config.geminiKey);
+  localStorage.setItem('rv8_parent_pin', config.parentPin);
+
+  saveProfileData();
+  switchDashTab('play');
+  sfx('good');
 }
 
 generateRandomObstacles();
