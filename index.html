@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v10.2</title>
+<title>RIVALS: Word Arena v10.3</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -58,7 +58,7 @@
   }
 
   /* =========================================================
-     主遊戲視窗架構 (字體全面放大，清晰易讀)
+     主遊戲視窗架構 (上下獨立分區，字體全面放大清晰易讀)
      ========================================================= */
   .app-viewport {
     position: absolute;
@@ -145,7 +145,7 @@
     border: 1.5px solid var(--blue);
     color: #fff;
     border-radius: 8px;
-    padding: 4px 10px;
+    padding: 5px 11px;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
@@ -1071,7 +1071,7 @@
 </div>
 
 <!-- =========================================================
-     v10.2 響應式主大廳 (全介面字體放大 + 音節發音修復)
+     v10.3 響應式主大廳 (全介面字體放大 + 音節發音修復)
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -1196,7 +1196,7 @@
         🚀 開始挑戰所選題庫 (START)
       </button>
       <div style="text-align:center; font-size:12px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 10.2.0 (大字體清晰版 + 音節即時發音)
+        PWA Auto-Update Ready • Version 10.3.0 (大字體清晰版 + 音節即時發音)
       </div>
     </div>
 
@@ -1233,13 +1233,11 @@
           </div>
         </div>
 
-        <!-- 頂部並排展示：Whole Word 擺在中文解釋旁邊 (同字無點分色，跨字保留 Space) -->
         <div class="study-top-banner">
           <div class="whole-word-preview" id="studyWholeWord" onclick="speakStudyWord('-12%')" title="點擊朗讀完整生字或片語"></div>
           <div class="meaning-badge-study" id="studyWordMeaning">目標</div>
         </div>
 
-        <!-- 學習模式區 -->
         <div id="studyLearnArea">
           <div class="syllables-container" id="studySyllablesBox"></div>
           <div style="font-size:13px; color:#94a3b8; margin-bottom:12px;">
@@ -1247,7 +1245,6 @@
           </div>
         </div>
 
-        <!-- 砌音節練習區 -->
         <div id="studyBuildArea" class="hidden">
           <div style="font-size:14px; color:var(--gold); font-weight:800; margin-bottom:8px;">
             👇 請按正確順序點擊下方音節積木，拼出目標生字或片語：
@@ -1256,7 +1253,6 @@
           <div class="syllables-container" id="studyBuildPool" style="min-height:80px; margin-bottom:8px;"></div>
         </div>
 
-        <!-- 發音控制列 -->
         <div class="audio-controls" style="margin-bottom:14px;">
           <button class="act-btn btn-blend" onclick="playStudyBlend()">
             🔗 逐個音節拼讀
@@ -1650,1214 +1646,9 @@ const PHONICS_IPA_DICT = {
   'jogging':      [{ t: 'jog', ipa: 'dʒɒɡ', ph: 'jog' }, { t: 'ging', ipa: 'ɪŋ', ph: 'ing' }],
   'tennis':       [{ t: 'ten', ipa: 'ten', ph: 'ten' }, { t: 'nis', ipa: 'ɪs', ph: 'nis' }]
 };
-
-const FALLBACK_SYLLABLE_IPA = {
-  'un': { ipa: 'ʌn', ph: 'uhn' },
-  'in': { ipa: 'ɪn', ph: 'in' },
-  'im': { ipa: 'ɪm', ph: 'im' },
-  'dis': { ipa: 'dɪs', ph: 'dis' },
-  're': { ipa: 'rɪ', ph: 'rih' },
-  'pre': { ipa: 'prɪ', ph: 'prih' },
-  'pro': { ipa: 'prə', ph: 'pruh' },
-  'con': { ipa: 'kɒn', ph: 'kon' },
-  'de': { ipa: 'dɪ', ph: 'dih' },
-  'ex': { ipa: 'ɪks', ph: 'iks' },
-  'ob': { ipa: 'ɒb', ph: 'ob' },
-  'sub': { ipa: 'sʌb', ph: 'sub' },
-  'ap': { ipa: 'æp', ph: 'uhp' },
-  'at': { ipa: 'æt', ph: 'at' },
-  'up': { ipa: 'ʌp', ph: 'uhp' },
-  'em': { ipa: 'ɪm', ph: 'im' },
-  'en': { ipa: 'ɪn', ph: 'in' },
-  'er': { ipa: 'ɜː', ph: 'er' },
-  'ing': { ipa: 'ɪŋ', ph: 'ing' },
-  'ed': { ipa: 'ɪd', ph: 'id' },
-  'ly': { ipa: 'li', ph: 'lee' },
-  'ty': { ipa: 'ti', ph: 'tee' },
-  'ry': { ipa: 'ri', ph: 'ree' },
-  'tion': { ipa: 'ʃən', ph: 'shun' },
-  'sion': { ipa: 'ʒən', ph: 'zhun' },
-  'ture': { ipa: 'tʃə', ph: 'cher' },
-  'ous': { ipa: 'əs', ph: 'uhs' }
-};
-
-function splitSingleWordToSyllables(singleWord) {
-  if (PHONICS_IPA_DICT[singleWord]) {
-    return PHONICS_IPA_DICT[singleWord].map(s => ({ ...s }));
-  }
-  if (singleWord.length <= 4) {
-    const fb = FALLBACK_SYLLABLE_IPA[singleWord];
-    return [{ t: singleWord, ipa: fb ? fb.ipa : null, ph: fb ? fb.ph : singleWord }];
-  }
-  const regex = /[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi;
-  const parts = singleWord.match(regex) || [singleWord];
-  return parts.map(p => {
-    const fb = FALLBACK_SYLLABLE_IPA[p];
-    return { t: p, ipa: fb ? fb.ipa : null, ph: fb ? fb.ph : p };
-  });
-}
-
-function getWordSyllableObjects(wordOrPhrase) {
-  const clean = wordOrPhrase.toLowerCase().trim();
-  const words = clean.split(/\s+/);
-  let out = [];
-  words.forEach((w, wIdx) => {
-    const syls = splitSingleWordToSyllables(w);
-    syls.forEach((s, sIdx) => {
-      out.push({
-        t: s.t,
-        ipa: s.ipa,
-        ph: s.ph || s.t,
-        spaceAfter: (sIdx === syls.length - 1) && (wIdx < words.length - 1)
-      });
-    });
-  });
-  return out;
-}
-
+<script>
 /* =========================================================
-   5. 獨立玩家檔案與狀態
-   ========================================================= */
-let config = {
-  playerName: localStorage.getItem('rv8_active_prof') || 'JUSTIN',
-  mode: 'mix',
-  diff: 'progressive',
-  wordOrder: localStorage.getItem('rv8_word_order') || 'random',
-  seqIndex: 0,
-  voiceName: localStorage.getItem('rv94_voice_name') || 'en-GB-SoniaNeural',
-  voiceRate: localStorage.getItem('rv94_voice_rate') || '-15%',
-  parentPin: localStorage.getItem('rv8_parent_pin') || '1234',
-  geminiKey: localStorage.getItem('rv7_gemini_key') || '',
-  weaponId: 'cyber',
-  armorId: 'shield',
-  keys: 0,
-  coins: 30,
-  streak: 0,
-  selectedUnits: ['ALL'],
-  unitsMap: {}
-};
-
-function getProfKey(suffix) { return `rv8_${config.playerName}_${suffix}`; }
-
-let toastTimer = null;
-function showAutoSaveToast() {
-  const t = document.getElementById('autoSaveToast');
-  t.style.opacity = '1';
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1200);
-}
-
-function loadProfileData(profName) {
-  config.playerName = profName;
-  config.seqIndex = 0;
-  localStorage.setItem('rv8_active_prof', profName);
-
-  document.querySelectorAll('.prof-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent === profName);
-  });
-  document.getElementById('lobbyProfLabel').textContent = profName;
-
-  config.keys = parseInt(localStorage.getItem(getProfKey('keys')) || '0', 10);
-  config.coins = parseInt(localStorage.getItem(getProfKey('coins')) || '30', 10);
-  config.streak = parseInt(localStorage.getItem(getProfKey('streak')) || '0', 10);
-  config.weaponId = localStorage.getItem(getProfKey('weapon')) || 'cyber';
-  config.armorId = localStorage.getItem(getProfKey('armor')) || 'shield';
-
-  try {
-    const uw = JSON.parse(localStorage.getItem(getProfKey('uw')) || '["cyber"]');
-    WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber') || uw.includes(w.id); });
-    const ua = JSON.parse(localStorage.getItem(getProfKey('ua')) || '["shield"]');
-    ARMORS.forEach(a => { a.unlocked = (a.id === 'shield') || ua.includes(a.id); });
-  } catch (e) {}
-
-  const defaultForProf = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
-  let rawWords = localStorage.getItem(getProfKey('words'));
-  if (!rawWords || !rawWords.trim()) {
-    rawWords = defaultForProf;
-    localStorage.setItem(getProfKey('words'), rawWords);
-  }
-  parseUnitsFromText(rawWords);
-
-  try {
-    config.selectedUnits = JSON.parse(localStorage.getItem(getProfKey('sel_units')) || '["ALL"]');
-  } catch (e) { config.selectedUnits = ['ALL']; }
-
-  const firstUnit = Object.keys(config.unitsMap)[0] || 'Unit 1';
-  studyState.currentUnit = firstUnit;
-  studyState.idx = 0;
-
-  renderUnitSelectorBar();
-  renderGearLists();
-  updateTopHUD();
-  updateWordOrderUI();
-  syncVoiceControlsUI();
-  renderStudyMode();
-}
-
-function saveProfileData(silent = false) {
-  try {
-    localStorage.setItem('rv8_active_prof', config.playerName);
-    localStorage.setItem(getProfKey('uw'), JSON.stringify(WEAPONS.filter(w => w.unlocked).map(w => w.id)));
-    localStorage.setItem(getProfKey('ua'), JSON.stringify(ARMORS.filter(a => a.unlocked).map(a => a.id)));
-    localStorage.setItem(getProfKey('weapon'), config.weaponId);
-    localStorage.setItem(getProfKey('armor'), config.armorId);
-    localStorage.setItem(getProfKey('keys'), String(config.keys));
-    localStorage.setItem(getProfKey('coins'), String(config.coins));
-    localStorage.setItem(getProfKey('streak'), String(config.streak));
-    localStorage.setItem(getProfKey('sel_units'), JSON.stringify(config.selectedUnits));
-    if (!silent) showAutoSaveToast();
-  } catch (e) {}
-}
-
-window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveProfileData(true); });
-window.addEventListener('pagehide', () => saveProfileData(true));
-window.addEventListener('beforeunload', () => saveProfileData(true));
-
-function parseUnitsFromText(rawText) {
-  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-  const map = {};
-  let currentUnit = 'Unit 1';
-
-  for (const line of lines) {
-    if (line.startsWith('[') && line.endsWith(']')) {
-      currentUnit = line.slice(1, -1).trim() || 'Unit 1';
-      if (!map[currentUnit]) map[currentUnit] = [];
-      continue;
-    }
-
-    let splitIdx = -1;
-    let parenDepth = 0;
-    for (let i = 0; i < line.length; i++) {
-      if (line[i] === '(' || line[i] === '（') parenDepth++;
-      else if (line[i] === ')' || line[i] === '）') parenDepth = Math.max(0, parenDepth - 1);
-      else if (parenDepth === 0 && (line[i] === ',' || line[i] === '，' || line[i] === '\t')) {
-        splitIdx = i;
-        break;
-      }
-    }
-
-    let rawEng = splitIdx !== -1 ? line.slice(0, splitIdx).trim() : line.trim();
-    let meaning = splitIdx !== -1 ? line.slice(splitIdx + 1).trim() : '';
-
-    let parenNotes = [];
-    let spellTarget = rawEng.replace(/\(([^)]+)\)/g, (_, inner) => {
-      parenNotes.push(`(${inner})`);
-      return '';
-    });
-
-    spellTarget = spellTarget.toLowerCase()
-      .replace(/[\/\.]+/g, ' ')
-      .replace(/[^a-z\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    const pureLetters = spellTarget.replace(/[^a-z]/g, '');
-    if (pureLetters.length >= 2) {
-      if (!meaning) {
-        meaning = BUILTIN_DICT[rawEng.toLowerCase()] || BUILTIN_DICT[pureLetters] || '（點擊🔊聽讀音）';
-      }
-      if (parenNotes.length > 0 && !meaning.includes('(')) {
-        meaning += ' ' + parenNotes.join(' ');
-      }
-      const ttsPhrase = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
-      if (!map[currentUnit]) map[currentUnit] = [];
-      map[currentUnit].push({
-        word: spellTarget,
-        pureWord: pureLetters,
-        ttsText: ttsPhrase,
-        meaning,
-        unit: currentUnit
-      });
-    }
-  }
-
-  if (Object.keys(map).length === 0) {
-    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' }];
-  }
-  config.unitsMap = map;
-}
-
-/* =========================================================
-   6. 內置 Phonics 溫習室互動邏輯
-   ========================================================= */
-let studyState = {
-  mode: 'learn',
-  currentUnit: null,
-  idx: 0,
-  syllables: [],
-  buildStep: 0,
-  isBlending: false
-};
-
-function getStudyUnitWordList() {
-  const unitNames = Object.keys(config.unitsMap);
-  if (!studyState.currentUnit || !config.unitsMap[studyState.currentUnit]) {
-    studyState.currentUnit = unitNames[0] || 'Unit 1';
-  }
-  return config.unitsMap[studyState.currentUnit] || [];
-}
-
-function renderStudyUnitBar() {
-  const bar = document.getElementById('studyUnitBar');
-  if (!bar) return;
-  bar.innerHTML = '';
-  const unitNames = Object.keys(config.unitsMap);
-
-  if (!studyState.currentUnit || !config.unitsMap[studyState.currentUnit]) {
-    studyState.currentUnit = unitNames[0];
-  }
-
-  unitNames.forEach(uName => {
-    const chip = document.createElement('div');
-    const isAct = (studyState.currentUnit === uName);
-    chip.className = 'unit-chip' + (isAct ? ' active' : '');
-    chip.textContent = `📘 ${uName.split(':')[0]} (${config.unitsMap[uName].length}題)`;
-    chip.onclick = () => {
-      studyState.currentUnit = uName;
-      studyState.idx = 0;
-      sfx('good');
-      renderStudyMode();
-      speakStudyWord('-12%');
-    };
-    bar.appendChild(chip);
-  });
-
-  const lbl = document.getElementById('studyUnitLabel');
-  if (lbl && studyState.currentUnit) {
-    lbl.textContent = `${studyState.currentUnit.split(':')[0]} (共 ${getStudyUnitWordList().length} 題)`;
-  }
-}
-
-function renderStudyMode() {
-  renderStudyUnitBar();
-  const unitWords = getStudyUnitWordList();
-  if (studyState.idx >= unitWords.length) studyState.idx = 0;
-  const item = unitWords[studyState.idx] || unitWords[0];
-  if (!item) return;
-
-  studyState.syllables = getWordSyllableObjects(item.word);
-
-  document.getElementById('studyIdxText').textContent = `${studyState.idx + 1} / ${unitWords.length}`;
-  document.getElementById('studyWordMeaning').textContent = item.meaning;
-
-  const wholePreview = document.getElementById('studyWholeWord');
-  wholePreview.innerHTML = studyState.syllables.map((sylObj, i) => {
-    const coloredSpan = `<span style="color:${COLOR_HEX[i % 5]};">${sylObj.t}</span>`;
-    return sylObj.spaceAfter ? coloredSpan + `<span style="display:inline-block; width:14px;">&nbsp;</span>` : coloredSpan;
-  }).join('');
-
-  const box = document.getElementById('studySyllablesBox');
-  box.innerHTML = '';
-  studyState.syllables.forEach((sylObj, i) => {
-    const cIdx = i % 5;
-    const block = document.createElement('div');
-    block.className = `syl-block syl-c${cIdx}`;
-    block.innerHTML = `
-      <span>${sylObj.t}</span>
-      <span class="syl-ipa-tag">🔊 /${sylObj.ipa || sylObj.t}/</span>
-    `;
-    // 支援觸控與滑鼠點擊即刻發音
-    block.onpointerdown = (e) => {
-      e.preventDefault();
-      speakSingleSyllable(sylObj, block);
-    };
-    box.appendChild(block);
-
-    if (i < studyState.syllables.length - 1) {
-      if (sylObj.spaceAfter) {
-        const gap = document.createElement('div');
-        gap.className = 'syl-word-gap';
-        gap.title = '單字空格 (Space)';
-        box.appendChild(gap);
-      } else {
-        const dot = document.createElement('span');
-        dot.className = 'syl-dot';
-        dot.textContent = '•';
-        box.appendChild(dot);
-      }
-    }
-  });
-
-  if (studyState.mode === 'build') {
-    initStudyBuildChallenge();
-  }
-
-  renderStudyChips(unitWords);
-}
-
-function initStudyBuildChallenge() {
-  studyState.buildStep = 0;
-  const slotsBox = document.getElementById('studyBuildSlots');
-  const poolBox = document.getElementById('studyBuildPool');
-  slotsBox.innerHTML = '';
-  poolBox.innerHTML = '';
-
-  studyState.syllables.forEach((s, i) => {
-    const slot = document.createElement('div');
-    slot.className = 'build-slot-empty';
-    slot.textContent = `第 ${i + 1} 節`;
-    if (s.spaceAfter) slot.style.marginRight = '14px';
-    slotsBox.appendChild(slot);
-  });
-
-  const shuffled = studyState.syllables.map((sylObj, origIdx) => ({ sylObj, origIdx }))
-    .sort(() => Math.random() - 0.5);
-
-  shuffled.forEach(item => {
-    const cIdx = item.origIdx % 5;
-    const btn = document.createElement('div');
-    btn.className = `syl-block syl-c${cIdx}`;
-    btn.style.fontSize = '26px';
-    btn.style.padding = '10px 16px';
-    btn.textContent = item.sylObj.t;
-    btn.onpointerdown = (e) => {
-      e.preventDefault();
-      handleStudyBuildTap(item, btn);
-    };
-    poolBox.appendChild(btn);
-  });
-}
-
-async function handleStudyBuildTap(item, btnEl) {
-  const expectedObj = studyState.syllables[studyState.buildStep];
-  if (item.sylObj.t === expectedObj.t) {
-    speakSingleSyllable(item.sylObj, null);
-    btnEl.style.visibility = 'hidden';
-
-    const slotEls = document.getElementById('studyBuildSlots').children;
-    const targetSlot = slotEls[studyState.buildStep];
-    const cIdx = studyState.buildStep % 5;
-    targetSlot.className = `syl-block syl-c${cIdx}`;
-    targetSlot.style.fontSize = '26px';
-    targetSlot.style.padding = '8px 16px';
-    targetSlot.style.minWidth = '68px';
-    targetSlot.textContent = item.sylObj.t;
-
-    studyState.buildStep++;
-    if (studyState.buildStep >= studyState.syllables.length) {
-      setTimeout(() => speakStudyWord('-10%'), 450);
-    }
-  } else {
-    sfx('bad');
-    btnEl.style.transform = 'translateX(-6px)';
-    setTimeout(() => btnEl.style.transform = 'translateX(6px)', 80);
-    setTimeout(() => btnEl.style.transform = 'none', 160);
-  }
-}
-
-function setStudyMode(m) {
-  studyState.mode = m;
-  document.getElementById('tabStudy').classList.toggle('active', m === 'learn');
-  document.getElementById('tabBuild').classList.toggle('active', m === 'build');
-  document.getElementById('studyLearnArea').classList.toggle('hidden', m !== 'learn');
-  document.getElementById('studyBuildArea').classList.toggle('hidden', m !== 'build');
-  renderStudyMode();
-}
-
-function prevStudyWord() {
-  const unitWords = getStudyUnitWordList();
-  studyState.idx = (studyState.idx - 1 + unitWords.length) % unitWords.length;
-  renderStudyMode();
-  speakStudyWord('-12%');
-}
-
-function nextStudyWord() {
-  const unitWords = getStudyUnitWordList();
-  studyState.idx = (studyState.idx + 1) % unitWords.length;
-  renderStudyMode();
-  speakStudyWord('-12%');
-}
-
-function renderStudyChips(unitWords) {
-  const grid = document.getElementById('studyWordChips');
-  grid.innerHTML = '';
-  unitWords.forEach((item, i) => {
-    const chip = document.createElement('div');
-    chip.className = 'w-chip' + (i === studyState.idx ? ' active' : '');
-    chip.textContent = item.word;
-    chip.onclick = () => {
-      studyState.idx = i;
-      renderStudyMode();
-      speakStudyWord('-12%');
-    };
-    grid.appendChild(chip);
-  });
-}
-
-// 修復重點 1：點擊單一音節塊時 100% 發聲（支援 Azure IPA + 音訊快取 + Web Speech 保底）
-async function speakSingleSyllable(sylObj, blockEl) {
-  if (blockEl) {
-    document.querySelectorAll('#studySyllablesBox .syl-block').forEach(b => b.classList.remove('speaking'));
-    blockEl.classList.add('speaking');
-    setTimeout(() => blockEl.classList.remove('speaking'), 550);
-  }
-  const ssmlContent = sylObj.ipa
-    ? `<phoneme alphabet="ipa" ph="${sylObj.ipa}">${sylObj.t}</phoneme>`
-    : (sylObj.ph || sylObj.t);
-  await speakAzureSSML(ssmlContent, '-18%', sylObj.ph || sylObj.t);
-}
-
-async function speakStudyWord(rate = '-12%') {
-  const unitWords = getStudyUnitWordList();
-  const item = unitWords[studyState.idx] || unitWords[0];
-  if (!item) return;
-  const blocks = document.querySelectorAll('#studySyllablesBox .syl-block');
-  blocks.forEach(b => b.classList.add('speaking'));
-  await speakText(item.ttsText || item.word, rate);
-  blocks.forEach(b => b.classList.remove('speaking'));
-}
-
-async function playStudyBlend() {
-  if (studyState.isBlending) return;
-  studyState.isBlending = true;
-
-  const blocks = document.querySelectorAll('#studySyllablesBox .syl-block');
-  for (let i = 0; i < studyState.syllables.length; i++) {
-    const sylObj = studyState.syllables[i];
-    const el = blocks[i];
-    if (el) el.classList.add('speaking');
-
-    const ssmlContent = sylObj.ipa
-      ? `<phoneme alphabet="ipa" ph="${sylObj.ipa}">${sylObj.t}</phoneme>`
-      : (sylObj.ph || sylObj.t);
-    await speakAzureSSML(ssmlContent, '-18%', sylObj.ph || sylObj.t);
-    await new Promise(r => setTimeout(r, 150));
-    if (el) el.classList.remove('speaking');
-  }
-
-  await new Promise(r => setTimeout(r, 200));
-  await speakStudyWord('-12%');
-  studyState.isBlending = false;
-}
-
-/* =========================================================
-   7. 大廳渲染、題庫選擇、軍械庫、相片 OCR 與家長密碼
-   ========================================================= */
-let enteredPin = '';
-let pinTargetAction = '';
-
-function switchDashTab(tabName) {
-  document.getElementById('tabBtnPlay').classList.toggle('active', tabName === 'play');
-  document.getElementById('tabBtnArmory').classList.toggle('active', tabName === 'armory');
-  document.getElementById('tabBtnPhonics').classList.toggle('active', tabName === 'phonics');
-  document.getElementById('tabBtnParent').classList.toggle('active', tabName === 'parent');
-
-  document.getElementById('tabContentPlay').classList.toggle('hidden', tabName !== 'play');
-  document.getElementById('tabContentArmory').classList.toggle('hidden', tabName !== 'armory');
-  document.getElementById('tabContentPhonics').classList.toggle('hidden', tabName !== 'phonics');
-  document.getElementById('tabContentParent').classList.toggle('hidden', tabName !== 'parent');
-
-  if (tabName === 'phonics') {
-    renderStudyMode();
-  }
-  if (tabName === 'parent') {
-    document.getElementById('parentProfName').textContent = config.playerName;
-    const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
-    document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
-    document.getElementById('geminiKeyInput').value = config.geminiKey;
-    document.getElementById('parentPinInput').value = config.parentPin;
-  }
-}
-
-function requestParentPin(action) {
-  pinTargetAction = action;
-  enteredPin = '';
-  updatePinDots();
-  document.getElementById('pinModal').classList.remove('hidden');
-}
-
-function closePinModal() { document.getElementById('pinModal').classList.add('hidden'); }
-
-function tapPin(digit) {
-  if (enteredPin.length < 4) {
-    enteredPin += digit;
-    sfx('good');
-    updatePinDots();
-    if (enteredPin.length === 4) setTimeout(verifyPin, 120);
-  }
-}
-function clearPin() { enteredPin = ''; updatePinDots(); }
-function updatePinDots() {
-  document.querySelectorAll('#pinDots .pin-dot').forEach((d, idx) => d.classList.toggle('filled', idx < enteredPin.length));
-}
-function verifyPin() {
-  if (enteredPin === config.parentPin) {
-    sfx('portal');
-    closePinModal();
-    if (pinTargetAction === 'parentTab') switchDashTab('parent');
-  } else {
-    sfx('bad');
-    enteredPin = '';
-    updatePinDots();
-    alert('❌ 家長密碼錯誤！(預設密碼為 1234)');
-  }
-}
-
-function setWordOrder(order) {
-  config.wordOrder = order;
-  config.seqIndex = 0;
-  localStorage.setItem('rv8_word_order', order);
-  updateWordOrderUI();
-  sfx('good');
-}
-function updateWordOrderUI() {
-  document.getElementById('orderBtnRandom').classList.toggle('active', config.wordOrder === 'random');
-  document.getElementById('orderBtnSeq').classList.toggle('active', config.wordOrder === 'sequential');
-}
-
-function getActiveWordPool() {
-  const unitNames = Object.keys(config.unitsMap);
-  if (config.selectedUnits.includes('ALL') || config.selectedUnits.length === 0) {
-    return unitNames.flatMap(u => config.unitsMap[u]);
-  }
-  let pool = [];
-  config.selectedUnits.forEach(u => {
-    if (config.unitsMap[u]) pool = pool.concat(config.unitsMap[u]);
-  });
-  return pool.length > 0 ? pool : unitNames.flatMap(u => config.unitsMap[u]);
-}
-
-function renderUnitSelectorBar() {
-  const bar = document.getElementById('unitSelectBar');
-  bar.innerHTML = '';
-  const unitNames = Object.keys(config.unitsMap);
-
-  const allChip = document.createElement('div');
-  const isAll = config.selectedUnits.includes('ALL');
-  allChip.className = 'unit-chip' + (isAll ? ' active' : '');
-  const totalWords = unitNames.reduce((acc, u) => acc + config.unitsMap[u].length, 0);
-  allChip.textContent = `🌟 全部課題 (${totalWords}題)`;
-  allChip.onclick = () => {
-    config.selectedUnits = ['ALL'];
-    config.seqIndex = 0;
-    saveProfileData();
-    renderUnitSelectorBar();
-    sfx('good');
-  };
-  bar.appendChild(allChip);
-
-  unitNames.forEach(uName => {
-    const chip = document.createElement('div');
-    const active = !isAll && config.selectedUnits.includes(uName);
-    chip.className = 'unit-chip' + (active ? ' active' : '');
-    chip.textContent = `📘 ${uName.split(':')[0]} (${config.unitsMap[uName].length}題)`;
-    chip.onclick = () => {
-      if (config.selectedUnits.includes('ALL')) {
-        config.selectedUnits = [uName];
-      } else {
-        const idx = config.selectedUnits.indexOf(uName);
-        if (idx >= 0) {
-          config.selectedUnits.splice(idx, 1);
-          if (config.selectedUnits.length === 0) config.selectedUnits = ['ALL'];
-        } else {
-          config.selectedUnits.push(uName);
-        }
-      }
-      config.seqIndex = 0;
-      saveProfileData();
-      renderUnitSelectorBar();
-      sfx('good');
-    };
-    bar.appendChild(chip);
-  });
-
-  const activePool = getActiveWordPool();
-  document.getElementById('activePoolCountText').textContent = `目標：完成全部 ${activePool.length} 題即通關`;
-  const startBtn = document.getElementById('btnStartChallenge');
-  if (startBtn) {
-    startBtn.textContent = `🚀 開始挑戰所選題庫 (共 ${activePool.length} 題)`;
-  }
-}
-
-function renderGearLists() {
-  const wBox = document.getElementById('weaponList');
-  wBox.innerHTML = '';
-  WEAPONS.forEach(w => {
-    const d = document.createElement('div');
-    d.className = 'gear-card' + (config.weaponId === w.id ? ' active' : '');
-    const priceTag = w.unlocked ? '✅ 已裝備/擁有' : `🔒 需要 🔑${w.costKey}`;
-    d.innerHTML = `<div class="g-name">${w.name}</div>
-      <div class="g-desc">${w.desc}</div>
-      <div class="g-cost" style="color:${w.unlocked ? '#22c55e' : '#facc15'};">${priceTag}</div>`;
-    d.onclick = () => {
-      if (w.unlocked) {
-        config.weaponId = w.id; saveProfileData(); renderGearLists(); sfx('good');
-      } else if (config.keys >= w.costKey) {
-        config.keys -= w.costKey; w.unlocked = true; config.weaponId = w.id;
-        saveProfileData(); updateTopHUD(); renderGearLists(); sfx('portal');
-      } else {
-        sfx('bad');
-      }
-    };
-    wBox.appendChild(d);
-  });
-
-  const aBox = document.getElementById('armorList');
-  aBox.innerHTML = '';
-  ARMORS.forEach(a => {
-    const d = document.createElement('div');
-    d.className = 'gear-card' + (config.armorId === a.id ? ' active' : '');
-    const priceTag = a.unlocked ? '✅ 已裝備/擁有' : `🔒 需要 🔑${a.costKey}`;
-    d.innerHTML = `<div class="g-name">${a.name}</div>
-      <div class="g-desc">${a.desc}</div>
-      <div class="g-cost" style="color:${a.unlocked ? '#22c55e' : '#facc15'};">${priceTag}</div>`;
-    d.onclick = () => {
-      if (a.unlocked) {
-        config.armorId = a.id; saveProfileData(); renderGearLists(); sfx('good');
-      } else if (config.keys >= a.costKey) {
-        config.keys -= a.costKey; a.unlocked = true; config.armorId = a.id;
-        saveProfileData(); updateTopHUD(); renderGearLists(); sfx('portal');
-      } else {
-        sfx('bad');
-      }
-    };
-    aBox.appendChild(d);
-  });
-}
-
-function setMode(m, el) {
-  config.mode = m;
-  document.querySelectorAll('#modeRow .mode-card').forEach(x => x.classList.remove('active'));
-  el.classList.add('active');
-  sfx('good');
-}
-function setDiff(d, el) {
-  config.diff = d;
-  document.querySelectorAll('#diffRow .seg-btn').forEach(x => x.classList.remove('active'));
-  el.classList.add('active');
-  sfx('good');
-}
-
-function changeVoice(newVoice) {
-  config.voiceName = newVoice;
-  localStorage.setItem('rv94_voice_name', newVoice);
-  syncVoiceControlsUI();
-  previewVoiceSample();
-}
-
-function setVoiceSpeed(newRate) {
-  config.voiceRate = newRate;
-  localStorage.setItem('rv94_voice_rate', newRate);
-  syncVoiceControlsUI();
-  previewVoiceSample();
-}
-
-function syncVoiceControlsUI() {
-  const lv = document.getElementById('lobbyVoiceSelect');
-  const pv = document.getElementById('pauseVoiceSelect');
-  if (lv) lv.value = config.voiceName;
-  if (pv) pv.value = config.voiceName;
-
-  document.querySelectorAll('#lobbySpeedGroup .seg-btn, #pauseSpeedGroup .seg-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-spd') === config.voiceRate);
-  });
-}
-
-function previewVoiceSample() {
-  const samplePool = getActiveWordPool();
-  const sampleWord = (round.wordObj && match.active)
-    ? (round.wordObj.ttsText || round.wordObj.word)
-    : (samplePool[0] ? samplePool[0].ttsText : 'Welcome to Rivals Word Arena');
-  speakText(sampleWord);
-}
-
-function clearWordListContent() {
-  if (!confirm(`🧹 確定要清空【${config.playerName}】目前的題庫文字框嗎？`)) return;
-  const textarea = document.getElementById('wordInput');
-  textarea.value = `[Unit 1]\n`;
-  textarea.focus();
-  document.getElementById('ocrStatusText').textContent = '✨ 已清空！請直接貼上新英文生字。';
-  sfx('good');
-}
-
-function restorePlayerDefaultWords() {
-  if (!confirm(`🔄 確定要還原【${config.playerName}】的預設專屬題庫嗎？`)) return;
-  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
-  document.getElementById('wordInput').value = def;
-  document.getElementById('ocrStatusText').textContent = `✅ 已載入預設題庫，請按下方「💾 儲存題庫與設定」。`;
-  sfx('good');
-}
-
-function exportFullSaveBackup() {
-  saveProfileData(true);
-  const fullData = {
-    prof: config.playerName,
-    keys: config.keys,
-    coins: config.coins,
-    streak: config.streak,
-    uw: WEAPONS.filter(w => w.unlocked).map(w => w.id),
-    ua: ARMORS.filter(a => a.unlocked).map(a => a.id),
-    words: document.getElementById('wordInput').value.trim()
-  };
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify(fullData))));
-  navigator.clipboard.writeText(code).then(() => {
-    sfx('good');
-    alert(`✅ 已複製【${config.playerName}】的完整進度備份碼！`);
-  }).catch(() => {
-    prompt('請複製以下備份碼保存：', code);
-  });
-}
-
-function importFullSaveBackup() {
-  const code = prompt('請貼上之前匯出的「完整進度備份碼」：');
-  if (!code || !code.trim()) return;
-  try {
-    const data = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
-    config.keys = data.keys ?? config.keys;
-    config.coins = data.coins ?? config.coins;
-    config.streak = data.streak ?? config.streak;
-    if (Array.isArray(data.uw)) WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber') || data.uw.includes(w.id); });
-    if (Array.isArray(data.ua)) ARMORS.forEach(a => { a.unlocked = (a.id === 'shield') || data.ua.includes(a.id); });
-    if (data.words) {
-      localStorage.setItem(getProfKey('words'), data.words);
-      document.getElementById('wordInput').value = data.words;
-      parseUnitsFromText(data.words);
-    }
-    saveProfileData();
-    renderUnitSelectorBar();
-    renderGearLists();
-    updateTopHUD();
-    sfx('portal');
-    alert(`🎉 成功還原【${config.playerName}】的進度與題庫！`);
-  } catch (e) {
-    sfx('bad');
-    alert('❌ 備份碼格式不正確！');
-  }
-}
-
-function parentAddBonusKeys() {
-  config.keys += 2;
-  config.coins += 50;
-  saveProfileData();
-  updateTopHUD();
-  renderGearLists();
-  sfx('portal');
-  alert(`🎁 已為【${config.playerName}】補發 +2 把鎖匙 🔑 及 +50 金幣 💰！`);
-}
-
-function switchProfile(profName) {
-  saveProfileData(true);
-  sfx('good');
-  loadProfileData(profName);
-  document.getElementById('parentProfName').textContent = config.playerName;
-  const def = INITIAL_PROFILE_WORDS[profName] || INITIAL_PROFILE_WORDS.JUSTIN;
-  document.getElementById('wordInput').value = localStorage.getItem(getProfKey('words')) || def;
-}
-
-async function autoTranslateMissingChinese() {
-  const textarea = document.getElementById('wordInput');
-  const lines = textarea.value.split('\n');
-  const btn = document.getElementById('btnAutoTrans');
-  btn.textContent = '⏳ 翻譯中...';
-  btn.disabled = true;
-
-  const updatedLines = [];
-  for (let rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line || (line.startsWith('[') && line.endsWith(']'))) {
-      updatedLines.push(rawLine);
-      continue;
-    }
-    let hasComma = false;
-    let pDepth = 0;
-    for (let c of line) {
-      if (c === '(') pDepth++;
-      else if (c === ')') pDepth = Math.max(0, pDepth - 1);
-      else if (pDepth === 0 && (c === ',' || c === '，')) hasComma = true;
-    }
-
-    if (!hasComma) {
-      const cleanQuery = line.replace(/\.\.\./g, ' ').trim();
-      if (BUILTIN_DICT[cleanQuery.toLowerCase()]) {
-        updatedLines.push(`${line}, ${BUILTIN_DICT[cleanQuery.toLowerCase()]}`);
-      } else {
-        try {
-          const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dt=t&q=${encodeURIComponent(cleanQuery)}`);
-          const data = await res.json();
-          const trans = (data && data[0] && data[0][0] && data[0][0][0]) ? data[0][0][0] : '生字/片語';
-          updatedLines.push(`${line}, ${trans}`);
-        } catch (e) {
-          updatedLines.push(`${line}, (聽讀音串字)`);
-        }
-      }
-    } else {
-      updatedLines.push(rawLine);
-    }
-  }
-
-  textarea.value = updatedLines.join('\n');
-  btn.textContent = '✅ 已補全中文！';
-  setTimeout(() => {
-    btn.textContent = '🌐 自動補全中文';
-    btn.disabled = false;
-  }, 1800);
-  sfx('good');
-}
-
-function insertNewUnitTemplate() {
-  const textarea = document.getElementById('wordInput');
-  const count = (textarea.value.match(/\[Unit/gi) || []).length + 1;
-  textarea.value += `\n\n[Unit ${count}]\n`;
-  textarea.scrollTop = textarea.scrollHeight;
-}
-
-function executeFullReset() {
-  if (!confirm(`⚠️ 確定要清除【${config.playerName}】的所有連勝、鎖匙、金幣與已解鎖裝備嗎？`)) return;
-  sfx('portal');
-  config.keys = 0; config.coins = 30; config.streak = 0;
-  config.weaponId = 'cyber'; config.armorId = 'shield';
-  WEAPONS.forEach(w => { w.unlocked = (w.id === 'cyber'); });
-  ARMORS.forEach(a => { a.unlocked = (a.id === 'shield'); });
-  saveProfileData();
-  updateTopHUD();
-  renderGearLists();
-  alert(`✅ 已重設【${config.playerName}】的所有戰績與裝備！`);
-}
-
-function openLobby() {
-  match.active = false;
-  match.paused = false;
-  saveProfileData(true);
-  switchDashTab('play');
-  updateTopHUD();
-  renderUnitSelectorBar();
-  renderGearLists();
-  syncVoiceControlsUI();
-  document.getElementById('pauseModal').classList.add('hidden');
-  document.getElementById('lobbyModal').classList.remove('hidden');
-}
-
-function saveSettings() {
-  const def = INITIAL_PROFILE_WORDS[config.playerName] || INITIAL_PROFILE_WORDS.JUSTIN;
-  const raw = document.getElementById('wordInput').value.trim() || def;
-  localStorage.setItem(getProfKey('words'), raw);
-  parseUnitsFromText(raw);
-  config.selectedUnits = ['ALL'];
-  config.seqIndex = 0;
-  studyState.currentUnit = Object.keys(config.unitsMap)[0] || 'Unit 1';
-  studyState.idx = 0;
-  renderUnitSelectorBar();
-
-  config.geminiKey = document.getElementById('geminiKeyInput').value.trim();
-  config.parentPin = document.getElementById('parentPinInput').value.trim() || '1234';
-
-  localStorage.setItem('rv7_gemini_key', config.geminiKey);
-  localStorage.setItem('rv8_parent_pin', config.parentPin);
-
-  saveProfileData();
-  switchDashTab('play');
-  sfx('good');
-}
-
-/* --- 相片 OCR --- */
-let rawUploadedImage = null;
-let currentRotationDeg = 0;
-
-function triggerPhotoInput() { document.getElementById('ocrFileInput').click(); }
-
-function openPhotoRotateModal(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      rawUploadedImage = img;
-      currentRotationDeg = 0;
-      renderRotatedPreview();
-      document.getElementById('modalOcrProgress').textContent = '請確認上方文字是「打橫正常方向」，然後撳開始識別';
-      document.getElementById('photoRotateModal').classList.remove('hidden');
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-  event.target.value = '';
-}
-function closePhotoRotateModal() { document.getElementById('photoRotateModal').classList.add('hidden'); }
-function rotatePreviewImage(deltaDeg) {
-  currentRotationDeg = (currentRotationDeg + deltaDeg + 360) % 360;
-  renderRotatedPreview();
-  sfx('good');
-}
-function renderRotatedPreview() {
-  if (!rawUploadedImage) return;
-  const pCanvas = document.getElementById('ocrPreviewCanvas');
-  const pCtx = pCanvas.getContext('2d');
-  const maxDim = 1200;
-  let w = rawUploadedImage.width, h = rawUploadedImage.height;
-  if (Math.max(w, h) > maxDim) {
-    const r = maxDim / Math.max(w, h);
-    w = Math.round(w * r); h = Math.round(h * r);
-  }
-  if (currentRotationDeg === 90 || currentRotationDeg === 270) {
-    pCanvas.width = h; pCanvas.height = w;
-  } else {
-    pCanvas.width = w; pCanvas.height = h;
-  }
-  pCtx.save();
-  pCtx.fillStyle = '#ffffff';
-  pCtx.fillRect(0, 0, pCanvas.width, pCanvas.height);
-  pCtx.translate(pCanvas.width / 2, pCanvas.height / 2);
-  pCtx.rotate((currentRotationDeg * Math.PI) / 180);
-  pCtx.drawImage(rawUploadedImage, -w / 2, -h / 2, w, h);
-  pCtx.restore();
-}
-function getPreprocessedCanvasForOCR() {
-  const srcCanvas = document.getElementById('ocrPreviewCanvas');
-  const outCanvas = document.createElement('canvas');
-  outCanvas.width = srcCanvas.width; outCanvas.height = srcCanvas.height;
-  const oCtx = outCanvas.getContext('2d');
-  oCtx.drawImage(srcCanvas, 0, 0);
-  const imgData = oCtx.getImageData(0, 0, outCanvas.width, outCanvas.height);
-  const d = imgData.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-    const v = gray < 145 ? 0 : 255;
-    d[i] = d[i + 1] = d[i + 2] = v;
-  }
-  oCtx.putImageData(imgData, 0, 0);
-  return outCanvas;
-}
-async function runSmartOCR() {
-  const progEl = document.getElementById('modalOcrProgress');
-  const btn = document.getElementById('btnRunOCR');
-  btn.disabled = true;
-  const pCanvas = document.getElementById('ocrPreviewCanvas');
-  const gemKey = document.getElementById('geminiKeyInput').value.trim() || config.geminiKey;
-  try {
-    let extractedWords = [];
-    if (gemKey) {
-      progEl.textContent = '🌟 正在使用 Gemini AI 視覺引擎識別表格生字...';
-      const base64Data = pCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${gemKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: 'Extract all vocabulary words or phrases from this worksheet. Return ONLY lines in format: english_word_or_phrase, 繁體中文解釋.' },
-              { inlineData: { mimeType: 'image/jpeg', data: base64Data } }
-            ]
-          }]
-        })
-      });
-      if (resp.ok) {
-        const json = await resp.json();
-        const aiText = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (aiText.trim()) {
-          appendRecognizedBlock(aiText.trim(), 'AI 相片匯入');
-          btn.disabled = false;
-          closePhotoRotateModal();
-          return;
-        }
-      }
-    }
-    progEl.textContent = '🌐 正在透過雲端表格 OCR 引擎識別生字 (1/2)...';
-    try {
-      const base64Img = pCanvas.toDataURL('image/jpeg', 0.82);
-      const formData = new FormData();
-      formData.append('base64Image', base64Img);
-      formData.append('language', 'eng');
-      formData.append('isTable', 'true');
-      formData.append('OCREngine', '2');
-      const ocrRes = await fetch('https://api.ocr.space/parse/image', {
-        method: 'POST',
-        headers: { 'apikey': 'helloworld' },
-        body: formData
-      });
-      if (ocrRes.ok) {
-        const ocrJson = await ocrRes.json();
-        const parsedTxt = ocrJson?.ParsedResults?.[0]?.ParsedText || '';
-        extractedWords = filterValidEnglishWords(parsedTxt);
-      }
-    } catch (cloudErr) {}
-    if (extractedWords.length < 3) {
-      progEl.textContent = '🔍 正在使用本地高對比增強引擎識別生字 (2/2)...';
-      const cleanCanvas = getPreprocessedCanvasForOCR();
-      const res = await Tesseract.recognize(cleanCanvas, 'eng');
-      const localWords = filterValidEnglishWords(res.data.text || '');
-      extractedWords = [...new Set([...extractedWords, ...localWords])];
-    }
-    if (extractedWords.length === 0) {
-      progEl.textContent = '⚠️ 未能識別文字，請檢查相片是否已撳「↻ 右轉 90°」擺正！';
-      btn.disabled = false;
-      return;
-    }
-    progEl.textContent = `✅ 成功識別 ${extractedWords.length} 個生字！正在自動配對中文解釋...`;
-    appendRecognizedBlock(extractedWords.join('\n'), `相片匯入 (${extractedWords.length}字)`);
-    await autoTranslateMissingChinese();
-    closePhotoRotateModal();
-  } catch (err) {
-    progEl.textContent = '❌ 識別發生錯誤，請重試。';
-  }
-  btn.disabled = false;
-}
-function filterValidEnglishWords(rawText) {
-  const stopWords = new Set([
-    'you', 'are', 'not', 'required', 'spell', 'the', 'words', 'wsr', 'wwsr',
-    'and', 'for', 'but', 'all', 'can', 'her', 'was', 'one', 'our', 'out',
-    'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old',
-    'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say',
-    'she', 'too', 'use', 'unit', 'page', 'name', 'class', 'date', 'module'
-  ]);
-  const matches = rawText.match(/[a-zA-Z]+(?:-[a-zA-Z]+)?/g) || [];
-  const unique = [];
-  matches.forEach(w => {
-    const clean = w.toLowerCase();
-    if (clean.length >= 3 && clean.length <= 18 && !stopWords.has(clean) && !unique.includes(clean)) {
-      unique.push(clean);
-    }
-  });
-  return unique;
-}
-function appendRecognizedBlock(linesText, titleLabel) {
-  const textarea = document.getElementById('wordInput');
-  const unitNum = (textarea.value.match(/\[Unit/gi) || []).length + 1;
-  textarea.value = textarea.value.trim() + `\n\n[Unit ${unitNum}: ${titleLabel}]\n` + linesText;
-  document.getElementById('ocrStatusText').textContent = `🎉 已匯入 Unit ${unitNum}！請按下方「💾 儲存題庫」。`;
-  sfx('portal');
-}
-
-/* =========================================================
-   8. 語音合成 (修正 iPad/手機 Autoplay 限制 + 音訊快取 + 100% 發音保底)
-   ========================================================= */
-const sharedAudioPlayer = new Audio();
-const ttsAudioCache = new Map();
-
-// 任何點擊動作即時解鎖手機 AudioContext 與 Audio 播放器
-window.addEventListener('pointerdown', () => {
-  try {
-    if (actx && actx.state === 'suspended') actx.resume();
-  } catch(e) {}
-}, { passive: true });
-
-function speakWebSpeechFallback(text, rateStr = '-15%') {
-  return new Promise((resolve) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      const activeVoice = config.voiceName || 'en-GB-SoniaNeural';
-      u.lang = activeVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
-      const rateMap = { '-38%': 0.6, '-35%': 0.62, '-20%': 0.78, '-18%': 0.8, '-5%': 0.94, '+10%': 1.1 };
-      u.rate = rateMap[rateStr] || 0.85;
-      u.onend = () => resolve();
-      u.onerror = () => resolve();
-      window.speechSynthesis.speak(u);
-    } else {
-      resolve();
-    }
-  });
-}
-
-function speakAzureSSML(innerSSML, rate = '-15%', fallbackText = '') {
-  const activeVoice = config.voiceName || 'en-GB-SoniaNeural';
-  const xmlLang = activeVoice.startsWith('en-GB') ? 'en-GB' : 'en-US';
-  const cacheKey = `${activeVoice}|${rate}|${innerSSML}`;
-
-  return new Promise(async (resolve) => {
-    try {
-      sharedAudioPlayer.pause();
-
-      if (ttsAudioCache.has(cacheKey)) {
-        sharedAudioPlayer.src = ttsAudioCache.get(cacheKey);
-        sharedAudioPlayer.onended = () => resolve();
-        sharedAudioPlayer.onerror = () => resolve();
-        await sharedAudioPlayer.play();
-        return;
-      }
-
-      const ssml = `<speak version='1.0' xml:lang='${xmlLang}'><voice name='${activeVoice}'><prosody rate='${rate}'>${innerSSML}</prosody></voice></speak>`;
-      const res = await fetch(`https://${EMBEDDED_AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-        method: 'POST',
-        headers: {
-          'Ocp-Apim-Subscription-Key': EMBEDDED_AZURE_KEY,
-          'Content-Type': 'application/ssml+xml',
-          'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
-        },
-        body: ssml
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        if (blob.size > 100) {
-          const objUrl = URL.createObjectURL(blob);
-          ttsAudioCache.set(cacheKey, objUrl);
-          sharedAudioPlayer.src = objUrl;
-          sharedAudioPlayer.onended = () => resolve();
-          sharedAudioPlayer.onerror = () => resolve();
-          await sharedAudioPlayer.play();
-          return;
-        }
-      }
-    } catch (e) {}
-
-    // 萬一 Azure SSML 因任何網絡或瀏覽器限制失敗，立即啟動本地語音保底，絕不無聲！
-    const plain = fallbackText || innerSSML.replace(/<[^>]+>/g, '');
-    await speakWebSpeechFallback(plain, rate);
-    resolve();
-  });
-}
-
-async function speakText(text, customRate = null) {
-  if (!text) return;
-  const activeRate = customRate || config.voiceRate || '-15%';
-  await speakAzureSSML(text, activeRate, text);
-}
-
-function speakCurrentWord(overrideRate = null) {
-  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word, overrideRate);
-}
-
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx = null;
-function sfx(type) {
-  try {
-    if (!actx) actx = new AudioCtx();
-    if (actx.state === 'suspended') actx.resume();
-    const osc = actx.createOscillator();
-    const g = actx.createGain();
-    osc.connect(g); g.connect(actx.destination);
-    const now = actx.currentTime;
-    if (type === 'shoot') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(540, now);
-      osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
-      g.gain.setValueAtTime(0.14, now);
-      g.gain.linearRampToValueAtTime(0.01, now + 0.08);
-      osc.start(now); osc.stop(now + 0.08);
-    } else if (type === 'good') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(620, now);
-      osc.frequency.setValueAtTime(920, now + 0.06);
-      g.gain.setValueAtTime(0.22, now);
-      g.gain.linearRampToValueAtTime(0.01, now + 0.18);
-      osc.start(now); osc.stop(now + 0.18);
-    } else if (type === 'bad') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, now);
-      osc.frequency.setValueAtTime(95, now + 0.18);
-      g.gain.setValueAtTime(0.26, now);
-      g.gain.linearRampToValueAtTime(0.01, now + 0.25);
-      osc.start(now); osc.stop(now + 0.25);
-    } else if (type === 'portal') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(300, now);
-      osc.frequency.exponentialRampToValueAtTime(900, now + 0.22);
-      g.gain.setValueAtTime(0.2, now);
-      g.gain.linearRampToValueAtTime(0.01, now + 0.22);
-      osc.start(now); osc.stop(now + 0.22);
-    }
-  } catch (e) {}
-}
-
-function addCoins(amount) {
-  const mult = config.armorId === 'coinchip' ? 2 : 1;
-  config.coins += amount * mult;
-  saveProfileData(true);
-  updateTopHUD();
-}
-
-/* =========================================================
-   9. 競技場地圖、碰撞與遊戲主引擎
+   10. 遊戲主引擎與物理繪圖系統
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
@@ -3004,15 +1795,6 @@ function triggerDeathLootDrop() {
   return `💀 陣亡！`;
 }
 
-function togglePause() {
-  if (!match.active) return;
-  match.paused = !match.paused;
-  firingHeld = false;
-  syncVoiceControlsUI();
-  document.getElementById('pauseModal').classList.toggle('hidden', !match.paused);
-  sfx('good');
-}
-
 function restartCurrentRound() {
   match.paused = false;
   document.getElementById('pauseModal').classList.add('hidden');
@@ -3023,32 +1805,6 @@ function quitToLobbyFromPause() {
   match.paused = false;
   document.getElementById('pauseModal').classList.add('hidden');
   openLobby();
-}
-
-function startMatch() {
-  saveProfileData(true);
-  document.getElementById('lobbyModal').classList.add('hidden');
-  document.getElementById('pauseModal').classList.add('hidden');
-  resize();
-
-  const pool = [...getActiveWordPool()];
-  if (config.wordOrder === 'random') {
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-  }
-
-  match.queue = pool;
-  match.totalWords = pool.length;
-  match.you = 0;
-  match.bot = 0;
-  match.round = 1;
-  match.active = true;
-  match.paused = false;
-
-  updateTopHUD();
-  initRound();
 }
 
 function pickNewRivalWaypoint() {
@@ -3371,10 +2127,10 @@ function drawSafeSanctuaryZone() {
   ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle = player.inSafeZone ? '#86efac' : 'rgba(134, 239, 172, 0.7)';
-  ctx.font = '900 14px sans-serif';
+  ctx.font = '900 13px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('🛡️ 休息思考保護區', 0, -SAFE_ZONE.r - 10);
-  ctx.font = '700 12px sans-serif';
+  ctx.font = '700 11px sans-serif';
   ctx.fillText('(站入內擋子彈 + 慢速回血)', 0, SAFE_ZONE.r + 18);
   ctx.restore();
 }
@@ -3424,7 +2180,7 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = player.inSafeZone ? '#86efac' : '#fef08a';
-    ctx.font = '900 12px sans-serif';
+    ctx.font = '900 11px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(player.inSafeZone ? '🛡️ 思考保護中 (走出圈外開火)' : '🛡️ 開場無敵保護罩', 0, 52);
   }
@@ -3508,7 +2264,7 @@ function drawRobloxHero(x, y, angle, hp, maxHp, shield, maxShield, spawnProtecte
   ctx.fillRect(-bw / 2, -41, bw * (hp / maxHp), 6);
 
   ctx.fillStyle = '#bae6fd';
-  ctx.font = '900 13px sans-serif';
+  ctx.font = '900 12px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(config.playerName, 0, -50);
   ctx.restore();
@@ -3589,16 +2345,10 @@ function drawRivalBoss(x, y, angle, hp, maxHp, shielded, profile) {
   ctx.fillStyle = '#f43f5e';
   ctx.fillRect(-bw / 2, -46, bw * (hp / maxHp), 7);
   ctx.fillStyle = '#fda4af';
-  ctx.font = '900 12px sans-serif';
+  ctx.font = '900 11px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(profile.name, 0, -51);
   ctx.restore();
-}
-
-function circleRect(cx, cy, cr, rx, ry, rw, rh) {
-  const nx = Math.max(rx, Math.min(cx, rx + rw));
-  const ny = Math.max(ry, Math.min(cy, ry + rh));
-  return Math.hypot(cx - nx, cy - ny) < cr;
 }
 
 function update() {
@@ -4027,9 +2777,6 @@ function announceRound(t, s) {
   setTimeout(() => b.classList.add('hidden'), 2300);
 }
 
-/* =========================================================
-   10. 畫面繪製與觸控控制
-   ========================================================= */
 let scale = 1, offX = 0, offY = 0;
 function resize() {
   const rect = stageEl.getBoundingClientRect();
@@ -4140,7 +2887,7 @@ function draw() {
     ctx.fillStyle = p.color; ctx.fillRect(p.x - 3, p.y - 3, 6, 6);
   }
   for (const t of round.texts) {
-    ctx.fillStyle = t.color; ctx.font = '900 19px sans-serif';
+    ctx.fillStyle = t.color; ctx.font = '900 18px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(t.text, t.x, t.y);
   }
