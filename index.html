@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v10.2.1</title>
+<title>RIVALS: Word Arena v10.3.1</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -101,7 +101,7 @@
 
   .word-pill {
     flex: 1;
-    max-width: 720px;
+    max-width: 760px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -139,6 +139,25 @@
     font-size: 18px;
     font-weight: 900;
     color: #fff;
+    text-align: center;
+    line-height: 1.35;
+  }
+  .meaning-text.is-sentence {
+    font-size: 15px;
+    color: #fef08a;
+    background: rgba(250, 204, 21, 0.12);
+    border: 1px dashed rgba(250, 204, 21, 0.45);
+    padding: 4px 10px;
+    border-radius: 8px;
+    max-width: 100%;
+  }
+  .blank-tag {
+    color: var(--blue);
+    font-weight: 900;
+    background: rgba(56, 189, 248, 0.18);
+    padding: 0 6px;
+    border-radius: 4px;
+    border-bottom: 2px solid var(--blue);
   }
   .action-chip-btn {
     background: rgba(56, 189, 248, 0.22);
@@ -707,7 +726,7 @@
     background: rgba(56, 189, 248, 0.16);
     border: 2px solid var(--blue);
     color: #bae6fd;
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 900;
     padding: 8px 20px;
     border-radius: 99px;
@@ -1063,7 +1082,7 @@
     </div>
     <div style="display:flex; flex-direction:column; gap:10px;">
       <button class="start-hero-btn" style="padding:12px; font-size:18px; margin:0;" onclick="togglePause()">▶️ 繼續戰鬥 (RESUME)</button>
-      <button class="mini-btn" style="padding:11px; font-size:15px;" onclick="speakCurrentWord()">🔊 重聽目標生字讀音</button>
+      <button class="mini-btn" style="padding:11px; font-size:15px;" onclick="speakCurrentWord()">🔊 重聽題目讀音</button>
       <button class="mini-btn" style="padding:11px; font-size:15px;" onclick="restartCurrentRound()">🔄 重新開始本題</button>
       <button class="mini-btn" style="padding:11px; font-size:15px; border-color:var(--red); color:#fda4af;" onclick="quitToLobbyFromPause()">🏠 結束並返回大廳</button>
     </div>
@@ -1071,7 +1090,7 @@
 </div>
 
 <!-- =========================================================
-     v10.2.1 響應式主大廳
+     v10.3.1 響應式主大廳
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -1196,7 +1215,7 @@
         🚀 開始挑戰所選題庫 (START)
       </button>
       <div style="text-align:center; font-size:12px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 10.2.1 (Assault 先答後射 + Phonics 盲聽砌字)
+        PWA Auto-Update Ready • Version 10.3.1 (Justin Unit 1-3 + 句子填充不讀答案版)
       </div>
     </div>
 
@@ -1235,7 +1254,7 @@
 
         <!-- 頂部並排展示：Whole Word 擺在中文解釋旁邊 (聽音砌音節時自動隱藏英文) -->
         <div class="study-top-banner">
-          <div class="whole-word-preview" id="studyWholeWord" onclick="speakStudyWord('-12%')" title="點擊朗讀完整生字或片語"></div>
+          <div class="whole-word-preview" id="studyWholeWord" onclick="speakStudyWord('-12%')" title="點擊朗讀目標生字"></div>
           <div class="meaning-badge-study" id="studyWordMeaning">目標</div>
         </div>
 
@@ -1262,7 +1281,7 @@
             🔗 逐個音節拼讀
           </button>
           <button class="act-btn btn-whole" onclick="speakStudyWord('-10%')">
-            🔊 讀出全字/全句
+            🔊 讀出目標生字
           </button>
           <button class="act-btn btn-slow" onclick="speakStudyWord('-38%')">
             🐢 超慢速
@@ -1298,7 +1317,7 @@
 
       <div style="margin-bottom:12px;">
         <label style="font-size:13px; color:#cbd5e1; font-weight:700;">
-          📝 分課生字表（支援單字或片語 Phrase，括號內文字會自動變成提示）：
+          📝 分課生字表（支援單字、片語，或包含 ___ 的句子填充題）：
         </label>
         <textarea class="form-textarea" id="wordInput" style="height:135px; font-family:monospace; line-height:1.45;"></textarea>
       </div>
@@ -1430,7 +1449,7 @@ const EMBEDDED_AZURE_REGION = 'eastasia';
 const COLOR_HEX = ['#38bdf8', '#22c55e', '#facc15', '#e879f9', '#fb923c'];
 
 /* =========================================================
-   2. 預載 MARCUS、JUSTIN、FUNG 三人專屬題庫
+   2. 預載 MARCUS、JUSTIN (含 Unit 1-3 生字與句子填充)、FUNG 題庫
    ========================================================= */
 const INITIAL_PROFILE_WORDS = {
   MARCUS: `[Unit 1]
@@ -1473,6 +1492,24 @@ push other passengers, 推撞其他乘客
 rush to the seats, 衝去搶座位
 talk on the phone softly / loudly, 細聲 / 大聲講電話
 
+[Unit 1 Sentences: 句子填充]
+arrive at school early, Good students always ___ before the bell rings. (提早返到學校)
+arrive at school late, The bus broke down, so I ___ this morning. (遲到返學校)
+dress tidily, We should ___ in clean school uniforms every day. (穿著整齊)
+dress untidily, Look at your messy shirt! Do not ___. (穿著不整齊)
+wait patiently, There is a long line at the bus stop. Please ___ for your turn. (耐心地等待)
+wait impatiently, The angry man kept looking at his watch and began to ___. (不耐煩地等待)
+eat quietly, Keep your mouth closed when chewing and ___ in the restaurant. (安靜地進食)
+eat noisily, It is bad manners to ___ with your mouth open. (嘈吵地進食)
+speak politely, Always say please and thank you. We should ___ to others. (有禮貌地說話)
+speak rudely, Do not shout at your parents or ___ to them. (粗魯地說話)
+jump the queue, Everyone is lining up. It is unfair to ___. (打尖/插隊)
+offer your seat, When an old lady gets on the train, you should ___ to her. (讓座)
+push other passengers, The train is crowded, so walk carefully and do not ___. (推撞其他乘客)
+rush to the seats, When the train doors open, do not ___ dangerously. (衝去搶座位)
+talk on the phone softly, On the quiet bus, please ___ so you do not disturb others. (細聲講電話)
+talk on the phone loudly, It is annoying when people ___ inside the cinema. (大聲講電話)
+
 [Unit 2]
 be mean to, 對...刻薄/惡劣
 be nice to, 對...友善
@@ -1492,7 +1529,54 @@ puzzled, 困惑的 (adj.)
 embarrassed, 尷尬的 (adj.)
 annoyed, 惱怒/煩躁的 (adj.)
 upset, 難過/心煩的 (adj.)
-disappointed, 失望的 (adj.)`,
+disappointed, 失望的 (adj.)
+
+[Unit 2 Sentences: 句子填充]
+be mean to, Do not laugh at your classmates or ___ them. (對...刻薄/惡劣)
+be nice to, Good friends should always ___ each other. (對...友善)
+say sorry to, If you break your brother's toy, you must ___ him. (向...道歉)
+share with, Best friends often ___ each other their snacks and secrets. (與...分享)
+quarrel with, Good brothers should talk calmly and not ___ each other. (與...吵架)
+discuss with, Let's ___ our group members how to finish this project. (與...討論)
+agree with, Your idea is great! I totally ___ you. (同意...)
+disagree with, I think differently, so I ___ your plan. (不同意...)
+get on with, The new student is friendly and can ___ everyone in class. (與...融洽相處)
+help with, My sister is kind. She often ___ me ___ my English homework. (幫...做功課)
+lie to, Always tell the truth and never ___ your parents or teachers. (對...講大話)
+be jealous of, Be happy for the winner! Do not ___ your friend's prize. (妒忌...)
+take care of, My parents are busy, so I ___ my little sister at home. (照顧...)
+shocked, Everyone was ___ when they heard the sudden loud thunder! (震驚的)
+puzzled, The maths question was too hard, so Tom looked ___. (困惑的)
+embarrassed, Her face turned red and she felt ___ when she fell on stage. (尷尬的)
+annoyed, I felt ___ because my neighbour made loud noise all night. (惱怒/煩躁的)
+upset, She cried and felt ___ after losing her favourite puppy. (難過/心煩的)
+disappointed, Our team practised hard, so we were ___ when we lost the match. (失望的)
+
+[Unit 3]
+a vest, 一件背心
+a suit, 一套西裝
+sandals, 涼鞋
+gloves, 手套 (五指分開)
+mittens, 連指手套
+glasses, 眼鏡
+sunglasses, 太陽眼鏡
+curly blonde hair, 捲曲的金髮
+long straight hair, 長直髮
+a round face, 圓臉
+a long face, 長臉
+
+[Unit 3 Sentences: 句子填充]
+a vest, He wears ___ under his school shirt to stay warm. (一件背心)
+a suit, My father wears ___ and a tie to his office. (一套西裝)
+sandals, We wear ___ on our feet when we walk on the beach. (涼鞋)
+gloves, Firefighters wear thick ___ to protect their five fingers. (五指手套)
+mittens, Babies wear warm ___ in winter so their hands stay warm. (連指手套)
+glasses, Grandpa cannot see small words without his ___. (眼鏡)
+sunglasses, It is very sunny today! Put on your ___ to protect your eyes. (太陽眼鏡)
+curly blonde hair, The girl from Britain has ___ that looks like golden rings. (捲曲的金髮)
+long straight hair, My sister never curls her hair. She has ___. (長直髮)
+a round face, The cute baby has ___ like a little full moon. (圓臉)
+a long face, A horse has ___, and my uncle has ___ too. (長臉)`,
 
   FUNG: `[Unit 1]
 go rock climbing, 去攀石
@@ -1510,13 +1594,18 @@ read the newspaper, 睇報紙
 read magazines, 睇雜誌`
 };
 
-(function seedV9ProfileWordsOnce() {
+(function seedProfileWordsAndUpgrades() {
   if (!localStorage.getItem('rv9_fixed_seeded')) {
     ['JUSTIN', 'FUNG', 'MARCUS'].forEach(prof => {
       localStorage.setItem(`rv8_${prof}_words`, INITIAL_PROFILE_WORDS[prof]);
       localStorage.setItem(`rv8_${prof}_sel_units`, '["ALL"]');
     });
     localStorage.setItem('rv9_fixed_seeded', 'true');
+  }
+  // v10.3.1 自動為 JUSTIN 升級 Unit 1, 2, 3 生字與句子填充（保留鎖匙與金幣進度）
+  if (!localStorage.getItem('rv10_3_1_u123_seeded')) {
+    localStorage.setItem('rv8_JUSTIN_words', INITIAL_PROFILE_WORDS.JUSTIN);
+    localStorage.setItem('rv10_3_1_u123_seeded', 'true');
   }
 })();
 
@@ -1648,7 +1737,14 @@ const PHONICS_IPA_DICT = {
   'skating':      [{ t: 'ska', ipa: 'skeɪ', ph: 'skei' }, { t: 'ting', ipa: 'tɪŋ', ph: 'ting' }],
   'iceskating':   [{ t: 'ice', ipa: 'aɪs', ph: 'ais' }, { t: 'ska', ipa: 'skeɪ', ph: 'skei' }, { t: 'ting', ipa: 'tɪŋ', ph: 'ting' }],
   'jogging':      [{ t: 'jog', ipa: 'dʒɒɡ', ph: 'jog' }, { t: 'ging', ipa: 'ɪŋ', ph: 'ing' }],
-  'tennis':       [{ t: 'ten', ipa: 'ten', ph: 'ten' }, { t: 'nis', ipa: 'ɪs', ph: 'nis' }]
+  'tennis':       [{ t: 'ten', ipa: 'ten', ph: 'ten' }, { t: 'nis', ipa: 'ɪs', ph: 'nis' }],
+  'sandals':      [{ t: 'san', ipa: 'sæn', ph: 'san' }, { t: 'dals', ipa: 'dəlz', ph: 'dulz' }],
+  'mittens':      [{ t: 'mit', ipa: 'mɪt', ph: 'mit' }, { t: 'tens', ipa: 'ənz', ph: 'unz' }],
+  'glasses':      [{ t: 'glas', ipa: 'ɡlɑːs', ph: 'glas' }, { t: 'ses', ipa: 'ɪz', ph: 'iz' }],
+  'sunglasses':   [{ t: 'sun', ipa: 'sʌn', ph: 'sun' }, { t: 'glas', ipa: 'ɡlɑːs', ph: 'glas' }, { t: 'ses', ipa: 'ɪz', ph: 'iz' }],
+  'curly':        [{ t: 'cur', ipa: 'kɜː', ph: 'ker' }, { t: 'ly', ipa: 'li', ph: 'lee' }],
+  'blonde':       [{ t: 'blonde', ipa: 'blɒnd', ph: 'blond' }],
+  'straight':     [{ t: 'straight', ipa: 'streɪt', ph: 'streit' }]
 };
 
 const FALLBACK_SYLLABLE_IPA = {
@@ -1827,10 +1923,13 @@ function parseUnitsFromText(rawText) {
 
     let splitIdx = -1;
     let parenDepth = 0;
+    let bracketDepth = 0;
     for (let i = 0; i < line.length; i++) {
       if (line[i] === '(' || line[i] === '（') parenDepth++;
       else if (line[i] === ')' || line[i] === '）') parenDepth = Math.max(0, parenDepth - 1);
-      else if (parenDepth === 0 && (line[i] === ',' || line[i] === '，' || line[i] === '\t')) {
+      else if (line[i] === '[') bracketDepth++;
+      else if (line[i] === ']') bracketDepth = Math.max(0, bracketDepth - 1);
+      else if (parenDepth === 0 && bracketDepth === 0 && (line[i] === ',' || line[i] === '，' || line[i] === '\t')) {
         splitIdx = i;
         break;
       }
@@ -1838,6 +1937,20 @@ function parseUnitsFromText(rawText) {
 
     let rawEng = splitIdx !== -1 ? line.slice(0, splitIdx).trim() : line.trim();
     let meaning = splitIdx !== -1 ? line.slice(splitIdx + 1).trim() : '';
+    let isSentenceBlank = false;
+
+    // 支援格式 B：句子內用 [answer] 標示漏空
+    const bracketMatch = rawEng.match(/\[([^\]]+)\]/);
+    if (bracketMatch) {
+      const ans = bracketMatch[1].trim();
+      const blankedSent = rawEng.replace(/\[[^\]]+\]/g, '___');
+      rawEng = ans;
+      meaning = meaning ? `${blankedSent} (${meaning})` : blankedSent;
+      isSentenceBlank = true;
+    } else if (meaning.includes('___') || meaning.includes('____')) {
+      // 支援格式 A：答案在前，後面 meaning 包含 ___ 漏空句子
+      isSentenceBlank = true;
+    }
 
     let parenNotes = [];
     let spellTarget = rawEng.replace(/\(([^)]+)\)/g, (_, inner) => {
@@ -1859,20 +1972,36 @@ function parseUnitsFromText(rawText) {
       if (parenNotes.length > 0 && !meaning.includes('(')) {
         meaning += ' ' + parenNotes.join(' ');
       }
-      const ttsPhrase = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
+
+      // 目標生字本身的讀音（用於 Phonics 溫習室或答對後的確認讀音）
+      const wordTts = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
+
+      // 題目讀音：如果是句子填充題，絕不將答案代入 ___，只將 ___ 讀成 "blank"，防止洩露答案！
+      let promptTts = wordTts;
+      if (isSentenceBlank) {
+        promptTts = meaning
+          .replace(/_{2,}/g, ' blank ')
+          .replace(/\([^)]*\)/g, '')
+          .replace(/（[^）]*）/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
       if (!map[currentUnit]) map[currentUnit] = [];
       map[currentUnit].push({
         word: spellTarget,
         pureWord: pureLetters,
-        ttsText: ttsPhrase,
+        ttsText: promptTts,
+        wordTts: wordTts,
         meaning,
+        isSentence: isSentenceBlank,
         unit: currentUnit
       });
     }
   }
 
   if (Object.keys(map).length === 0) {
-    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', meaning: '蘋果 (n.)', unit: 'Unit 1' }];
+    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', wordTts: 'apple', meaning: '蘋果 (n.)', isSentence: false, unit: 'Unit 1' }];
   }
   config.unitsMap = map;
 }
@@ -2110,7 +2239,8 @@ async function speakStudyWord(rate = '-12%') {
   if (!item) return;
   const blocks = document.querySelectorAll('#studySyllablesBox .syl-block');
   blocks.forEach(b => b.classList.add('speaking'));
-  await speakText(item.ttsText || item.word, rate);
+  // 在 Phonics 溫習室讀出目標生字本身 (wordTts)
+  await speakText(item.wordTts || item.word, rate);
   blocks.forEach(b => b.classList.remove('speaking'));
 }
 
@@ -2809,7 +2939,13 @@ async function speakText(text, customRate = null) {
 }
 
 function speakCurrentWord(overrideRate = null) {
-  if (round.wordObj) speakText(round.wordObj.ttsText || round.wordObj.word, overrideRate);
+  if (!round.wordObj) return;
+  // 句子填充題：未完成串字時只讀帶有 "blank" 的題目句子，不讀出答案；完成串字後才讀出目標字詞
+  if (round.wordObj.isSentence && round.nextIdx !== -1) {
+    speakText(round.wordObj.ttsText, overrideRate);
+  } else {
+    speakText(round.wordObj.wordTts || round.wordObj.word, overrideRate);
+  }
 }
 
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -3145,7 +3281,10 @@ function initRound() {
   updateWordHUD();
   setTimeout(resize, 20);
   announceRound();
-  setTimeout(() => speakCurrentWord(), 550);
+  // 開局自動發音：若是句子填充題，不自動讀出答案
+  if (!round.wordObj.isSentence) {
+    setTimeout(() => speakCurrentWord(), 550);
+  }
 }
 
 function buildSlots(word, mode, diff) {
@@ -3997,7 +4136,22 @@ function updateWordHUD() {
   const names = { sniper: '🎯 SNIPER', assault: '⚡ ASSAULT', breaker: '🛡️ BREAKER' };
   document.getElementById('hudModeBadge').textContent = names[round.mode];
   document.getElementById('hudUnitBadge').textContent = round.wordObj ? round.wordObj.unit.split(':')[0] : 'Unit';
-  document.getElementById('hudMeaning').textContent = round.wordObj ? round.wordObj.meaning : '';
+  const meaningEl = document.getElementById('hudMeaning');
+  if (round.wordObj) {
+    const isSent = round.wordObj.isSentence || round.wordObj.meaning.includes('___');
+    meaningEl.classList.toggle('is-sentence', isSent);
+    if (isSent) {
+      const safeHtml = round.wordObj.meaning
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/_{2,}/g, '<span class="blank-tag"> ___ </span>');
+      meaningEl.innerHTML = `📝 ${safeHtml}`;
+    } else {
+      meaningEl.textContent = round.wordObj.meaning;
+    }
+  } else {
+    meaningEl.textContent = '';
+  }
+
   const box = document.getElementById('hudSlots');
   box.innerHTML = '';
   box.classList.toggle('compact', round.slots.length > 12);
