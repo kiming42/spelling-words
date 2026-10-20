@@ -1,4 +1,4 @@
-const APP_VERSION = 'rivals-word-arena-v10.3.1';
+const APP_VERSION = 'rivals-word-arena-v10.5.0';
 const ASSETS = [
   './',
   './index.html',
