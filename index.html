@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.json">
-<title>RIVALS: Word Arena v10.3.1</title>
+<title>RIVALS: Word Arena v10.4.0</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
@@ -58,7 +58,7 @@
   }
 
   /* =========================================================
-     主遊戲視窗架構 (字體全面放大，清晰易讀)
+     主遊戲視窗架構
      ========================================================= */
   .app-viewport {
     position: absolute;
@@ -101,7 +101,7 @@
 
   .word-pill {
     flex: 1;
-    max-width: 760px;
+    max-width: 780px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -389,7 +389,7 @@
   }
 
   /* =========================================================
-     DASHBOARD & PHONICS STUDY MODE 樣式 (字體全面放大!)
+     DASHBOARD & PHONICS STUDY MODE 樣式
      ========================================================= */
   .modal-overlay {
     position: fixed;
@@ -673,7 +673,7 @@
   }
 
   /* =========================================================
-     Phonics 溫習室樣式 (字體與音節積木大幅放大!)
+     Phonics 溫習室樣式
      ========================================================= */
   .phonics-study-wrap {
     background: #090d16;
@@ -1090,7 +1090,7 @@
 </div>
 
 <!-- =========================================================
-     v10.3.1 響應式主大廳
+     v10.4.0 響應式主大廳
      ========================================================= -->
 <div class="modal-overlay" id="lobbyModal">
   <div class="dashboard-shell interactive">
@@ -1145,7 +1145,7 @@
           <div class="mode-card active" onclick="setMode('mix', this)">
             <span class="m-icon">🔥</span>
             <div class="m-title">混合輪換賽</div>
-            <div class="m-desc">每題切換玩法</div>
+            <div class="m-desc">三種模式輪流出題</div>
           </div>
           <div class="mode-card" onclick="setMode('sniper', this)">
             <span class="m-icon">🎯</span>
@@ -1155,12 +1155,12 @@
           <div class="mode-card" onclick="setMode('assault', this)">
             <span class="m-icon">⚡</span>
             <div class="m-title">裝彈追擊戰</div>
-            <div class="m-desc">先答題解鎖追射</div>
+            <div class="m-desc">答題獲限量彈藥追擊</div>
           </div>
-          <div class="mode-card" onclick="setMode('breaker', this)">
-            <span class="m-icon">🛡️</span>
-            <div class="m-title">弱點破甲戰</div>
-            <div class="m-desc">揀字母箱破盾</div>
+          <div class="mode-card" onclick="setMode('cypher', this)">
+            <span class="m-icon">🌀</span>
+            <div class="m-title">次元駭客戰</div>
+            <div class="m-desc">搶奪句子核心召喚雷擊</div>
           </div>
         </div>
       </div>
@@ -1215,7 +1215,7 @@
         🚀 開始挑戰所選題庫 (START)
       </button>
       <div style="text-align:center; font-size:12px; color:#64748b; margin-top:6px;">
-        PWA Auto-Update Ready • Version 10.3.1 (Justin Unit 1-3 + 句子填充不讀答案版)
+        PWA Auto-Update Ready • Version 10.4.0 (句子填充模式 + Assault 進階挑戰)
       </div>
     </div>
 
@@ -1252,13 +1252,11 @@
           </div>
         </div>
 
-        <!-- 頂部並排展示：Whole Word 擺在中文解釋旁邊 (聽音砌音節時自動隱藏英文) -->
         <div class="study-top-banner">
           <div class="whole-word-preview" id="studyWholeWord" onclick="speakStudyWord('-12%')" title="點擊朗讀目標生字"></div>
           <div class="meaning-badge-study" id="studyWordMeaning">目標</div>
         </div>
 
-        <!-- 學習模式區 -->
         <div id="studyLearnArea">
           <div class="syllables-container" id="studySyllablesBox"></div>
           <div style="font-size:13px; color:#94a3b8; margin-bottom:12px;">
@@ -1266,7 +1264,6 @@
           </div>
         </div>
 
-        <!-- 砌音節練習區 -->
         <div id="studyBuildArea" class="hidden">
           <div style="font-size:14px; color:var(--gold); font-weight:800; margin-bottom:8px;">
             👇 請先聽讀音，再按正確順序點擊下方音節積木拼出目標生字：
@@ -1275,7 +1272,6 @@
           <div class="syllables-container" id="studyBuildPool" style="min-height:80px; margin-bottom:8px;"></div>
         </div>
 
-        <!-- 發音控制列 -->
         <div class="audio-controls" style="margin-bottom:14px;">
           <button class="act-btn btn-blend" onclick="playStudyBlend()">
             🔗 逐個音節拼讀
@@ -1317,7 +1313,7 @@
 
       <div style="margin-bottom:12px;">
         <label style="font-size:13px; color:#cbd5e1; font-weight:700;">
-          📝 分課生字表（支援單字、片語，或包含 ___ 的句子填充題）：
+          📝 分課生字表（支援單字、片語，或包含 ___ 的純英文句子填充題）：
         </label>
         <textarea class="form-textarea" id="wordInput" style="height:135px; font-family:monospace; line-height:1.45;"></textarea>
       </div>
@@ -1449,7 +1445,7 @@ const EMBEDDED_AZURE_REGION = 'eastasia';
 const COLOR_HEX = ['#38bdf8', '#22c55e', '#facc15', '#e879f9', '#fb923c'];
 
 /* =========================================================
-   2. 預載 MARCUS、JUSTIN (含 Unit 1-3 生字與句子填充)、FUNG 題庫
+   2. 預載 MARCUS、JUSTIN (Unit 1-3)、FUNG 題庫 + 純英文句子庫 (無中文解釋)
    ========================================================= */
 const INITIAL_PROFILE_WORDS = {
   MARCUS: `[Unit 1]
@@ -1482,45 +1478,32 @@ reality, 現實 (n.)`,
   JUSTIN: `[Unit 1]
 arrive at school early, 提早返到學校
 arrive at school late, 遲到返學校
-dress tidily / untidily, 穿著整齊 / 不整齊
-wait patiently / impatiently, 耐心地 / 不耐煩地等待
-eat quietly / noisily, 安靜地 / 嘈吵地進食
-speak politely / rudely, 有禮貌地 / 粗魯地說話
+dress tidily, 穿著整齊
+dress untidily, 穿著不整齊
+wait patiently, 耐心地等待
+wait impatiently, 不耐煩地等待
+eat quietly, 安靜地進食
+eat noisily, 嘈吵地進食
+speak politely, 有禮貌地說話
+speak rudely, 粗魯地說話
 jump the queue, 打尖 / 插隊
 offer your seat, 讓座
 push other passengers, 推撞其他乘客
 rush to the seats, 衝去搶座位
-talk on the phone softly / loudly, 細聲 / 大聲講電話
-
-[Unit 1 Sentences: 句子填充]
-arrive at school early, Good students always ___ before the bell rings. (提早返到學校)
-arrive at school late, The bus broke down, so I ___ this morning. (遲到返學校)
-dress tidily, We should ___ in clean school uniforms every day. (穿著整齊)
-dress untidily, Look at your messy shirt! Do not ___. (穿著不整齊)
-wait patiently, There is a long line at the bus stop. Please ___ for your turn. (耐心地等待)
-wait impatiently, The angry man kept looking at his watch and began to ___. (不耐煩地等待)
-eat quietly, Keep your mouth closed when chewing and ___ in the restaurant. (安靜地進食)
-eat noisily, It is bad manners to ___ with your mouth open. (嘈吵地進食)
-speak politely, Always say please and thank you. We should ___ to others. (有禮貌地說話)
-speak rudely, Do not shout at your parents or ___ to them. (粗魯地說話)
-jump the queue, Everyone is lining up. It is unfair to ___. (打尖/插隊)
-offer your seat, When an old lady gets on the train, you should ___ to her. (讓座)
-push other passengers, The train is crowded, so walk carefully and do not ___. (推撞其他乘客)
-rush to the seats, When the train doors open, do not ___ dangerously. (衝去搶座位)
-talk on the phone softly, On the quiet bus, please ___ so you do not disturb others. (細聲講電話)
-talk on the phone loudly, It is annoying when people ___ inside the cinema. (大聲講電話)
+talk on the phone softly, 細聲講電話
+talk on the phone loudly, 大聲講電話
 
 [Unit 2]
 be mean to, 對...刻薄/惡劣
 be nice to, 對...友善
 say sorry to, 向...道歉
-share (feelings, secrets, things) with, 與...分享(感受/秘密/東西)
-quarrel / argue with, 與...吵架/爭論
-discuss (a topic, problem) with, 與...討論(話題/問題)
+share with, 與...分享
+quarrel with, 與...吵架/爭論
+discuss with, 與...討論
 agree with, 同意...
 disagree with, 不同意...
 get on with, 與...融洽相處
-help ... with (the homework), 幫...做(功課)
+help with, 幫...做(功課)
 lie to, 對...講大話
 be jealous of, 妒忌...
 take care of, 照顧...
@@ -1530,27 +1513,6 @@ embarrassed, 尷尬的 (adj.)
 annoyed, 惱怒/煩躁的 (adj.)
 upset, 難過/心煩的 (adj.)
 disappointed, 失望的 (adj.)
-
-[Unit 2 Sentences: 句子填充]
-be mean to, Do not laugh at your classmates or ___ them. (對...刻薄/惡劣)
-be nice to, Good friends should always ___ each other. (對...友善)
-say sorry to, If you break your brother's toy, you must ___ him. (向...道歉)
-share with, Best friends often ___ each other their snacks and secrets. (與...分享)
-quarrel with, Good brothers should talk calmly and not ___ each other. (與...吵架)
-discuss with, Let's ___ our group members how to finish this project. (與...討論)
-agree with, Your idea is great! I totally ___ you. (同意...)
-disagree with, I think differently, so I ___ your plan. (不同意...)
-get on with, The new student is friendly and can ___ everyone in class. (與...融洽相處)
-help with, My sister is kind. She often ___ me ___ my English homework. (幫...做功課)
-lie to, Always tell the truth and never ___ your parents or teachers. (對...講大話)
-be jealous of, Be happy for the winner! Do not ___ your friend's prize. (妒忌...)
-take care of, My parents are busy, so I ___ my little sister at home. (照顧...)
-shocked, Everyone was ___ when they heard the sudden loud thunder! (震驚的)
-puzzled, The maths question was too hard, so Tom looked ___. (困惑的)
-embarrassed, Her face turned red and she felt ___ when she fell on stage. (尷尬的)
-annoyed, I felt ___ because my neighbour made loud noise all night. (惱怒/煩躁的)
-upset, She cried and felt ___ after losing her favourite puppy. (難過/心煩的)
-disappointed, Our team practised hard, so we were ___ when we lost the match. (失望的)
 
 [Unit 3]
 a vest, 一件背心
@@ -1563,20 +1525,7 @@ sunglasses, 太陽眼鏡
 curly blonde hair, 捲曲的金髮
 long straight hair, 長直髮
 a round face, 圓臉
-a long face, 長臉
-
-[Unit 3 Sentences: 句子填充]
-a vest, He wears ___ under his school shirt to stay warm. (一件背心)
-a suit, My father wears ___ and a tie to his office. (一套西裝)
-sandals, We wear ___ on our feet when we walk on the beach. (涼鞋)
-gloves, Firefighters wear thick ___ to protect their five fingers. (五指手套)
-mittens, Babies wear warm ___ in winter so their hands stay warm. (連指手套)
-glasses, Grandpa cannot see small words without his ___. (眼鏡)
-sunglasses, It is very sunny today! Put on your ___ to protect your eyes. (太陽眼鏡)
-curly blonde hair, The girl from Britain has ___ that looks like golden rings. (捲曲的金髮)
-long straight hair, My sister never curls her hair. She has ___. (長直髮)
-a round face, The cute baby has ___ like a little full moon. (圓臉)
-a long face, A horse has ___, and my uncle has ___ too. (長臉)`,
+a long face, 長臉`,
 
   FUNG: `[Unit 1]
 go rock climbing, 去攀石
@@ -1594,6 +1543,103 @@ read the newspaper, 睇報紙
 read magazines, 睇雜誌`
 };
 
+// 純英文情境句子填充庫 (已完全移除所有中文解釋)
+const SENTENCES_DB = {
+  // JUSTIN Unit 1
+  'arrive at school early': 'Good students always ___ before the school bell rings.',
+  'arrive at school late': 'The bus broke down on the road, so I had to ___ this morning.',
+  'dress tidily': 'We should ___ in clean and neat school uniforms every day.',
+  'dress untidily': 'Look at your messy shirt! Do not ___ when you go out.',
+  'wait patiently': 'There is a long line at the bus stop. Please ___ for your turn.',
+  'wait impatiently': 'The angry man kept looking at his watch and began to ___.',
+  'eat quietly': 'Keep your mouth closed when chewing and ___ in the restaurant.',
+  'eat noisily': 'It is bad table manners to ___ with your mouth wide open.',
+  'speak politely': 'Always say please and thank you. We should ___ to others.',
+  'speak rudely': 'Do not shout at your parents or ___ to them.',
+  'jump the queue': 'Everyone is lining up nicely. It is very unfair to ___.',
+  'offer your seat': 'When an elderly lady gets on the train, you should ___ to her.',
+  'push other passengers': 'The train platform is crowded, so walk carefully and do not ___.',
+  'rush to the seats': 'When the train doors open, do not ___ dangerously.',
+  'talk on the phone softly': 'On the quiet library bus, please ___ so you do not disturb others.',
+  'talk on the phone loudly': 'It is very annoying when people ___ inside a quiet cinema.',
+
+  // JUSTIN Unit 2
+  'be mean to': 'Do not laugh at your classmates or ___ them.',
+  'be nice to': 'Good friends should always help and ___ each other.',
+  'say sorry to': 'If you break your brother\'s favourite toy, you must ___ him.',
+  'share with': 'Best friends often ___ each other their snacks and feelings.',
+  'quarrel with': 'Good brothers should talk calmly and never ___ each other.',
+  'discuss with': 'Let\'s ___ our group members how to finish this school project.',
+  'agree with': 'Your idea is wonderful! I totally ___ you.',
+  'disagree with': 'I have a different opinion, so I ___ your plan.',
+  'get on with': 'The new student is very friendly and can ___ everyone in class.',
+  'help with': 'My sister is kind. She often comes to ___ my difficult homework.',
+  'lie to': 'Always tell the truth and never ___ your parents or teachers.',
+  'be jealous of': 'Be happy for the winner! Do not ___ your friend\'s prize.',
+  'take care of': 'My parents are busy at work, so I ___ my little sister at home.',
+  'shocked': 'Everyone was ___ when they heard the sudden loud thunder!',
+  'puzzled': 'The maths question was too hard, so Tom looked ___ and scratched his head.',
+  'embarrassed': 'Her face turned bright red and she felt ___ when she fell on stage.',
+  'annoyed': 'I felt ___ because my neighbour made loud noise all night.',
+  'upset': 'She cried and felt very ___ after losing her favourite puppy.',
+  'disappointed': 'Our team practised hard, so we were ___ when we lost the final match.',
+
+  // JUSTIN Unit 3
+  'a vest': 'He wears ___ under his white school shirt to stay warm in winter.',
+  'a suit': 'My father wears ___ and a tie when he goes to his office.',
+  'sandals': 'We wear ___ on our feet when we walk on the sandy beach in summer.',
+  'gloves': 'Firefighters wear thick ___ to protect their five fingers.',
+  'mittens': 'Babies wear warm ___ in winter so their hands stay warm together.',
+  'glasses': 'Grandpa cannot read small words in the book without his ___.',
+  'sunglasses': 'It is very sunny outside! Put on your ___ to protect your eyes.',
+  'curly blonde hair': 'The girl from Britain has ___ that looks like golden rings.',
+  'long straight hair': 'My sister never curls her hair. She has ___ down to her shoulders.',
+  'a round face': 'The cute baby has ___ that looks like a little full moon.',
+  'a long face': 'A horse has ___, and my tall uncle has ___ too.',
+
+  // FUNG Unit 1
+  'go rock climbing': 'Put on your helmet and safety rope before you ___.',
+  'go jogging': 'My dad likes to ___ slowly in the park every morning.',
+  'go cycling': 'Put on your helmet before you ride your bike and ___ on the track.',
+  'go ice skating': 'It is cold inside the rink where people wear skates and ___.',
+  'go to an indoor playground': 'It is raining heavily outside, so let\'s ___ to play on the slides.',
+  'go to a public library': 'We ___ to borrow storybooks and read quietly.',
+  'play tennis': 'You need a racket and a yellow ball to ___ on the court.',
+  'play volleyball': 'Two teams hit a large ball over a high net with their hands when they ___.',
+  'play online games': 'I connect to the internet to ___ with my friends.',
+  'play video games': 'He uses a controller in front of the TV to ___.',
+  'text my friend': 'I use my mobile phone to send a message and ___.',
+  'read the newspaper': 'Grandpa likes to ___ every morning to know the daily news.',
+  'read magazines': 'My mum likes to ___ with colourful fashion photos.',
+
+  // MARCUS Unit 1
+  'aim': 'Our main ___ is to finish the science project before Friday.',
+  'observe': 'Scientists use telescopes to ___ the stars at night.',
+  'conservation': 'Nature ___ helps keep forests and wild animals safe.',
+  'progress': 'You have made great ___ in your English speaking this term!',
+  'relieved': 'I felt so ___ when I found my lost wallet in my schoolbag.',
+  'endangered': 'Giant pandas and tigers are ___ animals that need our help.',
+  'predator': 'A lion is a fierce ___ that hunts other animals for food.',
+  'attitude': 'A positive ___ helps you overcome difficult challenges.',
+  'succeed': 'If you work hard and never give up, you will finally ___.',
+  'resist': 'The chocolate cake smelled so good that I could not ___ eating it.',
+  'extinct': 'Dinosaurs became ___ millions of years ago and no longer exist.',
+  'presenter': 'The TV ___ spoke clearly to the audience on the nature show.',
+  'develop': 'Reading every day helps children ___ good writing skills.',
+  'interrupted': 'The outdoor football match was ___ by a sudden heavy rainstorm.',
+  'connection': 'There is a strong ___ between healthy food and a strong body.',
+  'habitat': 'The bamboo forest is the natural ___ of the giant panda.',
+  'species': 'There are thousands of different bird ___ living in the rainforest.',
+  'open minded': 'An ___ person is always ready to listen to new ideas.',
+  'protect': 'We must ___ wild animals and their forest homes.',
+  'steady': 'Hold the camera with a ___ hand so the photo is not blurry.',
+  'prey': 'The eagle flew down quickly to catch its ___.',
+  'navigate': 'Sailors in the past used the stars to ___ across the ocean.',
+  'fail': 'If you do not study for the test, you might ___ it.',
+  'barely': 'The fog was so thick that the driver could ___ see the road ahead.',
+  'reality': 'His dream of becoming a pilot finally became a ___.'
+};
+
 (function seedProfileWordsAndUpgrades() {
   if (!localStorage.getItem('rv9_fixed_seeded')) {
     ['JUSTIN', 'FUNG', 'MARCUS'].forEach(prof => {
@@ -1602,10 +1648,10 @@ read magazines, 睇雜誌`
     });
     localStorage.setItem('rv9_fixed_seeded', 'true');
   }
-  // v10.3.1 自動為 JUSTIN 升級 Unit 1, 2, 3 生字與句子填充（保留鎖匙與金幣進度）
-  if (!localStorage.getItem('rv10_3_1_u123_seeded')) {
+  // v10.4.0 自動更新 JUSTIN Unit 1-3 題庫 (移除重複的句子 Unit，改由 SENTENCE 模式直接調用純英文句子)
+  if (!localStorage.getItem('rv10_4_0_seeded')) {
     localStorage.setItem('rv8_JUSTIN_words', INITIAL_PROFILE_WORDS.JUSTIN);
-    localStorage.setItem('rv10_3_1_u123_seeded', 'true');
+    localStorage.setItem('rv10_4_0_seeded', 'true');
   }
 })();
 
@@ -1938,17 +1984,18 @@ function parseUnitsFromText(rawText) {
     let rawEng = splitIdx !== -1 ? line.slice(0, splitIdx).trim() : line.trim();
     let meaning = splitIdx !== -1 ? line.slice(splitIdx + 1).trim() : '';
     let isSentenceBlank = false;
+    let customSentence = '';
 
-    // 支援格式 B：句子內用 [answer] 標示漏空
     const bracketMatch = rawEng.match(/\[([^\]]+)\]/);
     if (bracketMatch) {
       const ans = bracketMatch[1].trim();
-      const blankedSent = rawEng.replace(/\[[^\]]+\]/g, '___');
+      customSentence = rawEng.replace(/\[[^\]]+\]/g, '___').replace(/\([^)]*\)/g, '').replace(/（[^）]*）/g, '').trim();
       rawEng = ans;
-      meaning = meaning ? `${blankedSent} (${meaning})` : blankedSent;
       isSentenceBlank = true;
     } else if (meaning.includes('___') || meaning.includes('____')) {
-      // 支援格式 A：答案在前，後面 meaning 包含 ___ 漏空句子
+      // 若為句子填充題，自動清除句子尾部的中文括號解釋
+      customSentence = meaning.replace(/\([^)]*\)/g, '').replace(/（[^）]*）/g, '').trim();
+      meaning = customSentence;
       isSentenceBlank = true;
     }
 
@@ -1969,30 +2016,29 @@ function parseUnitsFromText(rawText) {
       if (!meaning) {
         meaning = BUILTIN_DICT[rawEng.toLowerCase()] || BUILTIN_DICT[pureLetters] || '（點擊🔊聽讀音）';
       }
-      if (parenNotes.length > 0 && !meaning.includes('(')) {
+      if (!isSentenceBlank && parenNotes.length > 0 && !meaning.includes('(')) {
         meaning += ' ' + parenNotes.join(' ');
       }
 
-      // 目標生字本身的讀音（用於 Phonics 溫習室或答對後的確認讀音）
       const wordTts = rawEng.replace(/\([^)]*\)/g, '').replace(/\.\.\./g, '').replace(/\//g, ' or ').replace(/\s+/g, ' ').trim();
 
-      // 題目讀音：如果是句子填充題，絕不將答案代入 ___，只將 ___ 讀成 "blank"，防止洩露答案！
-      let promptTts = wordTts;
-      if (isSentenceBlank) {
-        promptTts = meaning
-          .replace(/_{2,}/g, ' blank ')
-          .replace(/\([^)]*\)/g, '')
-          .replace(/（[^）]*）/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
-      }
+      // 為每個生字配對純英文漏空句子 (無中文解釋)
+      const sentencePrompt = customSentence || SENTENCES_DB[spellTarget] || `Please choose the correct answer: ___.`;
+      const sentenceTts = sentencePrompt
+        .replace(/_{2,}/g, ' blank ')
+        .replace(/\([^)]*\)/g, '')
+        .replace(/（[^）]*）/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
 
       if (!map[currentUnit]) map[currentUnit] = [];
       map[currentUnit].push({
         word: spellTarget,
         pureWord: pureLetters,
-        ttsText: promptTts,
+        ttsText: isSentenceBlank ? sentenceTts : wordTts,
         wordTts: wordTts,
+        sentencePrompt: sentencePrompt,
+        sentenceTts: sentenceTts,
         meaning,
         isSentence: isSentenceBlank,
         unit: currentUnit
@@ -2001,7 +2047,12 @@ function parseUnitsFromText(rawText) {
   }
 
   if (Object.keys(map).length === 0) {
-    map['Unit 1'] = [{ word: 'apple', pureWord: 'apple', ttsText: 'apple', wordTts: 'apple', meaning: '蘋果 (n.)', isSentence: false, unit: 'Unit 1' }];
+    map['Unit 1'] = [{
+      word: 'apple', pureWord: 'apple', ttsText: 'apple', wordTts: 'apple',
+      sentencePrompt: 'An ___ a day keeps the doctor away.',
+      sentenceTts: 'An blank a day keeps the doctor away.',
+      meaning: '蘋果 (n.)', isSentence: false, unit: 'Unit 1'
+    }];
   }
   config.unitsMap = map;
 }
@@ -2239,7 +2290,6 @@ async function speakStudyWord(rate = '-12%') {
   if (!item) return;
   const blocks = document.querySelectorAll('#studySyllablesBox .syl-block');
   blocks.forEach(b => b.classList.add('speaking'));
-  // 在 Phonics 溫習室讀出目標生字本身 (wordTts)
   await speakText(item.wordTts || item.word, rate);
   blocks.forEach(b => b.classList.remove('speaking'));
 }
@@ -2940,9 +2990,9 @@ async function speakText(text, customRate = null) {
 
 function speakCurrentWord(overrideRate = null) {
   if (!round.wordObj) return;
-  // 句子填充題：未完成串字時只讀帶有 "blank" 的題目句子，不讀出答案；完成串字後才讀出目標字詞
-  if (round.wordObj.isSentence && round.nextIdx !== -1) {
-    speakText(round.wordObj.ttsText, overrideRate);
+  // 在句子填充模式或句子題目中，未完成答題前只讀帶有 "blank" 的句子，不讀答案
+  if ((round.mode === 'cypher' || round.wordObj.isSentence) && round.nextIdx !== -1) {
+    speakText(round.wordObj.sentenceTts || round.wordObj.ttsText, overrideRate);
   } else {
     speakText(round.wordObj.wordTts || round.wordObj.word, overrideRate);
   }
@@ -2998,7 +3048,7 @@ function addCoins(amount) {
 }
 
 /* =========================================================
-   9. 競技場地圖、碰撞與遊戲主引擎 (上方傳送門與通道已擴寬)
+   9. 競技場地圖、碰撞與遊戲主引擎
    ========================================================= */
 const stageEl = document.getElementById('arenaStage');
 const canvas = document.getElementById('gameCanvas');
@@ -3058,6 +3108,8 @@ let round = {
   nextIdx: 0,
   missingChunk: '',
   questionAnswered: false,
+  cypherPhase: 'pick',
+  laserEffect: 0,
   orbs: [],
   crates: [],
   medkits: [],
@@ -3214,7 +3266,7 @@ function pickNewRivalWaypoint() {
 function initRound() {
   generateRandomObstacles();
 
-  const modes = ['sniper', 'assault', 'breaker'];
+  const modes = ['sniper', 'assault', 'cypher'];
   round.mode = config.mode === 'mix' ? modes[(match.round - 1) % 3] : config.mode;
   round.diff = config.diff === 'progressive'
     ? ((match.you >= Math.ceil(match.totalWords / 2)) ? 'full' : 'blanks')
@@ -3223,6 +3275,7 @@ function initRound() {
   round.wordObj = match.queue[0] || getActiveWordPool()[0];
   rival.profile = BOSS_PROFILES[Math.floor(Math.random() * BOSS_PROFILES.length)];
   round.hintHighlightChar = null;
+  round.laserEffect = 0;
 
   player.x = SAFE_ZONE.x;
   player.y = SAFE_ZONE.y;
@@ -3237,9 +3290,13 @@ function initRound() {
   player.speed = config.armorId === 'boots' ? 5.7 : 4.4;
   player.portalCd = 0; player.speedBuff = 0;
 
+  const stageScale = Math.min(12, match.you);
   rival.x = 1060; rival.y = 330;
-  rival.hp = 100; rival.stun = 0; rival.fireCd = 75;
-  rival.speed = 2.2;
+  rival.maxHp = round.mode === 'assault' ? (100 + stageScale * 8) : 100;
+  rival.hp = rival.maxHp;
+  rival.stun = 0;
+  rival.fireCd = Math.max(38, 72 - stageScale * 3);
+  rival.speed = Math.min(4.2, 2.2 + stageScale * 0.14);
   rival.enragedBoost = 0;
   pickNewRivalWaypoint();
 
@@ -3269,20 +3326,20 @@ function initRound() {
     dock.classList.remove('hidden');
     ammoLbl.textContent = `先答題解鎖`;
     renderQuickSpellDock();
-  } else if (round.mode === 'breaker') {
+  } else if (round.mode === 'cypher') {
     rival.shielded = true;
-    player.ammo = 999;
-    round.questionAnswered = true;
+    player.ammo = 0;
+    round.cypherPhase = 'pick';
+    round.questionAnswered = false;
     dock.classList.add('hidden');
-    ammoLbl.textContent = '破盾開火';
-    spawnBreakerCrates();
+    ammoLbl.textContent = '走位拾取核心';
+    spawnCypherCores();
   }
 
   updateWordHUD();
   setTimeout(resize, 20);
   announceRound();
-  // 開局自動發音：若是句子填充題，不自動讀出答案
-  if (!round.wordObj.isSentence) {
+  if (round.mode !== 'cypher' && !round.wordObj.isSentence) {
     setTimeout(() => speakCurrentWord(), 550);
   }
 }
@@ -3291,28 +3348,12 @@ function buildSlots(word, mode, diff) {
   round.slots = [];
   const chars = word.split('');
 
-  if (mode === 'breaker') {
-    let candidates = [];
-    for (let i = 0; i < chars.length - 1; i++) {
-      if (chars[i] !== ' ' && chars[i + 1] !== ' ') {
-        const len = (i + 2 < chars.length && chars[i + 2] !== ' ') ? 3 : 2;
-        candidates.push({ start: i, len });
-      }
+  if (mode === 'cypher' && round.cypherPhase === 'pick') {
+    // 階段 1：尚未拾取核心前，隱藏字母數量與提示，顯示神秘問號格
+    for (let i = 0; i < 5; i++) {
+      round.slots.push({ char: '?', isSpace: false, filled: false });
     }
-    const pick = candidates.length > 0
-      ? candidates[Math.floor(candidates.length / 2)]
-      : { start: 0, len: Math.min(2, chars.length) };
-
-    round.missingChunk = word.slice(pick.start, pick.start + pick.len);
-    for (let i = 0; i < chars.length; i++) {
-      const missing = i >= pick.start && i < pick.start + pick.len;
-      round.slots.push({
-        char: chars[i],
-        isSpace: chars[i] === ' ',
-        filled: chars[i] === ' ' ? true : !missing
-      });
-    }
-    round.nextIdx = pick.start;
+    round.nextIdx = 0;
     round.totalToFill = 1;
     round.filledCount = 0;
     return;
@@ -3377,24 +3418,37 @@ function useHint() {
     updateWordHUD();
     if (!more) {
       round.questionAnswered = true;
-      player.ammo += 30;
+      player.ammo += 12;
       document.getElementById('ammoLabel').textContent = `彈藥:${player.ammo}`;
-      addText(player.x, player.y - 40, `💡 提示完成串字！武器已解鎖 (+30 彈藥)!`, '#facc15');
+      addText(player.x, player.y - 40, `💡 提示完成串字！武器已解鎖 (+12 彈藥)!`, '#facc15');
       speakCurrentWord();
     } else {
-      player.ammo += 5;
+      player.ammo += 2;
       document.getElementById('ammoLabel').textContent = round.questionAnswered ? `彈藥:${player.ammo}` : `先答題(${player.ammo})`;
       addText(player.x, player.y - 40, `💡 提示自動填入：【 ${needed.toUpperCase()} 】(完成全字解鎖射擊)`, '#facc15');
     }
     renderQuickSpellDock();
-  } else if (round.mode === 'breaker') {
-    const wrongIdx = round.crates.findIndex(c => !c.isCorrect);
-    if (wrongIdx !== -1) {
-      const removed = round.crates.splice(wrongIdx, 1)[0];
-      spawnParticles(removed.x, removed.y, '#facc15', 14);
-      addText(player.x, player.y - 40, `💡 已幫你炸毀一個錯誤字母箱！`, '#facc15');
+} else if (round.mode === 'cypher') {
+    if (round.cypherPhase === 'pick') {
+      const wrongIdx = round.crates.findIndex(c => !c.isCorrect);
+      if (wrongIdx !== -1) {
+        const removed = round.crates.splice(wrongIdx, 1)[0];
+        spawnParticles(removed.x, removed.y, '#facc15', 14);
+        addText(player.x, player.y - 40, `💡 已幫你消除一個假數據核心！`, '#facc15');
+      } else {
+        addText(player.x, player.y - 40, `💡 快走去拾取【 ${round.wordObj.word} 】核心!`, '#facc15');
+      }
     } else {
-      addText(player.x, player.y - 40, `💡 正確組合係：【 ${round.missingChunk} 】!`, '#facc15');
+      const needed = round.slots[round.nextIdx].char;
+      round.slots[round.nextIdx].filled = true;
+      const more = findNextSlot();
+      updateWordHUD();
+      if (!more) {
+        triggerCypherLaserKill();
+      } else {
+        addText(player.x, player.y - 40, `💡 自動解碼字母：【 ${needed.toUpperCase()} 】`, '#facc15');
+        renderQuickSpellDock();
+      }
     }
   }
 }
@@ -3432,7 +3486,7 @@ function renderQuickSpellDock() {
   const container = document.getElementById('dockTiles');
   container.innerHTML = '';
   if (round.nextIdx === -1) {
-    buildSlots(round.wordObj.word, 'assault', round.diff);
+    buildSlots(round.wordObj.word, round.mode, round.diff);
     updateWordHUD();
   }
   const needed = round.slots[round.nextIdx].char;
@@ -3466,23 +3520,35 @@ function handleQuickTileTap(ch, btn) {
     sfx('good');
     addCoins(3);
     round.slots[round.nextIdx].filled = true;
-    player.ammo += 5;
 
     const more = findNextSlot();
     updateWordHUD();
+
+    if (round.mode === 'cypher') {
+      if (!more) {
+        triggerCypherLaserKill();
+      } else {
+        addText(player.x, player.y - 30, `⚡ 駭入解碼中...`, '#38bdf8');
+        renderQuickSpellDock();
+      }
+      return;
+    }
+
+    // Assault 模式：減少獲發彈藥 (+2 每字母，完成全字 +10)
+    player.ammo += 2;
     if (!more) {
       round.questionAnswered = true;
       addCoins(10);
-      player.ammo += 25;
+      player.ammo += 10;
       player.speedBuff = 150;
-      rival.enragedBoost = 180;
+      rival.enragedBoost = 190;
       pickNewRivalWaypoint();
       document.getElementById('ammoLabel').textContent = `彈藥:${player.ammo}`;
-      addText(player.x, player.y - 42, '⚡ 答題完成！武器已解鎖 (+30 彈藥)！走出綠圈開火！', '#facc15');
+      addText(player.x, player.y - 42, `⚡ 答題完成！獲發限量彈藥 (共 ${player.ammo} 發)！準確開火！`, '#facc15');
       speakCurrentWord();
     } else {
       document.getElementById('ammoLabel').textContent = round.questionAnswered ? `彈藥:${player.ammo}` : `先答題(${player.ammo})`;
-      addText(player.x, player.y - 30, `✅ 正確! (完成全字後解鎖射擊)`, '#22c55e');
+      addText(player.x, player.y - 30, `✅ 正確! (完成全字解鎖射擊)`, '#22c55e');
     }
     renderQuickSpellDock();
   } else {
@@ -3492,21 +3558,54 @@ function handleQuickTileTap(ch, btn) {
   }
 }
 
-function spawnBreakerCrates() {
+function spawnCypherCores() {
   round.crates = [];
-  const correct = round.missingChunk;
-  const chars = correct.split('');
-  let d1 = chars.length >= 2 && chars[0] !== chars[1]
-    ? chars[1] + chars[0] + chars.slice(2).join('')
-    : 'ea' + chars.slice(2).join('');
-  let d2 = chars.slice(0, -1).join('') + (chars[chars.length - 1] === 'e' ? 'a' : 'e');
-  if (d2 === correct) d2 = 'ou';
+  const correct = round.wordObj.word;
+  const pool = getActiveWordPool().map(w => w.word).filter(w => w !== correct);
+  const shuffledPool = [...new Set(pool)].sort(() => Math.random() - 0.5);
 
-  const opts = [correct, d1, d2].sort(() => Math.random() - 0.5);
-  const pos = [{ x: 460, y: 110 }, { x: 600, y: 550 }, { x: 740, y: 110 }];
+  const distractors = shuffledPool.slice(0, 3);
+  const fallbacks = ['arrive early', 'speak politely', 'a round face', 'go jogging'];
+  for (const fb of fallbacks) {
+    if (distractors.length >= 3) break;
+    if (fb !== correct && !distractors.includes(fb)) distractors.push(fb);
+  }
+
+  const opts = [correct, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+  const pos = [
+    { x: 430, y: 140 },
+    { x: 430, y: 520 },
+    { x: 730, y: 140 },
+    { x: 730, y: 520 }
+  ];
   opts.forEach((txt, i) => {
-    round.crates.push({ x: pos[i].x, y: pos[i].y, r: 34, text: txt, isCorrect: txt === correct });
+    const boxW = Math.max(135, txt.length * 11 + 36);
+    round.crates.push({
+      x: pos[i].x,
+      y: pos[i].y,
+      vx: (Math.random() - 0.5) * 1.1,
+      vy: (Math.random() - 0.5) * 1.1,
+      w: boxW,
+      h: 52,
+      r: 40,
+      text: txt,
+      isCorrect: txt === correct
+    });
   });
+}
+
+function triggerCypherLaserKill() {
+  sfx('portal');
+  addCoins(15);
+  round.laserEffect = 35;
+  rival.shielded = false;
+  rival.hp = 0;
+  document.getElementById('quickSpellDock').classList.add('hidden');
+  spawnParticles(rival.x, rival.y, '#38bdf8', 32);
+  spawnParticles(rival.x, rival.y, '#facc15', 24);
+  addText(rival.x, rival.y - 45, '⚡ 次元雷霆轟炸！OVERDRIVE 秒殺！', '#38bdf8');
+  speakCurrentWord();
+  finishRound(true);
 }
 
 function drawSafeSanctuaryZone() {
@@ -3856,23 +3955,31 @@ function update() {
     }
   }
 
-  if (round.mode === 'breaker' && rival.shielded) {
+if (round.mode === 'cypher' && round.cypherPhase === 'pick') {
     for (let i = round.crates.length - 1; i >= 0; i--) {
       const c = round.crates[i];
-      if (Math.hypot(player.x - c.x, player.y - c.y) < player.r + c.r + pickRadius * 0.5) {
-        hitBreakerCrate(c, i);
+      c.x += c.vx || 0;
+      c.y += c.vy || 0;
+      if (c.x < 330) { c.x = 330; c.vx = Math.abs(c.vx); }
+      if (c.x > 880) { c.x = 880; c.vx = -Math.abs(c.vx); }
+      if (c.y < 85) { c.y = 85; c.vy = Math.abs(c.vy); }
+      if (c.y > ARENA.h - 85) { c.y = ARENA.h - 85; c.vy = -Math.abs(c.vy); }
+
+      if (circleRect(player.x, player.y, player.r + 8, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h)) {
+        hitCypherCore(c, i);
         break;
       }
     }
   }
-
+  if (round.laserEffect > 0) round.laserEffect--;
   if (rival.stun > 0) {
     rival.stun--;
   } else {
     if (Math.hypot(rival.wp.x - rival.x, rival.wp.y - rival.y) < 35) {
       pickNewRivalWaypoint();
     }
-    const aiSpd = rival.speed * (rival.enragedBoost > 0 ? 1.2 : 1) * (round.mode === 'assault' ? 1.05 : 1);
+    const stageScale = Math.min(12, match.you);
+    const aiSpd = rival.speed * (rival.enragedBoost > 0 ? 1.32 : 1) * (round.mode === 'assault' ? (1.1 + stageScale * 0.04) : 1);
     const ang = Math.atan2(rival.wp.y - rival.y, rival.wp.x - rival.x);
     const rx = rival.x + Math.cos(ang) * aiSpd;
     const ry = rival.y + Math.sin(ang) * aiSpd;
@@ -3899,13 +4006,16 @@ function update() {
     rival.angle = Math.atan2(player.y - rival.y, player.x - rival.x);
     rival.fireCd--;
     if (rival.fireCd <= 0 && !player.inSafeZone) {
-      rival.fireCd = Math.max(48, 76 - config.streak * 3);
+      // 後期敵人開火頻率、子彈速度與傷害同步提高
+      rival.fireCd = Math.max(28, 72 - config.streak * 3 - stageScale * 3);
+      const bSpd = 7.6 + stageScale * 0.35;
+      const bDmg = 9 + Math.floor(stageScale / 2);
       round.bullets.push({
         x: rival.x + Math.cos(rival.angle) * 28,
         y: rival.y + Math.sin(rival.angle) * 28,
-        vx: Math.cos(rival.angle) * 7.6,
-        vy: Math.sin(rival.angle) * 7.6,
-        r: 6, color: '#f43f5e', fromPlayer: false, dmg: 9
+        vx: Math.cos(rival.angle) * bSpd,
+        vy: Math.sin(rival.angle) * bSpd,
+        r: 6, color: '#f43f5e', fromPlayer: false, dmg: bDmg
       });
     }
   }
@@ -3943,24 +4053,13 @@ function update() {
         }
         if (hitO) continue;
       }
-      if (round.mode === 'breaker' && rival.shielded) {
-        let hitC = false;
-        for (let j = round.crates.length - 1; j >= 0; j--) {
-          const c = round.crates[j];
-          if (Math.hypot(b.x - c.x, b.y - c.y) < b.r + c.r) {
-            hitBreakerCrate(c, j);
-            round.bullets.splice(i, 1); hitC = true; break;
-          }
-        }
-        if (hitC) continue;
-      }
-      if (Math.hypot(b.x - rival.x, b.y - rival.y) < b.r + rival.r) {
+if (Math.hypot(b.x - rival.x, b.y - rival.y) < b.r + rival.r) {
         round.bullets.splice(i, 1);
         if (round.mode === 'sniper') {
           addText(rival.x, rival.y - 30, '🎯 請按順序射擊場上的字母球！', '#38bdf8');
-        } else if (rival.shielded) {
+        } else if (round.mode === 'cypher') {
           sfx('bad');
-          addText(rival.x, rival.y - 30, '🛡️ 先射爆正確字母箱破盾！', '#c084fc');
+          addText(rival.x, rival.y - 30, '🌀 絕對防禦！請走去拾取正確「數據核心」並串字召喚雷擊！', '#c084fc');
         } else {
           sfx('good');
           rival.hp = Math.max(0, rival.hp - b.dmg);
@@ -4049,24 +4148,26 @@ function hitSniperOrb(orb) {
   }
 }
 
-function hitBreakerCrate(crate, idx) {
-  if (!match.active) return;
-  if (crate.isCorrect) {
+function hitCypherCore(core, idx) {
+  if (!match.active || round.cypherPhase !== 'pick') return;
+  if (core.isCorrect) {
     sfx('portal');
-    addCoins(12);
-    rival.shielded = false;
-    rival.stun = 140;
-    rival.hp = Math.max(15, rival.hp - 35);
-    round.slots.forEach(s => s.filled = true);
-    round.nextIdx = -1;
+    addCoins(8);
+    round.cypherPhase = 'spell';
     round.crates = [];
+    rival.stun = 180;
+    buildSlots(round.wordObj.word, 'cypher', round.diff);
     updateWordHUD();
-    spawnParticles(rival.x, rival.y, '#a855f7', 22);
-    addText(rival.x, rival.y - 40, '⚡ 破盾成功！快開火擊殺敵人！', '#22c55e');
-    speakCurrentWord();
+    const dock = document.getElementById('quickSpellDock');
+    dock.classList.remove('hidden');
+    document.querySelector('#quickSpellDock .dock-hint').textContent = '🌀 駭入解碼:';
+    document.getElementById('ammoLabel').textContent = '頂部串字雷擊';
+    renderQuickSpellDock();
+    spawnParticles(player.x, player.y, '#22c55e', 24);
+    addText(player.x, player.y - 42, '🌀 成功奪取核心！快在頂部完成串字召喚雷霆秒殺！', '#22c55e');
   } else {
     round.crates.splice(idx, 1);
-    applyWrongLetterPenalty(`❌ 錯誤組合 (${crate.text})`, crate.x, crate.y);
+    applyWrongLetterPenalty(`❌ 假數據核心 (${core.text})`, core.x, core.y);
   }
 }
 
@@ -4133,15 +4234,19 @@ function spawnParticles(x, y, color, cnt) {
 function addText(x, y, text, color) { round.texts.push({ x, y, text, color, life: 48 }); }
 
 function updateWordHUD() {
-  const names = { sniper: '🎯 SNIPER', assault: '⚡ ASSAULT', breaker: '🛡️ BREAKER' };
+  const names = { sniper: '🎯 SNIPER', assault: '⚡ ASSAULT', cypher: '🌀 CYPHER' };
   document.getElementById('hudModeBadge').textContent = names[round.mode];
   document.getElementById('hudUnitBadge').textContent = round.wordObj ? round.wordObj.unit.split(':')[0] : 'Unit';
   const meaningEl = document.getElementById('hudMeaning');
   if (round.wordObj) {
-    const isSent = round.wordObj.isSentence || round.wordObj.meaning.includes('___');
+    const isSent = (round.mode === 'cypher') || round.wordObj.isSentence || round.wordObj.meaning.includes('___');
     meaningEl.classList.toggle('is-sentence', isSent);
     if (isSent) {
-      const safeHtml = round.wordObj.meaning
+      const rawSent = (round.mode === 'cypher' ? round.wordObj.sentencePrompt : round.wordObj.meaning)
+        .replace(/\([^)]*\)/g, '')
+        .replace(/（[^）]*）/g, '')
+        .trim();
+      const safeHtml = rawSent
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/_{2,}/g, '<span class="blank-tag"> ___ </span>');
       meaningEl.innerHTML = `📝 ${safeHtml}`;
@@ -4185,8 +4290,8 @@ function announceRound(t, s) {
   const b = document.getElementById('centerBanner');
   const subs = {
     sniper: '順序射擊正確字母球！(可隨時回左邊綠色保護區思考)',
-    assault: '先在頂部篤字母完成串字解鎖武器 ➔ 再走出綠圈追擊敵人！',
-    breaker: '射爆或拾取正確字母箱破盾！(小心假箱扣 15 HP)'
+    assault: '先在頂部完成串字獲取限量彈藥 ➔ 走出綠圈精準追擊敵人！',
+    cypher: '閱讀頂部純英文句子 ➔ 射爆或拾取正確的單字箱破盾！'
   };
   document.getElementById('bannerTitle').textContent = t || `STAGE ${match.you + 1} / ${match.totalWords} vs ${rival.profile.title}`;
   document.getElementById('bannerSub').textContent = s || subs[round.mode];
@@ -4279,12 +4384,46 @@ function draw() {
     ctx.fillText(o.char, o.x, o.y);
   }
 
-  for (const c of round.crates) {
-    ctx.fillStyle = '#3b0764'; ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.roundRect(c.x - 40, c.y - 24, 80, 48, 10); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#facc15'; ctx.font = '900 21px sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(c.text, c.x, c.y);
+for (const c of round.crates) {
+    const bw = c.w || 135;
+    const bh = c.h || 52;
+    const pulse = Math.sin(performance.now() * 0.006) * 4;
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    // 外層能量光環
+    ctx.fillStyle = 'rgba(168, 85, 247, 0.18)';
+    ctx.beginPath();
+    ctx.roundRect(-bw / 2 - pulse, -bh / 2 - pulse, bw + pulse * 2, bh + pulse * 2, 24);
+    ctx.fill();
+    // 數據核心主體
+    ctx.fillStyle = '#1e1b4b';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(-bw / 2, -bh / 2, bw, bh, 22);
+    ctx.fill();
+    ctx.stroke();
+    // 頂部小標籤
+    ctx.fillStyle = '#c084fc';
+    ctx.font = '800 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌀 DATA CORE (走近觸碰)', 0, -bh / 2 - 7);
+    // 單字文字
+    ctx.fillStyle = '#facc15';
+    ctx.font = c.text.length > 15 ? '900 16px sans-serif' : '900 19px sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(c.text, 0, 1);
+    ctx.restore();
+  }
+
+  // 衛星雷霆光柱轟炸特效
+  if (round.laserEffect > 0) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.75)';
+    ctx.fillRect(rival.x - 36, 0, 72, rival.y + 20);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(rival.x - 16, 0, 32, rival.y + 20);
+    ctx.restore();
   }
 
   for (const dl of round.droppedLoot) {
@@ -4410,7 +4549,14 @@ function shoot(manualAim = false) {
 
   if (round.mode === 'assault' && player.ammo <= 0) {
     sfx('bad');
-    addText(player.x, player.y - 30, '⚡ 無子彈！請篤頂部字母串字補彈！', '#facc15');
+    // 當子彈射光而敵人未死，重新開啟頂部串字面板讓玩家再次串字補彈
+    if (round.nextIdx === -1) {
+      round.questionAnswered = false;
+      buildSlots(round.wordObj.word, 'assault', round.diff);
+      updateWordHUD();
+      renderQuickSpellDock();
+    }
+    addText(player.x, player.y - 30, '⚡ 彈藥耗盡！請再串一次生字補充彈藥！', '#facc15');
     return;
   }
 
@@ -4419,7 +4565,7 @@ function shoot(manualAim = false) {
     if (round.mode === 'sniper' && round.orbs.length) {
       let best = Infinity;
       round.orbs.forEach(o => { const d = Math.hypot(o.x - player.x, o.y - player.y); if (d < best) { best = d; tgt = o; } });
-    } else if (round.mode === 'breaker' && rival.shielded && round.crates.length) {
+    } else if (round.mode === 'sentence' && rival.shielded && round.crates.length) {
       let best = Infinity;
       round.crates.forEach(c => { const d = Math.hypot(c.x - player.x, c.y - player.y); if (d < best) { best = d; tgt = c; } });
     }
@@ -4428,6 +4574,13 @@ function shoot(manualAim = false) {
   if (round.mode === 'assault') {
     player.ammo--;
     document.getElementById('ammoLabel').textContent = `彈藥:${player.ammo}`;
+    if (player.ammo <= 0 && rival.hp > 0) {
+      round.questionAnswered = false;
+      buildSlots(round.wordObj.word, 'assault', round.diff);
+      updateWordHUD();
+      renderQuickSpellDock();
+      document.getElementById('ammoLabel').textContent = `再答題補彈`;
+    }
   }
   const w = WEAPONS.find(x => x.id === config.weaponId) || WEAPONS[0];
   fireCd = w.rapid ? 7 : 11;
